@@ -1,0 +1,168 @@
+{
+  "data": [
+    {
+      "product_id": "220ac05c-fab0-4982-9e5a-e0ee97c1e3b9",
+      "product_group": "tshirts",
+      "name": "nisi labore consectetur",
+      "brand": "DataStax",
+      "model_number": 36,
+      "short_desc": "Dolore voluptate ex incididunt pariatur cupidatat qui incididunt enim duis reprehenderit. Lorem deserunt labore elit labore do quis. Lorem Lorem deserunt ex enim labore labore fugiat. Culpa elit esse dolor occaecat sint eu enim aliquip irure laborum laborum. Aliqua nostrud id magna id irure enim.\r\n",
+      "long_desc": "Quis incididunt sit eiusmod sint eu veniam consectetur irure laborum adipisicing officia. Amet nostrud et anim occaecat ea exercitation elit. Culpa eu culpa et nulla ullamco. Quis ea sunt Lorem sit. Dolore eu officia elit adipisicing nostrud Lorem consequat. Tempor velit sit adipisicing labore est sunt exercitation sit ad amet incididunt consectetur consequat. Dolor adipisicing nostrud esse ad.\r\nUllamco consequat voluptate velit quis aute dolor quis id laborum non irure aliquip labore ea. Ipsum non non nostrud Lorem fugiat esse proident aliquip sint pariatur esse cupidatat in. Ut ullamco amet ut mollit cupidatat ipsum nisi. Cillum et eu proident aute ex non culpa elit proident. Culpa ullamco laborum culpa pariatur et consectetur aute elit do. Incididunt nulla laborum commodo labore dolore. Consectetur quis sit mollit consequat non occaecat fugiat enim.\r\nPariatur exercitation ipsum laborum excepteur. Dolore non qui reprehenderit mollit tempor fugiat. Amet nulla eiusmod laboris qui veniam. Irure in cupidatat veniam labore cillum dolore amet sunt Lorem. Laborum tempor ut officia ut elit consequat. Ea ut excepteur consectetur cillum nulla pariatur. Ea sunt minim sint aliqua.\r\n",
+      "specifications": {
+        "colors": [
+          {
+            "name": "Black",
+            "bgColor": "bg-gray-900",
+            "selectedColor": "ring-gray-900"
+          },
+          {
+            "name": "Heather Grey",
+            "bgColor": "bg-gray-400",
+            "selectedColor": "ring-gray-400"
+          }
+        ],
+        "sizes": [
+          { "name": "XXS", "inStock": true },
+          { "name": "XS", "inStock": true },
+          { "name": "S", "inStock": true },
+          { "name": "M", "inStock": true },
+          { "name": "L", "inStock": true },
+          { "name": "XL", "inStock": false }
+        ]
+      },
+      "linked_documents": {
+        "lorem": "non"
+      },
+      "images": [
+        "/mocks/tshirt1.jpg",
+        "/mocks/tshirt1.jpg",
+        "/mocks/tshirt1.jpg",
+        "/mocks/tshirt1.jpg"
+      ],
+      "price": 36
+    },
+    {
+      "product_id": "6f26b239-0269-4710-afa9-bfae716ccf89",
+      "product_group": "tshirts",
+      "name": "eu nisi sit",
+      "brand": "DataStax",
+      "model_number": 29,
+      "short_desc": "Ut qui amet occaecat veniam anim quis proident occaecat veniam sint aliqua veniam culpa. Esse cupidatat tempor nostrud nisi ut incididunt. Irure duis ipsum adipisicing aute occaecat fugiat eu consectetur velit ullamco proident fugiat aliqua magna. In enim qui laborum labore eiusmod sint occaecat nulla velit est esse ex aute. Officia enim veniam exercitation est minim. Cillum enim nulla exercitation elit occaecat proident quis minim. Velit occaecat magna aliquip et consequat dolore laborum.\r\n",
+      "long_desc": "Occaecat qui et ea sit labore enim et ad sit. Nulla minim dolore commodo velit duis pariatur mollit et consectetur et sunt est. Culpa laboris cupidatat aute consectetur officia in id. Irure esse non duis ullamco proident.\r\nCulpa exercitation minim minim Lorem ut mollit qui dolore. Qui nisi sint proident sit dolore. Labore nisi laborum reprehenderit consectetur irure commodo ea laborum deserunt.\r\nProident aliqua occaecat id veniam id sint minim deserunt ipsum do non laboris laborum eu. Sunt consequat excepteur sunt cupidatat pariatur ipsum aliqua ad. Laboris proident voluptate mollit proident sunt elit. Sunt eiusmod aute sint est non. Nostrud deserunt veniam ex non elit exercitation nisi anim cupidatat do amet.\r\n",
+      "specifications": {
+        "colors": [
+          {
+            "name": "Black",
+            "bgColor": "bg-gray-900",
+            "selectedColor": "ring-gray-900"
+          },
+          {
+            "name": "Heather Grey",
+            "bgColor": "bg-gray-400",
+            "selectedColor": "ring-gray-400"
+          }
+        ],
+        "sizes": [
+          { "name": "XXS", "inStock": true },
+          { "name": "XS", "inStock": true },
+          { "name": "S", "inStock": true },
+          { "name": "M", "inStock": true },
+          { "name": "L", "inStock": true },
+          { "name": "XL", "inStock": false }
+        ]
+      },
+      "linked_documents": {
+        "lorem": "dolore"
+      },
+      "images": [
+        "/mocks/tshirt2.jpg",
+        "/mocks/tshirt2.jpg",
+        "/mocks/tshirt2.jpg",
+        "/mocks/tshirt2.jpg"
+      ],
+      "price": 29
+    },
+    {
+      "product_id": "1b6f7ed4-3d7b-442d-a1dd-91bfe203c8e5",
+      "product_group": "tshirts",
+      "name": "proident aliquip tempor",
+      "brand": "DataStax",
+      "model_number": 26,
+      "short_desc": "Eu quis esse proident occaecat do consequat minim reprehenderit commodo excepteur ad adipisicing nisi. Est irure eu mollit excepteur aliquip cillum laborum exercitation eiusmod minim anim aliqua enim. Laboris eiusmod occaecat laborum fugiat non excepteur nostrud.\r\n",
+      "long_desc": "Anim esse cupidatat aute ut ut duis nostrud proident. Do ad consequat reprehenderit sint incididunt do. Elit qui do laborum excepteur. Et aliquip cupidatat fugiat mollit Lorem dolore esse enim et adipisicing. Laboris ullamco non reprehenderit deserunt dolor sint ad aute non dolore ea. Consectetur anim dolore adipisicing pariatur.\r\nIn in laboris ut et irure dolor dolor est amet tempor. Officia aute ipsum quis occaecat eiusmod. Fugiat occaecat officia laboris elit Lorem do est tempor voluptate.\r\nAdipisicing labore nisi voluptate sunt velit sit veniam. Non occaecat consequat dolore officia fugiat eiusmod nostrud culpa pariatur fugiat irure laborum nostrud cupidatat. Magna exercitation et non fugiat laborum dolor sunt consequat ea ut tempor labore eu cupidatat.\r\n",
+      "specifications": {
+        "colors": [
+          {
+            "name": "Black",
+            "bgColor": "bg-gray-900",
+            "selectedColor": "ring-gray-900"
+          },
+          {
+            "name": "Heather Grey",
+            "bgColor": "bg-gray-400",
+            "selectedColor": "ring-gray-400"
+          }
+        ],
+        "sizes": [
+          { "name": "XXS", "inStock": true },
+          { "name": "XS", "inStock": true },
+          { "name": "S", "inStock": true },
+          { "name": "M", "inStock": true },
+          { "name": "L", "inStock": true },
+          { "name": "XL", "inStock": false }
+        ]
+      },
+      "linked_documents": {
+        "lorem": "Lorem"
+      },
+      "images": [
+        "/mocks/tshirt3.jpg",
+        "/mocks/tshirt3.jpg",
+        "/mocks/tshirt3.jpg",
+        "/mocks/tshirt3.jpg"
+      ],
+      "price": 26
+    },
+    {
+      "product_id": "f8f6adc7-466d-4028-a691-52677ad59cdb",
+      "product_group": "tshirts",
+      "name": "magna enim elit",
+      "brand": "DataStax",
+      "model_number": 36,
+      "short_desc": "Proident laboris amet aute reprehenderit voluptate duis. Tempor elit dolor esse enim exercitation ullamco. Cillum reprehenderit non veniam do ipsum veniam adipisicing aliqua. In incididunt mollit labore eiusmod velit ut nostrud irure qui ullamco sint ipsum. Eiusmod anim aute sit id tempor exercitation laborum anim qui cillum nostrud anim. Aliquip reprehenderit qui sit deserunt incididunt consectetur cupidatat voluptate ullamco voluptate occaecat magna quis.\r\n",
+      "long_desc": "Tempor in consequat exercitation duis officia esse non mollit. Est sint est dolore irure velit. Reprehenderit Lorem esse commodo consequat culpa occaecat consequat ad proident esse velit dolor laborum nisi. Proident ipsum cupidatat officia mollit do dolore dolor. Commodo aute ullamco qui aute adipisicing labore.\r\nElit occaecat occaecat cillum culpa labore non amet nulla ad magna. Tempor qui sunt elit nisi occaecat fugiat nisi tempor qui sit voluptate incididunt esse ullamco. Consectetur deserunt fugiat ad Lorem dolore dolor consequat aute do ullamco sit do minim Lorem. Ad velit ipsum magna ea consectetur magna sunt non est excepteur irure id enim. Lorem Lorem adipisicing nisi enim exercitation cupidatat proident quis veniam dolor. Fugiat fugiat duis Lorem exercitation excepteur voluptate tempor nostrud et magna.\r\nEsse deserunt consectetur qui aliqua laboris do anim dolore. Nostrud irure proident sunt tempor qui ea voluptate. Mollit Lorem non cupidatat tempor nulla proident.\r\n",
+      "specifications": {
+        "colors": [
+          {
+            "name": "Black",
+            "bgColor": "bg-gray-900",
+            "selectedColor": "ring-gray-900"
+          },
+          {
+            "name": "Heather Grey",
+            "bgColor": "bg-gray-400",
+            "selectedColor": "ring-gray-400"
+          }
+        ],
+        "sizes": [
+          { "name": "XXS", "inStock": true },
+          { "name": "XS", "inStock": true },
+          { "name": "S", "inStock": true },
+          { "name": "M", "inStock": true },
+          { "name": "L", "inStock": true },
+          { "name": "XL", "inStock": false }
+        ]
+      },
+      "linked_documents": {
+        "lorem": "sit"
+      },
+      "images": [
+        "/mocks/tshirt4.jpg",
+        "/mocks/tshirt4.jpg",
+        "/mocks/tshirt4.jpg",
+        "/mocks/tshirt4.jpg"
+      ],
+      "price": 43
+    }
+  ]
+}
