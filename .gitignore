@@ -27,4 +27,4 @@ dist
 .templates
 template.config.js
 .env
-src/main/resources/static/*
+backend/src/main/resources/static/*

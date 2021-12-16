@@ -10,7 +10,7 @@ module.exports = {
     configure: (webpackConfig, { env, paths }) => {
       // set the output folder to be served by spring boot
       paths.appBuild = webpackConfig.output.path = path.resolve(
-        "../src/main/resources/static"
+        "../backend/src/main/resources/static"
       );
       return webpackConfig;
     },
