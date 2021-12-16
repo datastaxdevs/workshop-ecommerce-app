@@ -58,17 +58,14 @@ The status will change to `Active` when the database is ready, this will only ta
 
 ## 2. Create your schema
 
-Information:
- - The "top" categories of the product hierarchy can be retrieved using a `parent_id` of "ffdac25a-0244-4894-bb31-a0884bc82aa9".
- - Without specifying a `category_id`, all categories for the `parent_id` are returned in an array.
- - Once a category from the bottom of the hierarchy is returned, a `products` ArrayList will be returned.  From there, the returned `product_id` can be used with the `/product` service.
- - Category navigation is achieved by using the `name` and `category_id` properties returned for each category.
- - /category/toplevel  =>  Category[]: Clothing, Cups and Mugs, Tech Accessories, Wall Decor
- - /category/toplevel/Clothing  =>  Category: Clothing
- - /category/Clothing  =>  Category[]: T-Shirts, Hoodies, Jackets
- - /category/T-Shirts  =>  Category[]: Men’s "Your Face...Autowired" T-Shirt, Men’s "Go Away...Annotation" T-Shirt
- - /category/T-Shirts/Men’s%20"Your%20Face...Autowired"%20T-Shirt  ==>  products List<String>: 'LS534S','LS534M','LS534L','LS534XL','LS5342XL','LS5343XL'
+**Introduction**
+This section will provide DDL to create three tables inside the "ecommerce" keyspace: category, price, and product.
 
+The `product` table supports all product data queries, and uses `product_id` as a single key.  It has a few columns for specific product data, but any ad-hoc or non-standard properties can be added to the `specifications` map.
+
+The `category` table will support all product navigation service calls.  It is designed to provide recursive, hierarchical navigation without a pre-set limit on the number of levels.  The top-most level only exists as a `parent_id`, and the bottom-most level contains products.
+
+The `price` table was intentionally split-off from product.  There are several reasons for this.  Price data is much more likely to change than pure product data (different read/write patterns).  Also, large enterprises typically have separate teams for product and price, meaning they will usually have different micro-service layers and data stores.
 
 #### ✅ 2a. Open the CqlConsole on Astra
 
@@ -132,8 +129,8 @@ INSERT INTO category (name,category_id,image,parent_id) VALUES ('Coffee Mugs',20
 INSERT INTO category (name,category_id,image,parent_id) VALUES ('Travel Mugs',0660483e-2fad-447b-b19a-63ab4935e482,'',675cf3a2-2752-4de7-ae2e-849471c29f51);
 INSERT INTO category (name,category_id,image,parent_id) VALUES ('Posters',fdbe9dcb-6878-4216-a64d-27c094b1b075,'',591bf485-de09-4b46-8fd2-5d9dc7ca101e);
 INSERT INTO category (name,category_id,image,parent_id) VALUES ('Wall Art',943482f9-070c-4390-bb30-2107b6fe653a,'bh001.png',591bf485-de09-4b46-8fd2-5d9dc7ca101e);
-INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Men’s "Go Away...Annotation" T-Shirt',99c4d825-d262-4a95-a04e-cc72e7e273c1,'ls534.png',91455473-212e-4c6e-8bec-1da06779ae10,['LS534S','LS534M','LS534L','LS534XL','LS5342XL','LS5343XL']);
-INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Men’s "Your Face...Autowired" T-Shirt',3fa13eee-d057-48d0-b0ae-2d83af9e3e3e,'ls355.png',91455473-212e-4c6e-8bec-1da06779ae10,['LS355S','LS355M','LS355L','LS355XL','LS3552XL','LS3553XL']);
+INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Men''s "Go Away...Annotation" T-Shirt',99c4d825-d262-4a95-a04e-cc72e7e273c1,'ls534.png',91455473-212e-4c6e-8bec-1da06779ae10,['LS534S','LS534M','LS534L','LS534XL','LS5342XL','LS5343XL']);
+INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Men''s "Your Face...Autowired" T-Shirt',3fa13eee-d057-48d0-b0ae-2d83af9e3e3e,'ls355.png',91455473-212e-4c6e-8bec-1da06779ae10,['LS355S','LS355M','LS355L','LS355XL','LS3552XL','LS3553XL']);
 INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Bigheads',2f25a732-0744-406d-baee-3e8131cbe500,'bh001.png',943482f9-070c-4390-bb30-2107b6fe653a,['bh001','bh002','bh003']);
 
 INSERT INTO price(product_id,store_id,value) VALUES ('LS534S','web',14.99);
@@ -175,6 +172,16 @@ VALUES ('LN3552XL','LN355','Your Face is an @Autowired @Bean T-Shirt','NerdShirt
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
 VALUES ('LN355XL','LN355','Your Face is an @Autowired @Bean T-Shirt','NerdShirts','NS102','Men''s 3x Large "Your Face...Autowired" T-Shirt','Everyone knows that one person who overuses the "your face" jokes.',{'size':'3x Large','material':'cotton, polyester','cut':'men''s','color':'black'},{'ln355.png'});
 ```
+
+**Notes:**
+ - The "top" categories of the product hierarchy can be retrieved using a `parent_id` of "ffdac25a-0244-4894-bb31-a0884bc82aa9".
+ - Without specifying a `category_id`, all categories for the `parent_id` are returned.
+ - When a category from the "bottom" of the hierarchy is returned, a `products` ArrayList will be populated.  From there, the returned `product_id`s can be used with the `/product` service.
+ - Category navigation is achieved by using the `name` and `category_id` properties returned for each category (to build the "next level" category links).
+ - /category/ffdac25a-0244-4894-bb31-a0884bc82aa9  =>  Category[Clothing, Cups and Mugs, Tech Accessories, Wall Decor]
+ - /category/ffdac25a-0244-4894-bb31-a0884bc82aa9/18105592-77aa-4469-8556-833b419dacf4  =>  Category[Clothing]
+ - /category/18105592-77aa-4469-8556-833b419dacf4  =>  Category[T-Shirts, Hoodies, Jackets]
+ - /category/91455473-212e-4c6e-8bec-1da06779ae10  =>  Category[Men's "Your Face...Autowired" T-Shirt, Men's "Go Away...Annotation" T-Shirt]
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
