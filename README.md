@@ -79,8 +79,8 @@ use ecommerce;
 #### ✅ 2b. Execute the following CQL script to create the schema
 
 ```sql
-# category table
-CREATE TABLE category (
+/* category table */
+CREATE TABLE IF NOT EXISTS category (
     parent_id UUID,
     category_id UUID,
     name TEXT,
@@ -88,15 +88,15 @@ CREATE TABLE category (
     products LIST<TEXT>,
 PRIMARY KEY (parent_id,category_id));
 
-# price table
-CREATE TABLE price (
+/* price table */
+CREATE TABLE IF NOT EXISTS price (
     product_id TEXT,
     store_id TEXT,
     value DECIMAL,
 PRIMARY KEY(product_id,store_id));
 
-# product table
-CREATE TABLE product (
+/* product table */
+CREATE TABLE IF NOT EXISTS product (
     product_id TEXT,
     product_group TEXT,
     name TEXT,
