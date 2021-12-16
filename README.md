@@ -1,7 +1,7 @@
 <!--- STARTEXCLUDE --->
 ## 🔥 Building an ECommerce Platform 🔥
 
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-streaming-game)
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app)
 [![License Apache2](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Discord](https://img.shields.io/discord/685554030159593522)](https://discord.com/widget?id=685554030159593522&theme=dark)
 
@@ -222,7 +222,7 @@ We are now set with the database and credentials.
 
 To run the application you need to provide the credentials and identifier to the application. you will have to provide 6 values in total as shown below
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/ecomdemo/workshop-ecommerce)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app)
 
 ✅ **5a: Enter the token**
 
