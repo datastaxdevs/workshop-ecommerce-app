@@ -2,6 +2,7 @@ package com.datastax.tutorials.service.featured;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.CassandraType.Name;
@@ -23,10 +24,14 @@ public class FeaturedEntity implements Serializable {
     @CassandraType(type = Name.TEXT)
     private String image;
 
+    @Column("parent_id")
+    @CassandraType(type = Name.UUID)
+    private UUID parentId;
+
     @Column("price")
     @CassandraType(type = Name.DECIMAL)
     private Double price;
-
+    
     /**
      * Getter accessor for attribute 'key'.
      *
@@ -78,10 +83,29 @@ public class FeaturedEntity implements Serializable {
     /**
      * Setter accessor for attribute 'name'.
      * @param name
-     * 		new value for 'name '
+     * 		new value for 'name'
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Getter accessor for attribute 'parentId'.
+     *
+     * @return
+     *       current value of 'parentId'
+     */
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    /**
+     * Setter accessor for attribute 'parentId'.
+     * @param parent_id
+     * 		new value for 'parentId'
+     */
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
     }
 
     /**
@@ -97,7 +121,7 @@ public class FeaturedEntity implements Serializable {
     /**
      * Setter accessor for attribute 'price'.
      * @param price
-     * 		new value for 'price '
+     * 		new value for 'price'
      */
     public void setPrice(Double price) {
         this.price = price;

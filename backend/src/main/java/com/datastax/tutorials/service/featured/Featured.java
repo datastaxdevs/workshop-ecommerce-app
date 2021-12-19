@@ -13,6 +13,7 @@ public class Featured {
 	private UUID categoryId;
     private String name;
     private String image;
+    private UUID parentId;
     private BigDecimal price;   
     
     public int getFeatureId() {
@@ -55,4 +56,11 @@ public class Featured {
     	this.price = _price;
     }
 
+    public UUID getParentId() {
+    	return this.parentId;
+	}
+
+    public void setParentId(UUID _parentId) {
+		this.parentId = _parentId;
+	}
 }

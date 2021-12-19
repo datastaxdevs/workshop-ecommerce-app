@@ -67,6 +67,8 @@ The `category` table will support all product navigation service calls.  It is d
 
 The `price` table was intentionally split-off from product.  There are several reasons for this.  Price data is much more likely to change than pure product data (different read/write patterns).  Also, large enterprises typically have separate teams for product and price, meaning they will usually have different micro-service layers and data stores.
 
+The `featured_product_groups` table was a late-add, to be able to provide some extra "atmostphere" of an e-commerce website.  This way, the UI has a means by which to highlight a few, select products.
+
 #### ✅ 2a. Open the CqlConsole on Astra
 
 ```sql
@@ -112,6 +114,7 @@ CREATE TABLE IF NOT EXISTS featured_product_groups (
     category_id UUID,
     name TEXT,
     image TEXT,
+    parent_id UUID,
     price DECIMAL,
 PRIMARY KEY (feature_id,category_id));
 ```
@@ -263,10 +266,11 @@ VALUES ('DSH916L','DSH916','DataStax Vintage 2015 MVP Hoodie','DataStax','DSS916
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
 VALUES ('DSH916XL','DSH916','DataStax Black Hoodie','DataStax','DSS916','DataStax Black Hoodie - Extra Large','Super warm!  You will underestimate how many times you will fall asleep wearing this!',{'size':'Extra Large','color':'black'},{'dsh916.jpg'});
 
-INSERT INTO featured_product_groups (feature_id,name,category_id,image,price) VALUES (202112,'DataStax Gray Track Jacket',f629e107-b219-4563-a852-6909fd246949,'dss821.jpg',44.99);
-INSERT INTO featured_product_groups (feature_id,name,category_id,image,price) VALUES (202112,'DataStax Black Hoodie',b9bed3c0-0a76-44ea-bce6-f5f21611a3f1,'dsh916.jpg',35.99);
-INSERT INTO featured_product_groups (feature_id,name,category_id,image,price) VALUES (202112,'Apache Cassandra 3.0 Contributor T-Shirt',95ae4613-0184-46ee-b4b0-adfe882754a8,'apc30a.jpg',15.99);
-INSERT INTO featured_product_groups (feature_id,name,category_id,image,price) VALUES (202112,'DataStax Astra "One Team" Long Sleeve Tee',775be203-1a84-4822-9645-4da98ca2b2d8,'dsa1121.jpg',21.99);
+INSERT INTO featured_product_groups (feature_id,name,category_id,image,price,parent_id) VALUES (202112,'DataStax Gray Track Jacket',f629e107-b219-4563-a852-6909fd246949,'dss821.jpg',44.99,d887b049-d16c-46e1-8c94-0a1280dedc30);
+INSERT INTO featured_product_groups (feature_id,name,category_id,image,price,parent_id) VALUES (202112,'DataStax Black Hoodie',b9bed3c0-0a76-44ea-bce6-f5f21611a3f1,'dsh916.jpg',35.99,6a4d86aa-ceb5-4c6f-b9b9-80e9a8c58ad1);
+INSERT INTO featured_product_groups (feature_id,name,category_id,image,price,parent_id) VALUES (202112,'Apache Cassandra 3.0 Contributor T-Shirt',95ae4613-0184-46ee-b4b0-adfe882754a8,'apc30a.jpg',15.99,91455473-212e-4c6e-8bec-1da06779ae10);
+INSERT INTO featured_product_groups (feature_id,name,category_id,image,price,parent_id) VALUES (202112,'DataStax Astra "One Team" Long Sleeve Tee',775be203-1a84-4822-9645-4da98ca2b2d8,'dsa1121.jpg',21.99,91455473-212e-4c6e-8bec-1da06779ae10);
+
 ```
 
 **Notes:**

@@ -118,6 +118,7 @@ public class FeaturedRestController {
     	fe.setCategoryId(f.getKey().getCategoryId());
     	fe.setName(f.getName());
     	fe.setImage(f.getImage());
+    	fe.setParentId(f.getParentId());
     	fe.setPrice(new BigDecimal(f.getPrice()));
         return fe;
     }
