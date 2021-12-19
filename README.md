@@ -105,6 +105,15 @@ CREATE TABLE IF NOT EXISTS product (
     linked_documents MAP<TEXT,TEXT>,
     images SET<TEXT>,
 PRIMARY KEY(product_id));
+
+/* featured product groups table */
+CREATE TABLE IF NOT EXISTS featured_product_groups (
+    feature_id INT,
+    category_id UUID,
+    name TEXT,
+    image TEXT,
+    price DECIMAL,
+PRIMARY KEY (feature_id,category_id));
 ```
 
 [🏠 Back to Table of Contents](#-table-of-contents)
