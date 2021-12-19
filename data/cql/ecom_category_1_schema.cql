@@ -34,5 +34,6 @@ CREATE TABLE featured_product_groups (
     category_id UUID,
     name TEXT,
     image TEXT,
+    parent_id UUID,
     price DECIMAL,
 PRIMARY KEY (feature_id,category_id));
