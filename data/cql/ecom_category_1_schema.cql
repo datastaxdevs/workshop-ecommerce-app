@@ -27,3 +27,12 @@ CREATE TABLE product (
     linked_documents MAP<TEXT,TEXT>,
     images SET<TEXT>,
 PRIMARY KEY(product_id));
+
+# featured product table
+CREATE TABLE featured_product_groups (
+    feature_id INT,
+    category_id UUID,
+    name TEXT,
+    image TEXT,
+    price DECIMAL,
+PRIMARY KEY (feature_id,category_id));
