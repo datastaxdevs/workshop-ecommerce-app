@@ -126,12 +126,13 @@ const Navigation = () => {
                                                 key={child.name}
                                                 className="flex"
                                               >
-                                                <Link
+                                                <Popover.Button
+                                                  as={Link}
                                                   to={`/categories/${child.categoryId}/${child.name}`}
                                                   className="hover:text-gray-800"
                                                 >
                                                   {child.name}
-                                                </Link>
+                                                </Popover.Button>
                                               </li>
                                             ))}
                                           </ul>
@@ -200,7 +201,7 @@ const Navigation = () => {
 
               {/* Cart */}
               <div className="ml-4 flow-root lg:ml-6">
-                <Link to="/cart" className="group -m-2 p-2 flex items-center">
+                <a href="/" className="group -m-2 p-2 flex items-center">
                   <ShoppingBagIcon
                     className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
                     aria-hidden="true"
@@ -209,7 +210,7 @@ const Navigation = () => {
                     0
                   </span>
                   <span className="sr-only">items in cart, view bag</span>
-                </Link>
+                </a>
               </div>
             </div>
           </div>
