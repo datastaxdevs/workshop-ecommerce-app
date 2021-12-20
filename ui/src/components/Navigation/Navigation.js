@@ -1,5 +1,6 @@
 import React, { useState, Fragment } from "react";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
+import { useCategories } from "../../hooks";
 import { Link } from "react-router-dom";
 import {
   MenuIcon,
@@ -13,6 +14,8 @@ import { classNames } from "../../utils";
 
 const Navigation = () => {
   const [open, setOpen] = useState(false);
+  const { data, error } = useCategories();
+
   return (
     <Fragment>
       {/* Mobile menu */}
