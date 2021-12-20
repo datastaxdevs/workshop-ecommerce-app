@@ -1,7 +1,11 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useCategories } from "../../hooks";
 import { footerNavigation } from "../../config";
 
 const Footer = () => {
+  const { data, error } = useCategories();
+
   return (
     <footer aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
@@ -23,14 +27,14 @@ const Footer = () => {
                     Products
                   </h3>
                   <ul className="mt-6 space-y-6">
-                    {footerNavigation.products.map((item) => (
+                    {data.map((item) => (
                       <li key={item.name} className="text-sm">
-                        <a
-                          href={item.href}
+                        <Link
+                          to={`/categories/${item.categoryId}`}
                           className="text-gray-500 hover:text-gray-600"
                         >
                           {item.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>

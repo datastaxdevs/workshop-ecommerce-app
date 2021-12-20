@@ -195,13 +195,6 @@ export const navigation = {
 };
 
 export const footerNavigation = {
-  products: [
-    { name: "Bags", href: "#" },
-    { name: "Tees", href: "#" },
-    { name: "Objects", href: "#" },
-    { name: "Home Goods", href: "#" },
-    { name: "Accessories", href: "#" },
-  ],
   company: [
     { name: "Who we are", href: "#" },
     { name: "Sustainability", href: "#" },

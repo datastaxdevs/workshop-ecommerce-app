@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import useSWR from "swr";
-import { fetcher } from "../../api";
+import { useProduct } from "../../hooks";
 import { useParams } from "react-router-dom";
-import _ from "lodash";
 import { RadioGroup } from "@headlessui/react";
 import { CurrencyDollarIcon, GlobeIcon } from "@heroicons/react/outline";
 import { classNames } from "../../utils";
+import NotFound from "../../components/NotFound";
+import Error from "../../components/Error";
 
 const defaultSpecifications = {
   colors: [
@@ -51,13 +51,13 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState(
     defaultSpecifications.sizes[2]
   );
-  const { data, error } = useSWR("/mocks/products.json", fetcher);
+  const { data, error } = useProduct(params.productId);
 
-  if (error) return <div>failed to load</div>;
+  if (error) return <Error />;
   if (!data) return <div>loading...</div>;
 
-  const product = _.find(data.data, { product_id: params.productId });
-  if (!product) return <div>not found</div>;
+  const product = data;
+  if (!product) return <NotFound />;
 
   return (
     <main className="mt-8 max-w-2xl mx-auto pb-16 px-4 sm:pb-24 sm:px-6 lg:max-w-7xl lg:px-8">

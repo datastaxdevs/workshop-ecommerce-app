@@ -1,9 +1,9 @@
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
-import ShoppingCart from "./ShoppingCart";
+import Loading from "./Loading";
 
-describe("ShoppingCart", () => {
+describe("Loading", () => {
   it("renders without crashing", () => {
-    render(<ShoppingCart />);
+    render(<Loading />);
   });
 });

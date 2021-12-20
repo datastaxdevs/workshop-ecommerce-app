@@ -1,14 +1,18 @@
 import React from "react";
-import useSWR from "swr";
-import { fetcher } from "../../api";
-import { Link } from "react-router-dom";
+import { useProducts } from "../../hooks";
+import { Link, useParams } from "react-router-dom";
+import Error from "../../components/Error";
+import Loading from "../../components/Loading";
+import NotFound from "../../components/NotFound";
 
 const ProductList = () => {
-  const { data, error } = useSWR("/mocks/products.json", fetcher);
-  if (error) return <div>failed to load</div>;
-  if (!data) return <div>loading...</div>;
+  const params = useParams();
+  const { data, error } = useProducts(params.categoryId);
+  if (error) return <Error />;
+  if (!data) return <Loading />;
 
-  const products = data.data;
+  const products = data;
+  if (!products) return <NotFound />;
 
   return (
     <div className="max-w-2xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">

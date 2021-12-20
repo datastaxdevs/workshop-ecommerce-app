@@ -1,9 +1,9 @@
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
-import SignIn from "./SignIn";
+import NotFound from "./NotFound";
 
-describe("SignIn", () => {
+describe("NotFound", () => {
   it("renders without crashing", () => {
-    render(<SignIn />);
+    render(<NotFound />);
   });
 });
