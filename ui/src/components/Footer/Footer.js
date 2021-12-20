@@ -24,7 +24,7 @@ const Footer = () => {
                 categories.map((parent) => (
                   <div key={parent.categoryId}>
                     <h3 className="text-sm font-medium text-gray-900">
-                      Products
+                      {parent.name}
                     </h3>
                     <ul className="mt-6 space-y-6">
                       {parent.children.map((child) => (

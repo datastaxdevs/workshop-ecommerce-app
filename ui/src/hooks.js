@@ -11,7 +11,7 @@ let categoryCache = null;
 export const useAllCategories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,7 +66,7 @@ export const useCategory = (parentId, categoryId) => {
 export const useProduct = (parentId, categoryId) => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
