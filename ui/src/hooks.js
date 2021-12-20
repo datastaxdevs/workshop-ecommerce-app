@@ -56,6 +56,44 @@ export const useProducts = (categoryId) => {
   return useSWR(path, fetcher);
 };
 
-export const useProduct = (productId) => {
-  return useSWR(`/api/v1/products/product/${productId}`, fetcher);
+export const useCategory = (parentId, categoryId) => {
+  return useSWR(
+    `/api/v1/categories/category/${parentId}/${categoryId}`,
+    fetcher
+  );
+};
+
+export const useProduct = (parentId, categoryId) => {
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const category = await fetcher(
+        `/api/v1/categories/category/${parentId}/${categoryId}`
+      );
+      if (category.products) {
+        const products = await Promise.all(
+          category.products.map((productId) =>
+            fetcher(`/api/v1/products/product/${productId}`)
+          )
+        );
+        const prices = await Promise.all(
+          category.products.map((productId) =>
+            fetcher(`/api/v1/prices/price/${productId}`)
+          )
+        );
+        category.products = products.map((product) => {
+          product.price = _.find(prices, { product_id: product.product_id });
+          return product;
+        });
+      }
+      setProduct(category);
+      setLoading(false);
+    };
+    fetchData();
+  }, [categoryId, parentId]);
+
+  return { product, loading, error };
 };

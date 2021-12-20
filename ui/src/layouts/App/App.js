@@ -11,8 +11,14 @@ const App = () => {
       <Navigation />
       <Routes>
         <Route path="/" element={<ProductList />} />
-        <Route path="/categories/:categoryId" element={<ProductList />} />
-        <Route path="/products/:productId" element={<ProductDetail />} />
+        <Route
+          path="/categories/:categoryId/:categoryName"
+          element={<ProductList />}
+        />
+        <Route
+          path="/products/:parentId/:categoryId"
+          element={<ProductDetail />}
+        />
       </Routes>
       <Footer />
     </BrowserRouter>

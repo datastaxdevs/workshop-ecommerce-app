@@ -1,23 +1,19 @@
 import React from "react";
-import { useAllCategories, useProducts } from "../../hooks";
+import { useProducts } from "../../hooks";
 import { Link, useParams } from "react-router-dom";
-import _ from "lodash";
 import Error from "../../components/Error";
 import Loading from "../../components/Loading";
 
 const ProductList = () => {
   const params = useParams();
   const { data: products, error } = useProducts(params.categoryId);
-  const { categories } = useAllCategories();
   if (error) return <Error />;
   if (!products) return <Loading />;
-
-  // const category = _.find(categories, { categoryId: products[0].parentId });
 
   return (
     <div className="max-w-2xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
       <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
-        {params.categoryId || "Featured Products"}
+        {params.categoryName || "Featured Products"}
       </h2>
 
       <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
@@ -33,7 +29,9 @@ const ProductList = () => {
             <div className="mt-4 flex justify-between">
               <div>
                 <h3 className="text-sm text-gray-700">
-                  <Link to={`/products/${product.categoryId}`}>
+                  <Link
+                    to={`/products/${product.parentId}/${product.categoryId}`}
+                  >
                     <span aria-hidden="true" className="absolute inset-0" />
                     {product.name}
                   </Link>

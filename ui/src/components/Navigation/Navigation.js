@@ -127,7 +127,7 @@ const Navigation = () => {
                                                 className="flex"
                                               >
                                                 <Link
-                                                  to={`/categories/${child.categoryId}`}
+                                                  to={`/categories/${child.categoryId}/${child.name}`}
                                                   className="hover:text-gray-800"
                                                 >
                                                   {child.name}

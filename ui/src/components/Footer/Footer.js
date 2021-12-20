@@ -30,7 +30,7 @@ const Footer = () => {
                       {parent.children.map((child) => (
                         <li key={child.name} className="text-sm">
                           <Link
-                            to={`/categories/${child.categoryId}`}
+                            to={`/categories/${child.categoryId}/${child.name}`}
                             className="text-gray-500 hover:text-gray-600"
                           >
                             {child.name}
