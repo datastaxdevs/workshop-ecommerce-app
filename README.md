@@ -308,12 +308,6 @@ This is what the token page looks like. You can now download the values as a CSV
 
 ![image](data/img/astra-token.png?raw=true)
 
-Notice the clipboard icon at the end of each value.
-
-- `clientId:` We will use it as a _username_ to contact to the Cassandra database
-
-- `clientSecret:` We will use it as a _password_ to contact to the Cassandra database
-
 - `appToken:` We will use it as a api token Key to interact with APIs.
 
 #### ✅ 4b. Save your token locally
@@ -334,11 +328,34 @@ To run the application you need to provide the credentials and identifier to the
 
 ✅ **5a: Enter the token**
 
-- Open the file `ecommerce/src/main/resources/application.yml` as show below.
+Copy the environment sample file as below.
+
+```
+cp .env.example .env
+```
+
+Open the `.env` file as below.
+
+```
+gp open .env
+```
+
+- In Astra DB go back to home page by clicking the logo
+
+- Select you database `demos` in the left panel and then copy values for `cloud-region` and `database-id` (clusterID) from the details page as shown below.
+
+- *The DatabaseID is located on the home page*
+
+![Ecom Welcome Screen](data/img/astra-config-1.png?raw=true)
+
+- *The Database region (and keyspace) are located in the details page*
+
+![Ecom Welcome Screen](data/img/astra-config-2.png?raw=true)
 
 - Replace `application-token` with values shown on the Astra token screen or picking the values from the CSV token file your dowloaded before including the AstraCS: part of the token.
 
-> To ease the copy-paste you can use the small clipboard icons as show in the walkthrough.
+
+- *Make sure the Token looks something like (with AstraCS: preceeding `AstraCS:xxxxxxxxxxx:yyyyyyyyyyy`*
 
 ```yaml
 astra:
@@ -350,11 +367,21 @@ astra:
     enabled: false
 ```
 
-✅ **5b: Enter values related to your DB**
+Make sure to inject the environment variables by running the following command
 
-- In Astra DB go back to home page by clicking the logo
+```
+source .env
+```
 
-- Select you database `workshops` in the left panel and then copy values for `cloud-region` and `database-id` (clusterID) from the details page.
+Verify that the environment variables are properly setup with the following command
+
+```
+env | grep -i astra
+```
+
+You should see four environment variables (not reproduced here).
+
+
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
@@ -367,6 +394,15 @@ The application is now set you should be able to interact with your DB. Let's de
 Interaction with Cassandra are implemented in Java through drivers and the main Class is `CqlSession`.
 
 Higher level frameworks like Spring, Spring Data, or even quarkus will rely on this object so let's make sure it is part of your Spring context with a `@SpringBootTest`.
+
+Let's change to the sub-directory from the terminal window as shown below.
+
+```
+cd backend
+```
+
+Let's run the first test with the following command.
+
 
 ```bash
 mvn test -Dtest=com.datastax.tutorials.Test01_Connectivity
@@ -404,10 +440,10 @@ mvn test -Dtest=com.datastax.tutorials.Test02_SpringData
 
 ```bash
 Categories:
-- Clothing with hildren:[T-Shirts, Hoodies, Jackets]
-- Cups and Mugs with hildren:[Cups, Coffee Mugs, Travel Mugs]
-- Tech Accessories with hildren:[Mousepads, Wrist Rests, Laptop Covers]
-- Wall Decor with hildren:[Posters, Wall Art]
+- Clothing with children:[T-Shirts, Hoodies, Jackets]
+- Cups and Mugs with children:[Cups, Coffee Mugs, Travel Mugs]
+- Tech Accessories with children:[Mousepads, Wrist Rests, Laptop Covers]
+- Wall Decor with children:[Posters, Wall Art]
 ```
 
 ✅ **6c: Working With Rest Controller**
