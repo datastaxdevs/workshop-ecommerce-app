@@ -322,11 +322,12 @@ We are now set with the database and credentials.
 
 ## 5. Setup your application
 
-To run the application you need to provide the credentials and identifier to the application. you will have to provide 6 values in total as shown below
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app)
 
 ✅ **5a: Enter the token**
+
+To run the application you need to provide the credentials and identifier to the application. you will have to provide 4 values in total as shown below
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app)
 
 Copy the environment sample file as below.
 
