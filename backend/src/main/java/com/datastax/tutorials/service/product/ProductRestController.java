@@ -86,6 +86,7 @@ public class ProductRestController {
      */
     private Product mapProduct(ProductEntity p) {
         Product pr = new Product();
+        pr.setProductId(p.getProductId());
         pr.setBrand(p.getBrand());
         pr.setImages(p.getImages());
         pr.setLinkedDocuments(p.getLinkedDocuments());
