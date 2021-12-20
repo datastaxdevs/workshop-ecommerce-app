@@ -1,5 +1,5 @@
 <!--- STARTEXCLUDE --->
-## 🔥 Building an ECommerce Platform 🔥
+## 🔥 Building an E-commerce Website 🔥
 
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app)
 [![License Apache2](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
@@ -9,26 +9,35 @@
 
 ## 📋 Table of contents
 
-1. [Create your Database](#1-create-astra-db-instance)
-2. [Create your schema](#2-create-your-schema)
-3. [Populate the dataset](#3-populate-the-data)
-4. [Create a token](#4-create-your-token)
-5. [Setup your application](#5-setup-your-application)
-6. [Run Unit Tests](#6-run-unit-tests)
-7. [Start the Backend API](#7-start-the-backend-api)
-8. [Start the frontend](#8-start-the-frontend)
+1. [Introduction](#1-introduction)
+2. [Create your Database](#2-create-astra-db-instance)
+3. [Create your schema](#3-create-your-schema)
+4. [Populate the dataset](#4-populate-the-data)
+5. [Create a token](#5-create-your-token)
+6. [Setup your application](#6-setup-your-application)
+7. [Run Unit Tests](#7-run-unit-tests)
+8. [Start the Backend API](#8-start-the-backend-api)
+9. [Start the frontend](#9-start-the-frontend)
 
-## 1. Create Astra DB Instance
+## 1. Introduction
+
+Are you building or do you support an e-commerce website?  If so, then this content is for **you**!
+
+Digital sales in 2020 eclipsed four trillion dollars (USD).  Businesses that want to compete, need a high performing e-commerce website.  Here we will demonstrate how to build a high performing persistence layer with DataStax **`ASTRA DB`**.
+
+Why does an e-commerce site need to be fast?  Because most consumers will leave a web page or a mobile app if it takes longer than a few seconds to load.  In the content below, we will cover how to build high-performing data models and services, helping you to build a e-commerce site with high throughput and low latency.
+
+## 2. Create Astra DB Instance
 
 **`ASTRA DB`** is the simplest way to run Cassandra with zero operations at all - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 20M read/write operations, 80GB storage monthly - sufficient to run small production workloads.
 
-#### ✅ 1a. Register
+#### ✅ 2a. Register
 
 If you do have an account yet register and sign In to Astra DB this is FREE and NO CREDIT CARD asked. [https://astra.datastax.com](https://astra.datastax.com): You can use your `Github`, `Google` accounts or register with an `email`.
 
 _Make sure to chose a password with minimum 8 characters, containing upper and lowercase letters, at least one number and special character_
 
-#### ✅ 1b. Create a "FREE" plan
+#### ✅ 2b. Create a "FREE" plan
 
 Follow this [guide](https://docs.datastax.com/en/astra/docs/creating-your-astra-database.html), to set up a pay as you go database with a free $25 monthly credit. You will find below recommended values to enter:
 
@@ -56,7 +65,7 @@ The status will change to `Active` when the database is ready, this will only ta
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 2. Create your schema
+## 3. Create your schema
 
 **Introduction**
 This section will provide DDL to create three tables inside the "ecommerce" keyspace: category, price, and product.
@@ -67,15 +76,15 @@ The `category` table will support all product navigation service calls.  It is d
 
 The `price` table was intentionally split-off from product.  There are several reasons for this.  Price data is much more likely to change than pure product data (different read/write patterns).  Also, large enterprises typically have separate teams for product and price, meaning they will usually have different micro-service layers and data stores.
 
-The `featured_product_groups` table was a late-add, to be able to provide some extra "atmostphere" of an e-commerce website.  This way, the UI has a means by which to highlight a few, select products.
+The `featured_product_groups` table was a late-add, to be able to provide some extra "atmosphere" of an e-commerce website.  This way, the UI has a means by which to highlight a few, select products.
 
-#### ✅ 2a. Open the CqlConsole on Astra
+#### ✅ 3a. Open the CqlConsole on Astra
 
 ```sql
 use ecommerce;
 ```
 
-#### ✅ 2b. Execute the following CQL script to create the schema
+#### ✅ 3b. Execute the following CQL script to create the schema
 
 ```sql
 /* category table */
@@ -121,9 +130,9 @@ PRIMARY KEY (feature_id,category_id));
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 3. Populate the Data
+## 4. Populate the Data
 
-#### ✅ 3a. Execute the following script to populate some data
+#### ✅ 4a. Execute the following script to populate some data
 
 ```sql
 INSERT INTO category (name,category_id,image,parent_id) VALUES ('Clothing',18105592-77aa-4469-8556-833b419dacf4,'ls534.png',ffdac25a-0244-4894-bb31-a0884bc82aa9);
@@ -286,9 +295,9 @@ INSERT INTO featured_product_groups (feature_id,name,category_id,image,price,par
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 4. Create your token
+## 5. Create your token
 
-#### ✅ 4a. Create the token
+#### ✅ 5a. Create the token
 
 Following the [Manage Application Tokens docs](https://docs.datastax.com/en/astra/docs/manage-application-tokens.html) create a token with `Database Admnistrator` roles.
 
@@ -296,7 +305,7 @@ Following the [Manage Application Tokens docs](https://docs.datastax.com/en/astr
 
 - Go to `Token Management`
 
-- Pick the role `Database Admnistrator` on the select box
+- Pick the role `Database Administrator` on the select box
 
 - Click Generate token
 
@@ -310,7 +319,7 @@ This is what the token page looks like. You can now download the values as a CSV
 
 - `appToken:` We will use it as a api token Key to interact with APIs.
 
-#### ✅ 4b. Save your token locally
+#### ✅ 5b. Save your token locally
 
 To know more about roles of each token you can have a look to [this video.](https://www.youtube.com/watch?v=TUTCLsBuUd4&list=PL2g2h-wyI4SpWK1G3UaxXhzZc6aUFXbvL&index=8)
 
@@ -320,10 +329,10 @@ We are now set with the database and credentials.
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 5. Setup your application
+## 6. Setup your application
 
 
-✅ **5a: Enter the token**
+✅ **6a: Enter the token**
 
 To run the application you need to provide the credentials and identifier to the application. you will have to provide 4 values in total as shown below
 
@@ -386,11 +395,11 @@ You should see four environment variables (not reproduced here).
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 6. Run Unit Tests
+## 7. Run Unit Tests
 
 The application is now set you should be able to interact with your DB. Let's demonstrate some capabilities.
 
-✅ **6a: Use CqlSession**
+✅ **7a: Use CqlSession**
 
 Interaction with Cassandra are implemented in Java through drivers and the main Class is `CqlSession`.
 
@@ -429,7 +438,7 @@ sdk_tests	 : id=a52f5879-3476-42d2-b5c9-81b18fc6d103, region=us-east-1
 metrics	 : id=d7ded041-3cfb-4dd4-9957-e20003c3ebe2, region=us-east-1
 ```
 
-✅ **6b: Working With Spring Data**
+✅ **7b: Working With Spring Data**
 
 Spring Data allows Mapping `Object <=> Table` based on annotation at the java bean level. Then by convention CQL query will be executed under the hood.
 
@@ -447,7 +456,7 @@ Categories:
 - Wall Decor with children:[Posters, Wall Art]
 ```
 
-✅ **6c: Working With Rest Controller**
+✅ **7c: Working With Rest Controller**
 
 `TestRestTemplate` is a neat way to test a web controller. The application will start on a random port with `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`
 
@@ -467,7 +476,7 @@ Wall Decor
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 7. Start the backend API
+## 8. Start the backend API
 
 ```bash
 mvn spring-boot:run
@@ -478,7 +487,7 @@ mvn spring-boot:run
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 8. Start the frontend
+## 9. Start the frontend
 
 ```bash
 cd ui
