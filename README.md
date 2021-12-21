@@ -29,7 +29,7 @@ Why does an e-commerce site need to be fast?  Because most consumers will leave 
 
 ## 2. Create Astra DB Instance
 
-**`ASTRA DB`** is the simplest way to run Cassandra with zero operations at all - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 20M read/write operations, 80GB storage monthly - sufficient to run small production workloads.
+**`ASTRA DB`** is the simplest way to run Cassandra with zero operations - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 20M read/write operations, 80GB storage monthly - sufficient to run small production workloads.
 
 #### ✅ 2a. Register
 
@@ -282,6 +282,12 @@ INSERT INTO featured_product_groups (feature_id,name,category_id,image,price,par
 
 ```
 
+Although it's not advised to use wildcards as below, you can verify the data has been created with the following command.
+
+```
+select * from CATEGORY;
+```
+
 **Notes:**
  - The "top" categories of the product hierarchy can be retrieved using a `parent_id` of "ffdac25a-0244-4894-bb31-a0884bc82aa9".
  - Without specifying a `category_id`, all categories for the `parent_id` are returned.
@@ -325,7 +331,7 @@ To know more about roles of each token you can have a look to [this video.](http
 
 **Note: Make sure you don't close the window accidentally or otherwise - if you close this window before you copy the values, the application token is lost forever. They won't be available later for security reasons.**
 
-We are now set with the database and credentials.
+We are now set with the database and credentials and will incorporate them into the application as we will see below.
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
@@ -389,8 +395,7 @@ Verify that the environment variables are properly setup with the following comm
 env | grep -i astra
 ```
 
-You should see four environment variables (not reproduced here).
-
+You should see four environment variables (not shown here).
 
 
 [🏠 Back to Table of Contents](#-table-of-contents)
