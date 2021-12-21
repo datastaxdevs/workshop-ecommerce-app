@@ -422,13 +422,12 @@ gp open .env
 - *Make sure the Token looks something like (with AstraCS: preceeding `AstraCS:xxxxxxxxxxx:yyyyyyyyyyy`*
 
 ```yaml
-astra:
-  application-token: <CHANGE_ME>
-  database-id: <CHANGE_ME>
-  database-region: <CHANGE_ME>
-  keyspace: ecommerce
-  metrics:
-    enabled: false
+# Copy this file to .env and fill in the appropriate values. Refer to README.md
+# for instructions on where to find them.
+export ASTRA_DB_ID=
+export ASTRA_DB_REGION=
+export ASTRA_DB_APPLICATION_TOKEN=
+export ASTRA_DB_KEYSPACE=ecommerce
 ```
 
 Make sure to inject the environment variables by running the following command
