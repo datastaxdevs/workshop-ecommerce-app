@@ -7,6 +7,16 @@
 
 <img src="data/img/splash.png?raw=true" align="right" width="400px"/>
 
+## Materials for the Session
+
+It doesn't matter if you join our workshop live or you prefer to do at your own pace, we have you covered. In this repository, you'll find everything you need for this workshop:
+
+- [Slide deck](./slides.pdf)
+- [Questions and Answers](https://community.datastax.com/)
+- [Worskhop code] (https://github.com/datastaxdevs/workshop-ecommerce-app)
+
+If you cannot attend this workshop live, recordings of this workshop and many more is available on [Youtube](https://youtube.com/datastaxdevs).
+
 ## 📋 Table of contents
 
 1. [Introduction](#1-introduction)
