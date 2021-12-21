@@ -347,6 +347,44 @@ We are now set with the database and credentials and will incorporate them into 
 
 ## 6. Setup your application
 
+### Know your gitpod
+
+Take a moment to read this entire section since it'll help you with the rest of the workshop as you'll be spending most of your time in Gitpod. If you're familiar with Gitpod, you can easily skip this entire section.
+
+The extreme left side has the explorer view(1). The top left, middle to right is where you'll be editing files(2), etc. and the bottom left, middle to right is what we will refer to as the Gitpod terminal window(3) as shown below.
+
+**👁️ Expected output**
+
+![gitpod](data/img/gitpod-01-home-annotated.png?raw=true)
+
+
+You can always get back to the file explorer view whenever by clicking on the hamburger menu on the top left followed by `View` and `Explorer` as shown below.
+
+![gitpod](data/img/Filexplorer0.png?raw=true)
+
+✅ ** Know your public URL**
+
+The workshop application has opened with an ephemeral URL. To know the URL where your application endpoint will be exposed you can run the following command in the terminal after the build has completed. **Please note this URL and open this up in a new browser window as shown below**.
+
+```bash
+gp url 8080
+```
+
+**👁️ Expected output**
+
+![gitpod](data/img/gitpod-02-url.png?raw=true)
+
+
+Pay attention to popups being blocked as shown below and allow the popups.
+
+![gitpod](data/img/PopupBlocked.png?raw=true)
+
+You may encounter the following at different steps and although this may not be applicable right away, the steps are included **in advance** and summarized here so that you can keep an eye out for it. Different paths and different environments might be slightly different although Gipod levels the playing field a bit.
+
+You can allow cutting and pasting into the window by clicking on `Allow` as shown below.
+
+![gitpod](data/img/allow.png?raw=true)
+
 
 ✅ **6a: Enter the token**
 
