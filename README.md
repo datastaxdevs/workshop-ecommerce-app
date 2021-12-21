@@ -17,7 +17,7 @@
 6. [Setup your application](#6-setup-your-application)
 7. [Run Unit Tests](#7-run-unit-tests)
 8. [Start the Backend API](#8-start-the-backend-api)
-9. [Start the frontend](#9-start-the-frontend)
+9. [Start the Application](#9-start-the-frontend)
 
 ## 1. Introduction
 
@@ -481,32 +481,37 @@ Wall Decor
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 8. Start the backend API
+## 8. Install the Backend
 
-```bash
-mvn spring-boot:run
+You can install the backend with the credentials using the following command
+
 ```
+cd /workspace/workshop-ecommerce-app
+mvn install -f backend/pom.xml -DskipTests
+```
+
 
 ![image](data/img/swagger.png?raw=true)
 
-
-[🏠 Back to Table of Contents](#-table-of-contents)
-
-## 9. Start the frontend
-
-```bash
-cd ui
-npm install
-npm run start
-```
+It sets up the backend open APIs that enables the frontend to obtain the data.
 
 ![image](data/img/splash.png?raw=true)
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
+## 9. Start the Application
+
+We've provided a convenience script that can be run as below.
+
+```bash
+./start.sh
+```
+
+[🏠 Back to Table of Contents](#-table-of-contents)
+
 # Done?
 
-Congratulations: you made to the end of today's workshop.
+Congratulations: you made to the end of today's workshop. More building to follow!!!
 
 ![Badge](data/img/build-an-ecommerce-app.png)
 
