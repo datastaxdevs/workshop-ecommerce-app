@@ -33,7 +33,7 @@ Why does an e-commerce site need to be fast?  Because most consumers will leave 
 
 #### ✅ 2a. Register
 
-If you do have an account yet register and sign In to Astra DB this is FREE and NO CREDIT CARD asked. [https://astra.datastax.com](https://astra.dev/12-21): You can use your `Github`, `Google` accounts or register with an `email`.
+If you do not have an account yet, register and sign in to Astra DB: This is FREE and NO CREDIT CARD is required. [https://astra.datastax.com](https://astra.dev/12-21): You can use your `Github`, `Google` accounts or register with an `email`.
 
 _Make sure to chose a password with minimum 8 characters, containing upper and lowercase letters, at least one number and special character_
 
