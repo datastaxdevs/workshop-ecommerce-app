@@ -362,7 +362,7 @@ You can always get back to the file explorer view whenever by clicking on the ha
 
 ![gitpod](data/img/Filexplorer0.png?raw=true)
 
-✅ ** Know your public URL**
+✅ **Know your public URL**
 
 The workshop application has opened with an ephemeral URL. To know the URL where your application endpoint will be exposed you can run the following command in the terminal after the build has completed. **Please note this URL and open this up in a new browser window as shown below**.
 
