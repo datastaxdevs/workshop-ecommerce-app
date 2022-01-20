@@ -161,8 +161,6 @@ CREATE TABLE cart_products (
     cart_id uuid,
     product_timestamp timestamp,
     product_id text,
-    product_description text,
-    product_name text,
     quantity int,
     PRIMARY KEY (cart_id, product_timestamp, product_id)
 ) WITH CLUSTERING ORDER BY (product_timestamp DESC, product_id ASC)

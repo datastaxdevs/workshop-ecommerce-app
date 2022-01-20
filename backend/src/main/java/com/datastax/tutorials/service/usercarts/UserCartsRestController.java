@@ -42,7 +42,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
   allowedHeaders = {"x-requested-with", "origin", "content-type", "accept"},
   origins = "*" 
 )
-@RequestMapping("/api/v1/usercart/")
+@RequestMapping("/api/v1/users/")
 @Tag(name = "User Cart Service", description="Provide crud operations for User Carts")
 public class UserCartsRestController {
 
@@ -68,7 +68,7 @@ public class UserCartsRestController {
      * @return
      *      list of user carts
      */
-    @GetMapping("/carts/{userid}")
+    @GetMapping("/{userid}/carts")
     @Operation(
      summary = "Retrieve metadata for user carts by a userid",
      description= "Find **carts list** for a user by its id `SELECT * FROM user_carts WHERE user_id =?`",
@@ -114,9 +114,9 @@ public class UserCartsRestController {
      * @return
      *      (single) list of user cart
      */
-    @GetMapping("/activecart/{userid}")
+    @GetMapping("/{userid}/carts?active=true")
     @Operation(
-     summary = "Retrieve metadata for user carts by a userid",
+     summary = "Retrieve metadata for the user's active cart by a userid",
      description= "Find **carts list** for a user by its id `SELECT * FROM user_carts WHERE user_id =?`",
      responses = {
        @ApiResponse(
