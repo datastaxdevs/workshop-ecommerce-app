@@ -21,7 +21,7 @@ public class OpenApiDocumentationConfig implements WebMvcConfigurer {
                     .version("1.0")
                     .description(""
                             + "Implementation of ECommerce application with "
-                            + "Spring WebMVC and storage in Apache Cassandra")
+                            + "Spring WebMVC and storage in DataStax AstraDB")
                     .termsOfService("http://swagger.io/terms/")
                     .license(new License().name("Apache 2.0")
                     .url("http://springdoc.org")));

@@ -80,6 +80,7 @@ The status will change to `Active` when the database is ready, this will only ta
 **Introduction**
 This section will provide DDL to create three tables inside the "ecommerce" keyspace: category, price, and product.
 
+### Session 1 - Product data model ###
 The `product` table supports all product data queries, and uses `product_id` as a single key.  It has a few columns for specific product data, but any ad-hoc or non-standard properties can be added to the `specifications` map.
 
 The `category` table will support all product navigation service calls.  It is designed to provide recursive, hierarchical navigation without a pre-set limit on the number of levels.  The top-most level only exists as a `parent_id`, and the bottom-most level contains products.
@@ -87,6 +88,12 @@ The `category` table will support all product navigation service calls.  It is d
 The `price` table was intentionally split-off from product.  There are several reasons for this.  Price data is much more likely to change than pure product data (different read/write patterns).  Also, large enterprises typically have separate teams for product and price, meaning they will usually have different micro-service layers and data stores.
 
 The `featured_product_groups` table was a late-add, to be able to provide some extra "atmosphere" of an e-commerce website.  This way, the UI has a means by which to highlight a few, select products.
+
+### Session 2 - Shopping Cart data model ###
+
+The `user_carts` table supports
+
+The `cart_products` table
 
 #### ✅ 3a. Open the CqlConsole on Astra
 
@@ -96,6 +103,7 @@ use ecommerce;
 
 #### ✅ 3b. Execute the following CQL script to create the schema
 
+#### Session 1 - Product data model ####
 ```sql
 /* category table */
 CREATE TABLE IF NOT EXISTS category (
@@ -138,11 +146,36 @@ CREATE TABLE IF NOT EXISTS featured_product_groups (
 PRIMARY KEY (feature_id,category_id));
 ```
 
+#### Session 2 - Shopping Cart data model ####
+```sql
+CREATE TABLE user_carts (
+    user_id uuid,
+    cart_name text,
+    cart_id uuid,
+    cart_is_active boolean,
+    user_email text static,
+    PRIMARY KEY (user_id, cart_name, cart_id)
+) WITH default_time_to_live = 5184000;
+
+CREATE TABLE cart_products (
+    cart_id uuid,
+    product_timestamp timestamp,
+    product_id text,
+    product_description text,
+    product_name text,
+    quantity int,
+    PRIMARY KEY (cart_id, product_timestamp, product_id)
+) WITH CLUSTERING ORDER BY (product_timestamp DESC, product_id ASC)
+  AND default_time_to_live = 5184000;
+```
+
 [🏠 Back to Table of Contents](#-table-of-contents)
 
 ## 4. Populate the Data
 
-#### ✅ 4a. Execute the following script to populate some data
+#### ✅ 4a. Execute the following script to populate the tables with the data below
+
+#### Session 1 - Product data ####
 
 ```sql
 INSERT INTO category (name,category_id,image,parent_id) VALUES ('Clothing',18105592-77aa-4469-8556-833b419dacf4,'ls534.png',ffdac25a-0244-4894-bb31-a0884bc82aa9);
