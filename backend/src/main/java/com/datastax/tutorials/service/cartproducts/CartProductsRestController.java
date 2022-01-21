@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -111,7 +111,7 @@ public class CartProductsRestController {
      * @return
      *      list of products in the cart
      */
-    @PutMapping("/{cartid}/products/{productid}/quantity/{quantity}")
+    @PutMapping("/{cartid}/products/{productid}/")
     @Operation(
      summary = "Add a product to a cart",
      description= "Add a product to a cart `INSERT INTO cart_products (cart_id,product_timestamp,product_id,product_description,product_name,quantity) VALUES (?,toTimestamp(now()),?,?,?,?);`",
@@ -137,24 +137,20 @@ public class CartProductsRestController {
     })
     public ResponseEntity<Stream<CartProduct>> addProductToCart(
             HttpServletRequest req, 
+            @RequestBody CartProduct product,
             @PathVariable(value = "cartid")
             @Parameter(name = "cartid", description = "cart identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
             UUID cartid,
             @PathVariable(value = "productid")
             @Parameter(name = "productid", description = "product identifier", example = "LSS123XL")
-            String productid,
-            @RequestParam int quantity) {
+            String productid) {
 
-    	// build local product
-    	CartProduct product = new CartProduct();
-    	
     	// set keys
     	product.setCartId(cartid);
     	product.setProductId(productid);
-    	//   set timestamp & qty
+    	//   set timestamp
     	product.setProductTimestamp(new Date());
-    	product.setQuantity(quantity);
-    	
+
     	// map CartProduct to entity
     	CartProductEntity cpe = mapCartProductEntity(product);
     	    	
