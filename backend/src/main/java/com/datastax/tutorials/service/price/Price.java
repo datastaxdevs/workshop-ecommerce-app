@@ -32,7 +32,7 @@ public class Price {
 	 * Constructor.
 	 * 
 	 * @param productId
-	 *         product identigier
+	 *         product identifier
 	 * @param storeId
 	 *         store identifier
 	 * @param value
