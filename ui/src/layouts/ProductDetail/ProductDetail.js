@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useProduct } from "../../hooks";
+import { useProduct, useCartId } from "../../hooks";
 import { useParams } from "react-router-dom";
 import { RadioGroup } from "@headlessui/react";
 import { CurrencyDollarIcon, GlobeIcon } from "@heroicons/react/outline";
@@ -7,6 +7,7 @@ import { classNames } from "../../utils";
 import NotFound from "../../components/NotFound";
 import Error from "../../components/Error";
 import Loading from "../../components/Loading";
+import toast from "react-hot-toast";
 
 const policies = [
   {
@@ -28,6 +29,7 @@ const ProductDetail = () => {
     params.parentId,
     params.categoryId
   );
+  const cartId = useCartId();
 
   if (error) return <Error />;
   if (loading) return <Loading />;
@@ -39,6 +41,28 @@ const ProductDetail = () => {
   }
 
   const productImage = selectedProduct.images[0] ?? product.image;
+
+  const addToCart = async () => {
+    const res = await fetch(
+      `/api/v1/carts/${cartId}/products/${selectedProduct.product_id}/`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          quantity: 1,
+          cart_id: cartId,
+          product_id: selectedProduct.product_id,
+          product_description: selectedProduct.short_desc,
+          product_name: selectedProduct.name,
+        }),
+      }
+    );
+    const resJson = await res.json();
+    console.log(resJson);
+    toast.success("Added to Cart");
+  };
 
   return (
     <main className="mt-8 max-w-2xl mx-auto pb-16 px-4 sm:pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -115,9 +139,9 @@ const ProductDetail = () => {
             </div>
 
             <button
-              type="submit"
               onClick={(e) => {
                 e.preventDefault();
+                addToCart();
               }}
               className="mt-8 w-full bg-indigo-600 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >

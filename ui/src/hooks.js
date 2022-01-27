@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import useSWR from "swr";
+import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 
 const TOP_LEVEL_CATEGORY_UUID = "ffdac25a-0244-4894-bb31-a0884bc82aa9";
@@ -96,4 +97,50 @@ export const useProduct = (parentId, categoryId) => {
   }, [categoryId, parentId]);
 
   return { product, loading, error };
+};
+
+export const useCart = (cartId) => {
+  const [cart, setCart] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const newCart = await fetcher(`/api/v1/carts/${cartId}/`);
+      if (newCart.length) {
+        const cartItems = await Promise.all(
+          newCart.map((cartItem) =>
+            fetcher(`/api/v1/products/product/${cartItem.product_id}`)
+          )
+        );
+        const prices = await Promise.all(
+          newCart.map((cartItem) =>
+            fetcher(`/api/v1/prices/price/${cartItem.product_id}`)
+          )
+        );
+        cartItems.forEach((cartItem) => {
+          cartItem.price = _.find(prices, { product_id: cartItem.product_id });
+        });
+        newCart.forEach((cartItem) => {
+          cartItem.product = _.find(cartItems, {
+            product_id: cartItem.product_id,
+          });
+        });
+      }
+      setCart(newCart);
+      setLoading(false);
+    };
+    fetchData();
+  }, [cartId]);
+
+  return { cart, loading, error, setCart };
+};
+
+export const useCartId = () => {
+  let cartId = localStorage.getItem("cartId");
+  if (!cartId) {
+    cartId = uuidv4();
+    localStorage.setItem("cartId", cartId);
+  }
+  return cartId;
 };
