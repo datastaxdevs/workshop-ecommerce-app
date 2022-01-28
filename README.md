@@ -332,6 +332,7 @@ select * from CATEGORY;
 ```
 
 **Notes:**
+
  - The "top" categories of the product hierarchy can be retrieved using a `parent_id` of "ffdac25a-0244-4894-bb31-a0884bc82aa9".
  - Without specifying a `category_id`, all categories for the `parent_id` are returned.
  - When a category from the "bottom" of the hierarchy is queried, a populated `products` ArrayList will be returned.  From there, the returned `product_id`s can be used with the `/product` service.
@@ -380,7 +381,9 @@ We are now set with the database and credentials and will incorporate them into 
 
 ## 6. Setup your application
 
-### Know your gitpod
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app)
+
+### Know your Gitpod
 
 Take a moment to read this entire section since it'll help you with the rest of the workshop as you'll be spending most of your time in Gitpod. If you're familiar with Gitpod, you can easily skip this entire section.
 
@@ -412,7 +415,7 @@ Pay attention to popups being blocked as shown below and allow the popups.
 
 ![gitpod](data/img/PopupBlocked.png?raw=true)
 
-You may encounter the following at different steps and although this may not be applicable right away, the steps are included **in advance** and summarized here so that you can keep an eye out for it. Different paths and different environments might be slightly different although Gipod levels the playing field a bit.
+You may encounter the following at different steps and although this may not be applicable right away, the steps are included **in advance** and summarized here so that you can keep an eye out for it. Different paths and different environments might be slightly different although Gitpod levels the playing field a bit.
 
 You can allow cutting and pasting into the window by clicking on `Allow` as shown below.
 
@@ -423,7 +426,6 @@ You can allow cutting and pasting into the window by clicking on `Allow` as show
 
 To run the application you need to provide the credentials and identifier to the application. you will have to provide 4 values in total as shown below
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app)
 
 Copy the environment sample file as below.
 
