@@ -148,7 +148,7 @@ PRIMARY KEY (feature_id,category_id));
 
 #### Session 2 - Shopping Cart data model ####
 ```sql
-CREATE TABLE user_carts (
+CREATE TABLE IF NOT EXISTS user_carts (
     user_id uuid,
     cart_name text,
     cart_id uuid,
@@ -157,7 +157,7 @@ CREATE TABLE user_carts (
     PRIMARY KEY (user_id, cart_name, cart_id)
 ) WITH default_time_to_live = 5184000;
 
-CREATE TABLE cart_products (
+CREATE TABLE IF NOT EXISTS cart_products (
     cart_id uuid,
     product_timestamp timestamp,
     product_id text,
