@@ -398,24 +398,6 @@ You can always get back to the file explorer view whenever by clicking on the ha
 
 ![gitpod](data/img/Filexplorer0.png?raw=true)
 
-✅ **Know your public URL**
-
-The workshop application has opened with an ephemeral URL. To know the URL where your application endpoint will be exposed you can run the following command in the terminal after the build has completed. **Please note this URL and open this up in a new browser window as shown below**.
-
-```bash
-gp url 8080
-```
-
-**👁️ Expected output**
-
-![gitpod](data/img/gitpod-02-url.png?raw=true)
-
-
-Pay attention to popups being blocked as shown below and allow the popups.
-
-![gitpod](data/img/PopupBlocked.png?raw=true)
-
-You may encounter the following at different steps and although this may not be applicable right away, the steps are included **in advance** and summarized here so that you can keep an eye out for it. Different paths and different environments might be slightly different although Gitpod levels the playing field a bit.
 
 You can allow cutting and pasting into the window by clicking on `Allow` as shown below.
 
@@ -572,7 +554,6 @@ cd /workspace/workshop-ecommerce-app
 mvn install -f backend/pom.xml -DskipTests
 ```
 
-
 ![image](data/img/swagger.png?raw=true)
 
 It sets up the backend open APIs that enables the frontend to obtain the data.
@@ -583,11 +564,91 @@ It sets up the backend open APIs that enables the frontend to obtain the data.
 
 ## 9. Start the Application
 
-We've provided a convenience script that can be run as below.
+✅ **9a: Know your public URL**
+
+The workshop application has opened with an ephemeral URL. To know the URL where your application endpoint will be exposed you can run the following command in the terminal after the build has completed. **Please note this URL and we will open this up in a new browser window if required later **.
+
+```bash
+gp url 8080
+```
+**👁️ Expected output**
+
+![gitpod](data/img/gitpod-02-url.png?raw=true)
+
+✅ **9b: Check APIs are not available (yet)**
+
+Run the following command in the Gitpod terminal window
+
+```
+curl localhost:8080/api/v1/products/product/LS534S
+```
+**👁️ Expected output**
+
+```
+curl: (7) Failed to connect to localhost port 8080: Connection refused
+```
+
+Not to be overly concerned as we're going to be starting the application that will be served from the port.
+
+✅ **9c: Start the application **
+
+To start the application, we've provided a very simple convenience script that can be run as below.
 
 ```bash
 ./start.sh
 ```
+
+Pay attention to popups being blocked as shown below and allow the popups.
+
+![gitpod](data/img/PopupBlocked.png?raw=true)
+
+You may encounter the following at different steps and although this may not be applicable right away, the steps are included **in advance** and summarized here so that you can keep an eye out for it. Different paths and different environments might be slightly different although Gitpod levels the playing field a bit.
+
+Your e-commerce application should be up and running.
+
+✅ **9d: Check APIs are now available**
+
+Get back to Gitpod tab/window.
+
+Leave the application running and open up another `shell` in the Gitpod terminal window by clicking on `+` and clicking on `bash` dropdown as shown below.
+
+![gitpod](data/img/gitpod-newbash1.png?raw=true)
+
+This will bring up a new `bash` shell as shown below.
+
+![gitpod](data/img/gitpod-newbash2.png?raw=true)
+
+Issue the following command in that shell as you did earlier.
+
+```
+curl localhost:8080/api/v1/products/product/LS534S
+```
+
+and you should see some output indicating that the API server is serving our ecommerce APIs.
+
+**👁️ Expected output**
+
+![gitpod](data/img/gitpod-newbash3.png?raw=true)
+
+Try a few other APIs (**Hint: Look for the `RestController` java files in the respective sub-directories.**).
+
+✅ **9e: OPTIONAL - Open in Gitpod preview window**
+
+This might be useful for troubleshooting if your application does not automatically open up a browser tab.
+
+If you want, you can run the following command to open your application in the preview window of Gitpod (it's much easier to use the app running in browser, though).
+
+```
+gp preview $(gp url 8080)
+```
+
+As indicated in the output below it's a very `Simple Browser`.
+
+**👁️ Expected output**
+
+![gitpod](data/img/gitpod-preview-1.png?raw=true)
+
+If your application is running in the preview window but you have difficulty accessing it from the browser pay attention to popups being blocked by the browser as explained before.
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
