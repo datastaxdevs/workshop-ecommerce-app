@@ -554,12 +554,6 @@ cd /workspace/workshop-ecommerce-app
 mvn install -f backend/pom.xml -DskipTests
 ```
 
-![image](data/img/swagger.png?raw=true)
-
-It sets up the backend open APIs that enables the frontend to obtain the data.
-
-![image](data/img/splash.png?raw=true)
-
 [🏠 Back to Table of Contents](#-table-of-contents)
 
 ## 9. Start the Application
@@ -650,11 +644,33 @@ As indicated in the output below it's a very `Simple Browser`.
 
 If your application is running in the preview window but you have difficulty accessing it from the browser pay attention to popups being blocked by the browser as explained before.
 
+✅ **9f: Get the Open API specification**
+
+In the new shell window open the specification in the preview or browser with the following command
+
+```
+gp preview $(gp url 8080)/swagger-ui/index.html
+```
+
+The preview window looks like below. **It might help to close all the tabs or open this URL in a browser by clicking on the `open in browser` tab on the top right as shown**.
+
+**👁️ Expected output**
+
+![image](data/img/swagger2.png?raw=true)
+
+Here's how it looks in the browser tab.
+
+![image](data/img/swagger.png?raw=true)
+
+This is the docs for the open APIs that enables the frontend or any other program to obtain the data and manipulate it with REST-based CRUD operations.
+
+![image](data/img/splash.png?raw=true)
+
 [🏠 Back to Table of Contents](#-table-of-contents)
 
 # Done?
 
-Congratulations: you made to the end of today's workshop. More building to follow!!!
+Congratulations: you made to the end of today's workshop. You will notice that the application is still incomplete as we're evolving it. More building to follow!!!
 
 ![Badge](data/img/build-an-ecommerce-app.png)
 
