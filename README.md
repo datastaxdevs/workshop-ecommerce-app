@@ -590,7 +590,7 @@ curl: (7) Failed to connect to localhost port 8080: Connection refused
 
 Not to be overly concerned as we're going to be starting the application that will be served from the port.
 
-✅ **9c: Start the application **
+✅ **9c: Start the application**
 
 To start the application, we've provided a very simple convenience script that can be run as below.
 
