@@ -24,10 +24,10 @@ If you cannot attend this workshop live, recordings of this workshop and many mo
 Complete the homework to earn the badge for this workshop (awarded at the end of the series).
 
 1. Rollup your sleeves, and modify the underlying product data.
-    a. Add your own product to the website.
-        i. `INSERT` rows into the product, price, and category tables. Section [4a](https://github.com/datastaxdevs/workshop-ecommerce-app#-4a-execute-the-following-script-to-populate-the-tables-with-the-data-below) will provide some clues on to do that.
-        ii. Navigate to your product, and add it to your shopping cart.
-        iii. View the shopping cart.
+    - Add your own product to the website.
+        1. `INSERT` rows into the product, price, and category tables. Section [4a](https://github.com/datastaxdevs/workshop-ecommerce-app#-4a-execute-the-following-script-to-populate-the-tables-with-the-data-below) will provide some clues on to do that.
+        2. Navigate to your product, and add it to your shopping cart.
+        3. View the shopping cart.
 2. Take a SCREENSHOT of the shopping cart containing your new product!
 3. Don't worry about submitting it just yet.  We'll have instructions on how to do that at the end of the series!
 
@@ -55,7 +55,7 @@ Why does an e-commerce site need to be fast?  Because most consumers will leave 
 
 You can skip to step 2c if you have already created a keyspace `ecommerce` in database `demos`. Otherwise (if you did not attend the previous installment of the e-commerce worksop):
 
-**`ASTRA DB`** is the simplest way to run Cassandra with zero operations - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 20M read/write operations, 80GB storage monthly - sufficient to run small production workloads. 
+**`ASTRA DB`** is the simplest way to run Cassandra with zero operations - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 20M read/write operations, 80GB storage monthly - sufficient to run small production workloads.
 
 #### ✅ 2a. Register
 
@@ -95,7 +95,7 @@ To connect to the database programmatically, you need to make sure the status wi
 
 ![my-pic](data/img/db-active.png?raw=true)
 
-If it's in a `standby` state you can hit `Connect` and `CQL Console` on top. 
+If it's in a `standby` state you can hit `Connect` and `CQL Console` on top.
 
 You should see a message something like below.
 
