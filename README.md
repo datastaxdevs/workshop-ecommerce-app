@@ -39,11 +39,13 @@ Why does an e-commerce site need to be fast?  Because most consumers will leave 
 
 ## 2. Create Astra DB Instance
 
-**`ASTRA DB`** is the simplest way to run Cassandra with zero operations - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 20M read/write operations, 80GB storage monthly - sufficient to run small production workloads.
+You can skip to step 2c if you have already created a keyspace `ecommerce` in database `demos`. Otherwise (if you did not attend the previous installment of the e-commerce worksop):
+
+**`ASTRA DB`** is the simplest way to run Cassandra with zero operations - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 20M read/write operations, 80GB storage monthly - sufficient to run small production workloads. 
 
 #### ✅ 2a. Register
 
-If you do not have an account yet, register and sign in to Astra DB: This is FREE and NO CREDIT CARD is required. [https://astra.datastax.com](https://astra.dev/12-21): You can use your `Github`, `Google` accounts or register with an `email`.
+If you do not have an account yet, register and sign in to Astra DB: This is FREE and NO CREDIT CARD is required. [https://astra.datastax.com](https://astra.dev/1-31): You can use your `Github`, `Google` accounts or register with an `email`.
 
 _Make sure to chose a password with minimum 8 characters, containing upper and lowercase letters, at least one number and special character_
 
@@ -55,23 +57,39 @@ Follow this [guide](https://docs.datastax.com/en/astra/docs/creating-your-astra-
 
 - **For the keyspace name** - `ecommerce`
 
-_You can technically use whatever you want and update the code to reflect the keyspace. This is really to get you on a happy path for the first run._
+_You can technically use whatever name(s) you want and update the code to reflect the keyspace. This is really to get you on a happy path for the first run._
 
 - **For provider and region**: Choose a provider (GCP, Azure or AWS) and then the related region is where your database will reside physically (choose one close to you or your users).
 
 - **Create the database**. Review all the fields to make sure they are as shown, and click the `Create Database` button.
 
+**👁️ Walkthrough**
+
+*The Walkthrough mentions a different keyspace, make sure to use `ecommerce`*
+
+![image](data/img/astra-create-db.gif?raw=true)
 You will see your new database `pending` in the Dashboard.
 
 ![my-pic](data/img/db-pending.png?raw=true)
 
-The status will change to `Active` when the database is ready, this will only take 2-3 minutes. You will also receive an email when it is ready.
+#### ✅ 2c. Ensure the database turns to active state
 
-**👁️ Walkthrough**
+To connect to the database programmatically, you need to make sure the status will change to `Active`. This happens when the database is ready, and will only take 2-3 minutes. You will also receive an email when it is ready.
 
-*The Walkthrough mentions the wrong keyspace, make sure to use `ecommerce`*
 
-![image](data/img/astra-create-db.gif?raw=true)
+**👁️ Expected Output**
+
+![my-pic](data/img/db-active.png?raw=true)
+
+If it's in a `standby` state you can hit `Connect` and `CQL Console` on top. 
+
+You should see a message something like below.
+
+**👁️ Expected Output**
+
+```cql
+{"message":"Resuming your database, please try again shortly."}
+```
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
