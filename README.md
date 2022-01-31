@@ -17,6 +17,20 @@ It doesn't matter if you join our workshop live or you prefer to do at your own 
 
 If you cannot attend this workshop live, recordings of this workshop and many more is available on [Youtube](https://youtube.com/datastaxdevs).
 
+## Homework
+
+<img src="data/img/build-an-ecommerce-app.png" width="200" align=right />
+
+Complete the homework to earn the badge for this workshop (awarded at the end of the series).
+
+1. Rollup your sleeves, and modify the underlying product data.
+    a. Add your own product to the website.
+        i. `INSERT` rows into the product, price, and category tables. Section [4a](https://github.com/datastaxdevs/workshop-ecommerce-app#-4a-execute-the-following-script-to-populate-the-tables-with-the-data-below) will provide some clues on to do that.
+        ii. Navigate to your product, and add it to your shopping cart.
+        iii. View the shopping cart.
+2. Take a SCREENSHOT of the shopping cart containing your new product!
+3. Don't worry about submitting it just yet.  We'll have instructions on how to do that at the end of the series!
+
 ## 📋 Table of contents
 
 1. [Introduction](#1-introduction)
@@ -33,7 +47,7 @@ If you cannot attend this workshop live, recordings of this workshop and many mo
 
 Are you building or do you support an e-commerce website?  If so, then this content is for **you**!
 
-Digital sales in 2020 eclipsed four trillion dollars (USD).  Businesses that want to compete, need a high performing e-commerce website.  Here we will demonstrate how to build a high performing persistence layer with DataStax **`ASTRA DB`**.
+Worldwide digital sales in 2020 eclipsed four trillion dollars (USD).  Businesses that want to compete, need a high performing e-commerce website.  Here, we will demonstrate how to build a high performing persistence layer with DataStax **`ASTRA DB`**.
 
 Why does an e-commerce site need to be fast?  Because most consumers will leave a web page or a mobile app if it takes longer than a few seconds to load.  In the content below, we will cover how to build high-performing data models and services, helping you to build a e-commerce site with high throughput and low latency.
 
