@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
- * Expose Rest Api to interact with prices.
+ * Expose Rest Api to interact with products.
  *
  * @author Cedrick LUNVEN
  * @author Aaron PLOETZ
