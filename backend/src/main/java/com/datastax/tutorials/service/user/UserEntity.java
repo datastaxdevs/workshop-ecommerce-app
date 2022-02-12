@@ -34,7 +34,7 @@ public class UserEntity implements Serializable {
 	private String locale;
 	
 	@CassandraType(type = CassandraType.Name.UDT, userTypeName = "address")
-    @Column("address")
+    @Column("addresses")
 	private List<AddressEntity> addresses;
 
 	@Column("password")
@@ -43,8 +43,8 @@ public class UserEntity implements Serializable {
 	@Column("tokentxt")
 	private String tokentxt;
 	
-	@Column("password_date")
-	private Date passwordDate;
+	@Column("password_timestamp")
+	private Date passwordTimestamp;
 	
 	public UUID getUserId() {
 		return userId;
@@ -118,11 +118,11 @@ public class UserEntity implements Serializable {
 		this.tokentxt = tokentxt;
 	}
 	
-	public Date getPasswordDate() {
-		return passwordDate;
+	public Date getPasswordTimestamp() {
+		return passwordTimestamp;
 	}
 	
-	public void setPasswordDate(Date passwordDate) {
-		this.passwordDate = passwordDate;
+	public void setPasswordTimestamp(Date passwordTimestamp) {
+		this.passwordTimestamp = passwordTimestamp;
 	}
 }

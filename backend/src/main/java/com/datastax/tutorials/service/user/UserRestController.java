@@ -28,9 +28,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.datastax.tutorials.service.cartproducts.CartProduct;
-import com.datastax.tutorials.service.cartproducts.CartProductEntity;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,7 +49,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         origins = "*")
 @Tag(   name = "User Service", 
         description = "Provide crud operations for Users")
-@RequestMapping("/api/v1/users/")
+@RequestMapping("/api/v1/user/")
 public class UserRestController {
 	
     /** Inject the repository. */
@@ -191,26 +188,27 @@ public class UserRestController {
     })
     public ResponseEntity<Stream<User>> updateUserPassword(
             HttpServletRequest req, 
-            @RequestBody User newUserData,
+            @RequestBody Password passwordData,
             @PathVariable(value = "userid")
-            @Parameter(name = "userid", description = "user identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
+            @Parameter(name = "userid", description = "user identifier (UUID)",
+                       example = "5929e846-53e8-473e-8525-80b666c46a83")
             UUID userid) {
 
     	// Hash the password from the request body
     	BCryptPasswordEncoder pEncoder = new BCryptPasswordEncoder();
-    	String hashedPassword = pEncoder.encode(newUserData.getPassword());
+    	String hashedPassword = pEncoder.encode(passwordData.getPassword());
     	
     	UserEntity userE = new UserEntity();
     	userE.setUserId(userid);
     	userE.setPassword(hashedPassword);
-       	userE.setPasswordDate(new Date());    	
-    	
+       	userE.setPasswordTimestamp(new Date());    	
+        	
     	// save to DB
     	userRepo.save(userE);
     	
     	// return current cart contents
     	Optional<UserEntity> returnVal = userRepo.findById(userid);
-    	
+
     	return ResponseEntity.ok(returnVal.stream().map(this::mapUser));
     }
     
@@ -231,9 +229,13 @@ public class UserRestController {
         u.setFirstName(ue.getFirstName());
         u.setLastName(ue.getLastName());
         u.setLocale(ue.getLocale());
-        u.setAddresses(mapAddress(ue.getAddresses()));
         u.setPassword(ue.getPassword());
+        u.setPasswordTimestamp(ue.getPasswordTimestamp());
         u.setTokentxt(ue.getTokentxt());
+
+        if (ue.getAddresses() != null) {
+            u.setAddresses(mapAddress(ue.getAddresses()));
+        }
         
         return u;
     }

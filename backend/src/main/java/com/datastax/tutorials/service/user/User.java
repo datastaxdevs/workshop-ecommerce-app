@@ -35,8 +35,8 @@ public class User {
 	
 	private String tokentxt;
 	
-	@JsonProperty("password_date")
-	private Date passwordDate;
+	@JsonProperty("password_timestamp")
+	private Date passwordTimestamp;
 	
 	public UUID getUserId() {
 		return userId;
@@ -110,11 +110,11 @@ public class User {
 		this.tokentxt = tokentxt;
 	}
 
-	public Date getPasswordDate() {
-		return passwordDate;
+	public Date getPasswordTimestamp() {
+		return passwordTimestamp;
 	}
 	
-	public void setPasswordDate(Date passwordDate) {
-		this.passwordDate = passwordDate;
+	public void setPasswordTimestamp(Date passwordTimestamp) {
+		this.passwordTimestamp = passwordTimestamp;
 	}
 }
