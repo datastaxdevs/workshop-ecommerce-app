@@ -22,7 +22,7 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
 	 * Main method.
 	 * 
 	 * @param args
-	 *         no argumemts provided here
+	 *         no arguments provided here
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(ECommerceApplication.class, args);
@@ -32,21 +32,23 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
     	// @formatter:off
         http
-        	// only way to get Test03 to work
-        	//.httpBasic().and().csrf().disable();
+        	.httpBasic().and().csrf().disable()
             .authorizeRequests(a -> a
-                .antMatchers("/api/v1/user/**", "/error", "/webjars/**").permitAll()
-                .anyRequest().authenticated()
-            )
+            		.antMatchers("/api/v1/user/**", "/error").permitAll()
+            		.anyRequest().authenticated()
+            	)
+            .formLogin(fl -> fl
+            		.loginPage("/login").permitAll()
+            	)
             .logout(l -> l
                     .logoutSuccessUrl("/").permitAll()
                 )
             .csrf(c -> c
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                )
+                   .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            	)
             .exceptionHandling(e -> e
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-            )
+            	)
             .oauth2Login();
     }
     
@@ -55,10 +57,15 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
     	web
     		.ignoring().antMatchers("/api/v1/products/**",
     				                "/api/v1/categories/**",
-    				                "/api/v1/users/**",
+    				                "/api/v1/user/**",
     				                "/api/v1/prices/**",
     				                "/api/v1/featured/**",
     				                "/swagger-ui/**",
-    				                "**swagger**");
+    				                "/v3/api-docs/**",
+    				                "/configuration/**",
+    				                "/swagger-resources/**",
+    				                "/configuration/security",
+    				                "/swagger-ui.html",
+    				                "/webjars/**");
     }
 }
