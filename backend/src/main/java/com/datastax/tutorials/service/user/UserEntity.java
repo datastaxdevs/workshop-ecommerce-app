@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.cassandra.core.mapping.CassandraType;
+//import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
@@ -33,7 +33,7 @@ public class UserEntity implements Serializable {
 	@Column("locale")
 	private String locale;
 	
-	@CassandraType(type = CassandraType.Name.UDT, userTypeName = "address")
+//	@CassandraType(type = CassandraType.Name.UDT, userTypeName = "address")
     @Column("addresses")
 	private List<AddressEntity> addresses;
 

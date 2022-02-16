@@ -31,9 +31,9 @@ public class User {
 	
 	private List<Address> addresses;
 
-	private String password;
-	
 	private String tokentxt;
+	
+	private String password;
 	
 	@JsonProperty("password_timestamp")
 	private Date passwordTimestamp;

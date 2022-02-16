@@ -16,14 +16,17 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,8 +55,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1/user/")
 public class UserRestController {
 	
-    /** Inject the repository. */
+    /** Inject the repositories. */
     private UserRepository userRepo;
+    private UserByEmailRepository userByEmailRepo;
     
     /**
      * Injection through constructor.
@@ -61,8 +65,9 @@ public class UserRestController {
      * @param repo
      *      repository
      */
-    public UserRestController(UserRepository repo) {
-    	userRepo = repo;
+    public UserRestController(UserRepository uRepo, UserByEmailRepository ueRepo) {
+    	userRepo = uRepo;
+    	userByEmailRepo = ueRepo;
     }
     
     @GetMapping("/user")
@@ -89,21 +94,47 @@ public class UserRestController {
     	                description = "Internal server error.") 
     	    })
     public ResponseEntity<User> user(@AuthenticationPrincipal OAuth2User principal) {
-
+    	//Called by GitHub or Google login APIs
+    	
     	UUID userId = null;
+    	UserEntity user = null;
+    	
     	//check if this is a returning user
+    	// Both Google and GitHub have an "email" attribute
+    	String email = principal.getAttribute("email");
+    	Optional<UserByEmailEntity> existingUser = userByEmailRepo.findById(email);
     	
-    	// If not, create new!
+    	if (existingUser.isEmpty()) {
+    		// If not, create new!
+    		user = new UserEntity();
+    		// need a userId, but we also need a way to get/transfer the one from the website
+    		user.setUserId(UUID.randomUUID());
+    		user.setUserEmail(email);
+    		
+    		if (principal.getAttribute("family_name") != null) {
+    			user.setLastName(principal.getAttribute("family_name"));
+    		}
+    		
+    		if (principal.getAttribute("given_name") != null) {
+    			user.setFirstName(principal.getAttribute("given_name"));
+    		}
+    		
+    	} else {
+	    	// existing user found!
+	    	userId = existingUser.get().getUserId();
+	        Optional<UserEntity> userO = userRepo.findById(userId);
+	        
+	        if (userO.isEmpty()) {
+	        	// catch-all, if for whatever reason a valid userId can't yield an existing user
+	            return ResponseEntity.notFound().build();
+	        } else {
+	        	// if it exists (it should) then invoke Optional's getter to convert from
+	        	// Optional to User bean.
+	        	user = userO.get();
+	        }
+    	}
     	
-    	// If so, return!
-
-    	//return Collections.singletonMap("name", principal.getAttribute("name"));
-        Optional<UserEntity> user = userRepo.findById(userId);
-        
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(mapUser(user.get()));
+        return ResponseEntity.ok(mapUser(user));
     }
     
     @GetMapping("/user/{userid}")
@@ -141,6 +172,295 @@ public class UserRestController {
         }
         return ResponseEntity.ok(mapUser(user.get()));
     }
+
+    @GetMapping("/email/{email}")
+    @Operation(
+    	       summary = "Retrieve user by email",
+    	       description= "Find User detail `SELECT * FROM user_by_email WHERE email=?`",
+    	       responses = {
+    	         @ApiResponse(
+    	           responseCode = "200",
+    	           description = "A single user object will be returned",
+    	           content = @Content(
+    	            mediaType = "application/json",
+    	                  schema = @Schema(implementation = User.class, name = "User")
+    	                )
+    	              ),
+    	              @ApiResponse(
+    	                responseCode = "404", 
+    	                description = "Issue processing user, not found"),
+    	              @ApiResponse(
+    	                responseCode = "400",
+    	                description = "Issue processing user, error occured"),
+    	              @ApiResponse(
+    	                responseCode = "500",
+    	                description = "Internal server error.") 
+    	    })
+    public ResponseEntity<User> getUserByEmail(HttpServletRequest req, 
+            @PathVariable(value = "email")
+            @Parameter(name = "email", description = "email address", example = "bob.slydell@bobsconsulting.com")
+            String email) {
+
+    	Optional<UserByEmailEntity> userByEmail = userByEmailRepo.findById(email);
+    	
+    	if (userByEmail.isPresent()) {
+    		// now pull the user data 
+	        Optional<UserEntity> user = userRepo.findById(userByEmail.get().getUserId());
+	        
+	        if (user.isEmpty()) {
+	        	// extra bullet proofing, just in case user is null (for whatever reason)
+	            return ResponseEntity.notFound().build();
+	        }
+	        
+	        return ResponseEntity.ok(mapUser(user.get()));
+    	} else {
+    		return ResponseEntity.notFound().build();
+    	}
+    }
+    
+    @PostMapping("/{userid}/create")
+    @Operation(
+     summary = "Create user",
+     description= "Creates a new user, saves it into the database",
+     responses = {
+       @ApiResponse(
+         responseCode = "200",
+         description = "Update completed",
+         content = @Content(
+           mediaType = "application/json",
+           schema = @Schema(implementation = User.class, name = "user")
+         )
+       ),
+       @ApiResponse(
+         responseCode = "404", 
+         description = "userId not found",
+         content = @Content(mediaType = "")),
+       @ApiResponse(
+         responseCode = "400",
+         description = "Invalid parameter check userId format."),
+       @ApiResponse(
+         responseCode = "500",
+         description = "Internal error.") 
+    })
+    @Transactional
+    public ResponseEntity<User> createUser(
+            HttpServletRequest req, 
+            @RequestBody User userData,
+            @PathVariable(value = "userid")
+            @Parameter(name = "userid", description = "user identifier (UUID)",
+                       example = "5929e846-53e8-473e-8525-80b666c46a83")
+            UUID userid) {
+    	
+    	String userEmail = userData.getUserEmail();
+    	
+    	//check if this is a returning user
+    	Optional<UserByEmailEntity> existingUser = userByEmailRepo.findById(userEmail);
+    	
+    	if (existingUser.isEmpty()) {
+    		// If not, create new!
+    		
+	    	// Hash the password from the request body
+	    	BCryptPasswordEncoder pEncoder = new BCryptPasswordEncoder();
+	    	String hashedPassword = pEncoder.encode(userData.getPassword());
+	    	
+	    	// user save
+	    	UserEntity userE = new UserEntity();
+	    	//Required User properties
+	    	userE.setUserId(userid);
+	    	userE.setPassword(hashedPassword);
+	       	userE.setPasswordTimestamp(new Date());
+	       	userE.setUserEmail(userEmail);
+	
+	       	// Optional User properties - check for null, first
+	       	if (userData.getFirstName() != null) {
+	       		userE.setFirstName(userData.getFirstName());
+	       	}
+	       	
+	       	if (userData.getLastName() != null) {
+	       		userE.setLastName(userData.getLastName());
+	       	}
+	       	
+	       	if (userData.getLocale() != null) {
+	           	userE.setLocale(userData.getLocale());       		
+	       	}
+	       	
+	       	if (userData.getAddresses() != null ) {
+	       		userE.setAddresses(mapAddressEntity(userData.getAddresses()));
+	       	}
+	       	
+	       	// user_by_email save
+	    	UserByEmailEntity userByEmailE = new UserByEmailEntity();
+	    	userByEmailE.setUserId(userid);
+	    	userByEmailE.setUserEmail(userEmail);
+	        	
+	    	// save to DB
+	    	userRepo.save(userE);
+	    	userByEmailRepo.save(userByEmailE);
+	    	
+	    	// return user data
+	    	return ResponseEntity.ok(mapUser(userE));
+    	} else {
+    		Optional<UserEntity> userE = userRepo.findById(existingUser.get().getUserId());
+    		
+    		return ResponseEntity.ok(mapUser(userE.get()));
+    	}
+    }
+
+    @PutMapping("/{userid}/update")
+    @Operation(
+     summary = "Update user data",
+     description= "Updates an existing user in the database",
+     responses = {
+       @ApiResponse(
+         responseCode = "200",
+         description = "Update completed",
+         content = @Content(
+           mediaType = "application/json",
+           schema = @Schema(implementation = User.class, name = "user")
+         )
+       ),
+       @ApiResponse(
+         responseCode = "404", 
+         description = "userId not found",
+         content = @Content(mediaType = "")),
+       @ApiResponse(
+         responseCode = "400",
+         description = "Invalid parameter check userId format."),
+       @ApiResponse(
+         responseCode = "500",
+         description = "Internal error.") 
+    })
+    @Transactional
+    public ResponseEntity<User> updateUser(
+            HttpServletRequest req, 
+            @RequestBody User userData,
+            @PathVariable(value = "userid")
+            @Parameter(name = "userid", description = "user identifier (UUID)",
+                       example = "5929e846-53e8-473e-8525-80b666c46a83")
+            UUID userid) {
+    	
+    	boolean emailChanged = false;
+
+    	// user save
+    	UserEntity userE = new UserEntity();
+    	
+    	// userid is the partition key, always going to send that
+    	userE.setUserId(userid);
+
+       	if (userData.getUserEmail() != null) {
+       		emailChanged = true;
+       		userE.setUserEmail(userData.getUserEmail());
+       	}
+
+    	// check for null, as we only want to send data that's changed
+    	if (userData.getPassword() != null) {
+    		// Hash the password from the request body
+    		BCryptPasswordEncoder pEncoder = new BCryptPasswordEncoder();
+    		String hashedPassword = pEncoder.encode(userData.getPassword());
+        	userE.setPassword(hashedPassword);
+           	userE.setPasswordTimestamp(new Date());
+    	}
+
+       	// Optional User properties - check for null, first
+       	if (userData.getFirstName() != null) {
+       		userE.setFirstName(userData.getFirstName());
+       	}
+       	
+       	if (userData.getLastName() != null) {
+       		userE.setLastName(userData.getLastName());
+       	}
+       	
+       	if (userData.getLocale() != null) {
+           	userE.setLocale(userData.getLocale());       		
+       	}
+       	
+       	if (userData.getAddresses() != null ) {
+       		userE.setAddresses(mapAddressEntity(userData.getAddresses()));
+       	}
+
+       	if (emailChanged) {
+       		// get old email
+       		Optional<UserEntity> oldEmailEntry = userRepo.findById(userid);
+       		String oldEmail = oldEmailEntry.get().getUserEmail();
+       		
+       		// user_by_email save
+       		UserByEmailEntity userByEmailE = new UserByEmailEntity();
+       		userByEmailE.setUserId(userid);
+       		userByEmailE.setUserEmail(userData.getUserEmail());
+        	userByEmailRepo.save(userByEmailE);
+        	
+        	// delete old email entry
+        	userByEmailRepo.deleteById(oldEmail);
+       	}
+       	
+    	// save to DB
+    	userRepo.save(userE);
+    	
+    	// return user data
+    	return ResponseEntity.ok(mapUser(userE));
+    }
+    
+    /**
+     * login with password (for those not using a 3rd party login).
+     * @param req
+     *      current request
+     * @param userid
+     *      user identifier (UUID)
+     * @return
+     *     user object
+     */
+    @PutMapping("/{userid}/login")
+    @Operation(
+     summary = "User login",
+     description= "Allows the user to login to their account`",
+     responses = {
+       @ApiResponse(
+         responseCode = "200",
+         description = "Update completed",
+         content = @Content(
+           mediaType = "application/json",
+           schema = @Schema(implementation = User.class, name = "user")
+         )
+       ),
+       @ApiResponse(
+         responseCode = "404", 
+         description = "userId not found",
+         content = @Content(mediaType = "")),
+       @ApiResponse(
+         responseCode = "400",
+         description = "Invalid parameter check userId format."),
+       @ApiResponse(
+         responseCode = "500",
+         description = "Internal error.") 
+    })
+    public ResponseEntity<Stream<User>> loginUser(
+            HttpServletRequest req, 
+            @RequestBody Password passwordData,
+            @PathVariable(value = "userid")
+            @Parameter(name = "userid", description = "user identifier (UUID)",
+                       example = "5929e846-53e8-473e-8525-80b666c46a83")
+            UUID userid) {
+
+    	String rawPassword = passwordData.getPassword();
+    	
+    	// query user data
+    	Optional<UserEntity> returnVal = userRepo.findById(userid);
+    	
+    	if (returnVal.isPresent()) {
+        	String hashedPassword = returnVal.get().getPassword();
+	    	// compare passwords
+	    	BCryptPasswordEncoder pEncoder = new BCryptPasswordEncoder();
+	    	if (pEncoder.matches(rawPassword, hashedPassword)) {
+	    		// Match!  return user data
+	        	return ResponseEntity.ok(returnVal.stream().map(this::mapUser));    		
+	    	} else {
+	    		// passwords do NOT match
+	    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    	}
+    	} else {
+    		return ResponseEntity.notFound().build();
+    	}
+    }
     
     /**
      * Set user password (for those not using a 3rd party login).
@@ -162,7 +482,7 @@ public class UserRestController {
      *     should use POST instead of PUT.
      *     
      */
-    @PostMapping("/{userid}/setpassword")
+    @PostMapping("/{userid}/updatepassword")
     @Operation(
      summary = "Set password",
      description= "Allows the user to change their password `UPDATE user SET password=? WHERE userid=?;`",
@@ -196,20 +516,34 @@ public class UserRestController {
 
     	// Hash the password from the request body
     	BCryptPasswordEncoder pEncoder = new BCryptPasswordEncoder();
-    	String hashedPassword = pEncoder.encode(passwordData.getPassword());
+    	String oldPassword = passwordData.getPassword();
     	
-    	UserEntity userE = new UserEntity();
-    	userE.setUserId(userid);
-    	userE.setPassword(hashedPassword);
-       	userE.setPasswordTimestamp(new Date());    	
-        	
-    	// save to DB
-    	userRepo.save(userE);
-    	
-    	// return current cart contents
+    	// query user to verify that the old password matched what we have stored.
     	Optional<UserEntity> returnVal = userRepo.findById(userid);
-
-    	return ResponseEntity.ok(returnVal.stream().map(this::mapUser));
+    	
+    	if (returnVal.isPresent()) {
+	    	if (pEncoder.matches(oldPassword, returnVal.get().getPassword())) {
+	    		// Match!  set new password
+		    	String newHashedPassword = pEncoder.encode(passwordData.getNewPassword()); 
+		    	
+		    	UserEntity userE = returnVal.get();
+		    	
+		    	userE.setPassword(newHashedPassword);
+		    	userE.setPasswordTimestamp(new Date());    	
+		        	
+		    	// save to DB
+		    	userRepo.save(userE);
+		    	
+		    	// return user data
+		    	return ResponseEntity.ok(returnVal.stream().map(this::mapUser));
+	    	} else {
+	    		// passwords do not match
+	    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    	}
+    	} else {
+    		// user not found/returned, an error has occurred
+    		return ResponseEntity.notFound().build();
+    	}
     }
     
     /**
@@ -229,7 +563,8 @@ public class UserRestController {
         u.setFirstName(ue.getFirstName());
         u.setLastName(ue.getLastName());
         u.setLocale(ue.getLocale());
-        u.setPassword(ue.getPassword());
+        // shouldn't ever need to return this
+        //u.setPassword(ue.getPassword());
         u.setPasswordTimestamp(ue.getPasswordTimestamp());
         u.setTokentxt(ue.getTokentxt());
 
@@ -264,6 +599,34 @@ public class UserRestController {
     		a.setCountry(addrE.getCountry());
     		
     		addrList.add(a);
+    	}
+    	return addrList;
+    }
+    
+    /**
+     * Mapping request UDT => Entity.
+     *
+     * @param a
+     *      rest bean
+     * @return
+     *      entity
+     */
+    private List<AddressEntity> mapAddressEntity(List<Address> a) {
+
+    	List<AddressEntity> addrList = new ArrayList<AddressEntity>();   	
+    	for (Address addr : a) {
+    		AddressEntity ae = new AddressEntity();
+    		
+    		ae.setType(addr.getType());
+    		ae.setMailtoName(addr.getMailtoName());
+    		ae.setStreet(addr.getStreet());
+    		ae.setStreet2(addr.getStreet2());
+    		ae.setCity(addr.getCity());
+    		ae.setStateProvince(addr.getStateProvince());
+    		ae.setPostalCode(addr.getPostalCode());
+    		ae.setCountry(addr.getCountry());
+    		
+    		addrList.add(ae);
     	}
     	return addrList;
     }

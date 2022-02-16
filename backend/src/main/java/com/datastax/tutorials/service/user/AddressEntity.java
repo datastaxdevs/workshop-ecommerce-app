@@ -2,6 +2,7 @@ package com.datastax.tutorials.service.user;
 
 import java.io.Serializable;
 
+import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.UserDefinedType;
 
 @UserDefinedType("address")
@@ -9,6 +10,7 @@ public class AddressEntity implements Serializable {
 
 	private static final long serialVersionUID = 1817053316281666003L;
 
+	@Column("mailto_name")
 	private String mailtoName;
 	
 	private String street;
@@ -17,8 +19,10 @@ public class AddressEntity implements Serializable {
 	
 	private String city;
 	
+	@Column("state_province")
 	private String stateProvince;
 	
+	@Column("postal_code")
 	private String postalCode;
 	
 	private String country;
