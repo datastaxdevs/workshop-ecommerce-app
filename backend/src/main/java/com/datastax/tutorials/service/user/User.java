@@ -31,7 +31,8 @@ public class User {
 	
 	private List<Address> addresses;
 
-	private String tokentxt;
+	@JsonProperty("session_id")
+	private String sessionid;
 	
 	private String password;
 	
@@ -102,12 +103,12 @@ public class User {
 		this.password = password;
 	}
 
-	public String getTokentxt() {
-		return tokentxt;
+	public String getSessionId() {
+		return sessionid;
 	}
 
-	public void setTokentxt(String tokentxt) {
-		this.tokentxt = tokentxt;
+	public void setSessionId(String sessionid) {
+		this.sessionid = sessionid;
 	}
 
 	public Date getPasswordTimestamp() {
