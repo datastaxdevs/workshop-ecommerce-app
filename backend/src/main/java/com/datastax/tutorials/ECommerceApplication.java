@@ -32,13 +32,13 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
     	// @formatter:off
         http
-        	.httpBasic().and().csrf().disable()
+        	//.httpBasic().and().csrf().disable()
             .authorizeRequests(a -> a
             		.antMatchers("/api/v1/user/**", "/error").permitAll()
             		.anyRequest().authenticated()
             	)
             .formLogin(fl -> fl
-            		.loginPage("/login").permitAll()
+            		.loginPage("http://localhost:3000/login").permitAll()
             	)
             .logout(l -> l
                     .logoutSuccessUrl("/").permitAll()

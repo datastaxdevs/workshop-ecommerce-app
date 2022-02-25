@@ -275,10 +275,10 @@ public class UserRestController {
     	}
     }
 
-    @PostMapping("{userid}/session/{sessionid}")
+    @GetMapping("/sessionid")
     @Operation(
-     summary = "Save session id",
-     description= "Saves the user's session id `UPDATE user SET session_id=? WHERE user_id=?;`",
+     summary = "GETs and saves the session id",
+     description= "GETs the session id from the header and saves it",
      responses = {
        @ApiResponse(
          responseCode = "200",
@@ -300,38 +300,27 @@ public class UserRestController {
          description = "Internal error.") 
     })
     @Transactional
-    public ResponseEntity<User> saveSessionId(
-            HttpServletRequest req, 
-            @PathVariable(value = "userid")
-            @Parameter(name = "userid", description = "user identifier (UUID)",
-                       example = "5929e846-53e8-473e-8525-80b666c46a83")
-            UUID userid,
-            @PathVariable(value = "sessionid")
-            @Parameter(name = "sessionid", description = "web session identifier",
-            example = "1489A654C68C3B235D234FC8999FDA11")            
-            String sessionid) {
+    public ResponseEntity<UserBySessionEntity> getSessionId(
+            HttpServletRequest req) {
 
-    	// query user to verify that the old password matched what we have stored.
-    	Optional<UserEntity> userE = userRepo.findById(userid);
-    	
-    	if (userE.isPresent()) {
-    		UserEntity returnVal = userE.get();
-    		UserBySessionEntity userBySessionE = new UserBySessionEntity();
-    		
-    		// set new sessionid
-    		returnVal.setSessionId(sessionid);
-    		userBySessionE.setUserSessionId(sessionid);
-    		userBySessionE.setUserId(userid);
-    		
-    		// save to DB
-    		userRepo.save(returnVal);
-    		userBySessionRepo.save(userBySessionE);
-    		
-    		return ResponseEntity.ok(mapUser(returnVal));
-    	} else {
-    		// user not found/returned, an error has occurred
-    		return ResponseEntity.notFound().build();
-    	}
+    	UUID userid = UUID.randomUUID();
+    	String sessionid = req.getSession().getId();
+
+		// set new sessionid
+    	UserBySessionEntity userBySessionE = new UserBySessionEntity();
+		userBySessionE.setUserSessionId(sessionid);
+		userBySessionE.setUserId(userid);
+		
+		// create new user
+		UserEntity userE = new UserEntity();
+		userE.setUserId(userid);
+		userE.setSessionId(sessionid);		
+		
+		// save to DB
+		userRepo.save(userE);
+		userBySessionRepo.save(userBySessionE);
+		
+		return ResponseEntity.ok(userBySessionE);
     }
     
     @PostMapping("/{userid}/create")
