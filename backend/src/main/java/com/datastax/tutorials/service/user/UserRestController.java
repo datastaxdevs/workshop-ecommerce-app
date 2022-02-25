@@ -95,6 +95,7 @@ public class UserRestController {
     	                responseCode = "500",
     	                description = "Internal server error.") 
     	    })
+    @Transactional()
     public ResponseEntity<User> user(@AuthenticationPrincipal OAuth2User principal) {
     	//Called by GitHub or Google login APIs
     	
@@ -121,6 +122,15 @@ public class UserRestController {
     			user.setFirstName(principal.getAttribute("given_name"));
     		}
     		
+           	if (email != null) {
+           		UserByEmailEntity userByE = new UserByEmailEntity();
+           		userByE.setUserEmail(email);
+           		userByE.setUserId(userId);
+           		userByEmailRepo.save(userByE);
+           	}
+           	
+           	userRepo.save(user);
+           	
     	} else {
 	    	// existing user found!
 	    	userId = existingUser.get().getUserId();
