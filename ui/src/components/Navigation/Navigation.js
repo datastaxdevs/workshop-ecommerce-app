@@ -13,7 +13,6 @@ import { classNames } from "../../utils";
 const Navigation = () => {
   const { categories } = useAllCategories();
   const { data: currentUser } = useCurrentUser();
-  console.log(currentUser);
 
   return (
     <header className="relative bg-white">
@@ -207,22 +206,36 @@ const Navigation = () => {
                   <span className="sr-only">items in cart, view bag</span>
                 </Link>
               </div>
-              <Link to="/login">
-                <button
-                  type="button"
-                  className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
-                >
-                  <span>Login</span>
-                </button>
-              </Link>
-              <Link to="/signup">
-                <button
-                  type="button"
-                  className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
-                >
-                  <span>Signup</span>
-                </button>
-              </Link>
+              {currentUser && (
+                <Link to="/logout">
+                  <button
+                    type="button"
+                    className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                  >
+                    <span>Logout</span>
+                  </button>
+                </Link>
+              )}
+              {!currentUser && (
+                <>
+                  <Link to="/login">
+                    <button
+                      type="button"
+                      className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                    >
+                      <span>Login</span>
+                    </button>
+                  </Link>
+                  <Link to="/signup">
+                    <button
+                      type="button"
+                      className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                    >
+                      <span>Signup</span>
+                    </button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

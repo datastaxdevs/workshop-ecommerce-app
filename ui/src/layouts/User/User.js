@@ -6,7 +6,7 @@ import { useCartId, useCurrentUser } from "../../hooks";
 import _ from "lodash";
 
 const User = () => {
-  const { currentUser } = useCurrentUser();
+  const { data: currentUser } = useCurrentUser();
   const cartId = useCartId();
 
   return (
