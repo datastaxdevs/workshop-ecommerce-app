@@ -38,7 +38,7 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
             		.anyRequest().authenticated()
             	)
             .formLogin(fl -> fl
-            		.loginPage("http://localhost:3000/login").permitAll()
+            		.loginPage("/login").permitAll()
             	)
             .logout(l -> l
                     .logoutSuccessUrl("/").permitAll()
