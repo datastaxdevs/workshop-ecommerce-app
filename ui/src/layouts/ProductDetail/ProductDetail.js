@@ -43,7 +43,7 @@ const ProductDetail = () => {
   const productImage = selectedProduct.images[0] ?? product.image;
 
   const addToCart = async () => {
-    const res = await fetch(
+    await fetch(
       `/api/v1/carts/${cartId}/products/${selectedProduct.product_id}/`,
       {
         method: "PUT",
@@ -59,8 +59,6 @@ const ProductDetail = () => {
         }),
       }
     );
-    const resJson = await res.json();
-    console.log(resJson);
     toast.success("Added to Cart");
   };
 
