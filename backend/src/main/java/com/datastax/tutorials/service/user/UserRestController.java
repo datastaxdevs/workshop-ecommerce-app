@@ -102,6 +102,8 @@ public class UserRestController {
     	UUID userId = null;
     	UserEntity user = null;
     	
+    	System.console().printf(principal.toString());
+    	
     	//check if this is a returning user
     	// Both Google and GitHub have an "email" attribute
     	String email = principal.getAttribute("email");
@@ -226,6 +228,7 @@ public class UserRestController {
 	        
 	        return ResponseEntity.ok(mapUser(user.get()));
     	} else {
+    		
     		return ResponseEntity.notFound().build();
     	}
     }
@@ -303,24 +306,21 @@ public class UserRestController {
     public ResponseEntity<UserBySessionEntity> getSessionId(
             HttpServletRequest req) {
 
-    	UUID userid = UUID.randomUUID();
     	String sessionid = req.getSession().getId();
+    	UserBySessionEntity returnVal = new UserBySessionEntity();
 
-		// set new sessionid
-    	UserBySessionEntity userBySessionE = new UserBySessionEntity();
-		userBySessionE.setUserSessionId(sessionid);
-		userBySessionE.setUserId(userid);
-		
-		// create new user
-		UserEntity userE = new UserEntity();
-		userE.setUserId(userid);
-		userE.setSessionId(sessionid);		
-		
-		// save to DB
-		userRepo.save(userE);
-		userBySessionRepo.save(userBySessionE);
-		
-		return ResponseEntity.ok(userBySessionE);
+		// find existing user
+    	Optional<UserBySessionEntity> userBySessionE = userBySessionRepo.findById(sessionid);
+
+    	if (userBySessionE.isEmpty()) {
+    		// user not found, just return object with sessionid
+    		returnVal.setUserSessionId(sessionid);
+    		
+    		return ResponseEntity.ok(returnVal);
+    	} else {
+    		// user found, return
+    		return ResponseEntity.ok(userBySessionE.get());
+    	}
     }
     
     @PostMapping("/{userid}/create")
@@ -453,6 +453,7 @@ public class UserRestController {
             UUID userid) {
     	
     	boolean emailChanged = false;
+    	boolean sessionidChanged = false;
 
     	// user save
     	UserEntity userE = new UserEntity();
@@ -460,11 +461,21 @@ public class UserRestController {
     	// userid is the partition key, always going to send that
     	userE.setUserId(userid);
 
+    	// pull current sessionid, check for changes
+    	String sessionid = req.getSession().getId();
+    	
        	if (userData.getUserEmail() != null) {
        		emailChanged = true;
        		userE.setUserEmail(userData.getUserEmail());
        	}
 
+       	if (userData.getSessionId() != null) {
+           	if (!userData.getSessionId().equals(sessionid)) {
+           		sessionidChanged = true;
+           		userE.setSessionId(sessionid);
+           	}       		
+       	}
+       	
     	// check for null, as we only want to send data that's changed
     	if (userData.getPassword() != null) {
     		// Hash the password from the request body
@@ -504,6 +515,17 @@ public class UserRestController {
         	
         	// delete old email entry
         	userByEmailRepo.deleteById(oldEmail);
+       	}
+       	
+       	if (sessionidChanged) {
+       		// save
+       		UserBySessionEntity userBySessionE = new UserBySessionEntity();
+       		userBySessionE.setUserId(userid);
+       		userBySessionE.setUserSessionId(sessionid);
+       		userBySessionRepo.save(userBySessionE);
+       		
+       		// delete old session entry
+       		userBySessionRepo.deleteById(sessionid);
        	}
        	
     	// save to DB
