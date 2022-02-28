@@ -9,7 +9,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.ArrayList;
 import java.util.Date;
+//import java.util.HashMap;
 import java.util.List;
+//import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -97,12 +99,13 @@ public class UserRestController {
     	    })
     @Transactional()
     public ResponseEntity<User> user(@AuthenticationPrincipal OAuth2User principal) {
+    //public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
     	//Called by GitHub or Google login APIs
+    	
+    	//Map<String, Object> returnVal = new HashMap<String,Object>();
     	
     	UUID userId = null;
     	UserEntity user = null;
-    	
-    	System.console().printf(principal.toString());
     	
     	//check if this is a returning user
     	// Both Google and GitHub have an "email" attribute
@@ -113,7 +116,8 @@ public class UserRestController {
     		// If not, create new!
     		user = new UserEntity();
     		// need a userId, but we also need a way to get/transfer the one from the website
-    		user.setUserId(UUID.randomUUID());
+    		userId = UUID.randomUUID();
+    		user.setUserId(userId);
     		user.setUserEmail(email);
     		
     		if (principal.getAttribute("family_name") != null) {
@@ -141,14 +145,17 @@ public class UserRestController {
 	        if (userO.isEmpty()) {
 	        	// catch-all, if for whatever reason a valid userId can't yield an existing user
 	            return ResponseEntity.notFound().build();
+	        	
 	        } else {
 	        	// if it exists (it should) then invoke Optional's getter to convert from
 	        	// Optional to User bean.
 	        	user = userO.get();
 	        }
     	}
-    	
+
+       	//returnVal.put("name", principal.getAttribute("name"));
         return ResponseEntity.ok(mapUser(user));
+    	//return returnVal;
     }
     
     @GetMapping("/user/{userid}")
@@ -700,6 +707,7 @@ public class UserRestController {
         u.setLocale(ue.getLocale());
         // shouldn't ever need to return this
         //u.setPassword(ue.getPassword());
+        u.setSessionId(ue.getSessionId());
         u.setPasswordTimestamp(ue.getPasswordTimestamp());
         u.setSessionId(ue.getSessionId());
 

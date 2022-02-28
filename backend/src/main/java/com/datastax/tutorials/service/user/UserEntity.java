@@ -41,7 +41,7 @@ public class UserEntity implements Serializable {
 	private String password;
 	
 	@Column("session_id")
-	private String sessionid;
+	private String sessionId;
 	
 	@Column("password_timestamp")
 	private Date passwordTimestamp;
@@ -111,11 +111,11 @@ public class UserEntity implements Serializable {
 	}
 
 	public String getSessionId() {
-		return sessionid;
+		return sessionId;
 	}
 
 	public void setSessionId(String sessionid) {
-		this.sessionid = sessionid;
+		this.sessionId = sessionid;
 	}
 	
 	public Date getPasswordTimestamp() {

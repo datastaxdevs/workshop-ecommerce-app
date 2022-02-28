@@ -34,7 +34,7 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
         http
         	//.httpBasic().and().csrf().disable()
             .authorizeRequests(a -> a
-            		.antMatchers("/api/v1/user/**", "/error", "/webjars/**").permitAll()
+            		.antMatchers("/", "/error", "/webjars/**").permitAll()
             		.anyRequest().authenticated()
             	)
             .formLogin(fl -> fl
@@ -61,10 +61,9 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
     				                "/api/v1/featured/**",
     				                "/swagger-ui/**",
     				                "/v3/api-docs/**",
-    				                "/configuration/**",
+//    				                "/configuration/**",
     				                "/swagger-resources/**",
-    				                "/configuration/security",
-    				                "/swagger-ui.html",
-    				                "/webjars/**");
+//    				                "/configuration/security",
+    				                "/swagger-ui.html");
     }
 }

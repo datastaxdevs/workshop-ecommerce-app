@@ -32,7 +32,7 @@ public class User {
 	private List<Address> addresses;
 
 	@JsonProperty("session_id")
-	private String sessionid;
+	private String sessionId;
 	
 	private String password;
 	
@@ -104,11 +104,11 @@ public class User {
 	}
 
 	public String getSessionId() {
-		return sessionid;
+		return sessionId;
 	}
 
 	public void setSessionId(String sessionid) {
-		this.sessionid = sessionid;
+		this.sessionId = sessionid;
 	}
 
 	public Date getPasswordTimestamp() {
