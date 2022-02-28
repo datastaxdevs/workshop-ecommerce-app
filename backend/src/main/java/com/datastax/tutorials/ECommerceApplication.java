@@ -34,7 +34,7 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
         http
         	//.httpBasic().and().csrf().disable()
             .authorizeRequests(a -> a
-            		.antMatchers("/api/v1/user/**", "/error").permitAll()
+            		.antMatchers("/api/v1/user/**", "/error", "/webjars/**").permitAll()
             		.anyRequest().authenticated()
             	)
             .formLogin(fl -> fl
@@ -57,7 +57,6 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
     	web
     		.ignoring().antMatchers("/api/v1/products/**",
     				                "/api/v1/categories/**",
-    				                "/api/v1/user/**",
     				                "/api/v1/prices/**",
     				                "/api/v1/featured/**",
     				                "/swagger-ui/**",
