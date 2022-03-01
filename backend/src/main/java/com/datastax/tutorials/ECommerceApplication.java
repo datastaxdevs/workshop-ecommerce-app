@@ -71,9 +71,9 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
 									"/favicon.ico",
 									"/manifest.json",
     				                "/v3/api-docs/**",
-//    				                "/configuration/**",
+    				                "/configuration/**",
     				                "/swagger-resources/**",
-//    				                "/configuration/security",
+    				                "/configuration/security",
     				                "/swagger-ui.html");
     }
 }

@@ -6,6 +6,7 @@
 
 # do not commit you token
 application.yaml
+application.yml
 node_modules
 
 # idea conf files

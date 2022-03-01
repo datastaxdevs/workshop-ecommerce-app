@@ -60,7 +60,6 @@ public class UserRestController {
     /** Inject the repositories. */
     private UserRepository userRepo;
     private UserByEmailRepository userByEmailRepo;
-    private UserBySessionRepository userBySessionRepo;
     
     /**
      * Injection through constructor.
@@ -68,10 +67,9 @@ public class UserRestController {
      * @param repo
      *      repository
      */
-    public UserRestController(UserRepository uRepo, UserByEmailRepository ueRepo, UserBySessionRepository usRepo) {
+    public UserRestController(UserRepository uRepo, UserByEmailRepository ueRepo) {
     	userRepo = uRepo;
     	userByEmailRepo = ueRepo;
-    	userBySessionRepo = usRepo;
     }
     
     @GetMapping("/user")
@@ -99,10 +97,7 @@ public class UserRestController {
     	    })
     @Transactional()
     public ResponseEntity<User> user(@AuthenticationPrincipal OAuth2User principal) {
-    //public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
     	//Called by GitHub or Google login APIs
-    	
-    	//Map<String, Object> returnVal = new HashMap<String,Object>();
     	
     	UUID userId = null;
     	UserEntity user = null;
@@ -239,96 +234,6 @@ public class UserRestController {
     		return ResponseEntity.notFound().build();
     	}
     }
-
-    @GetMapping("/session/{sessionid}")
-    @Operation(
-    	       summary = "Retrieve user by sessionid",
-    	       description= "Find User detail `SELECT * FROM user_by_session WHERE sessionid=?`",
-    	       responses = {
-    	         @ApiResponse(
-    	           responseCode = "200",
-    	           description = "A single user object will be returned",
-    	           content = @Content(
-    	            mediaType = "application/json",
-    	                  schema = @Schema(implementation = User.class, name = "User")
-    	                )
-    	              ),
-    	              @ApiResponse(
-    	                responseCode = "404", 
-    	                description = "Issue processing user, not found"),
-    	              @ApiResponse(
-    	                responseCode = "400",
-    	                description = "Issue processing user, error occured"),
-    	              @ApiResponse(
-    	                responseCode = "500",
-    	                description = "Internal server error.") 
-    	    })
-    public ResponseEntity<User> getUserBySession(HttpServletRequest req, 
-            @PathVariable(value = "sessionid")
-            @Parameter(name = "sessionid", description = "web sessionid", example = "1489A654C68C3B235D234FC8999FDA11")
-            String sessionid) {
-
-    	Optional<UserBySessionEntity> userBySession = userBySessionRepo.findById(sessionid);
-    	
-    	if (userBySession.isPresent()) {
-    		// now pull the user data 
-	        Optional<UserEntity> user = userRepo.findById(userBySession.get().getUserId());
-	        
-	        if (user.isEmpty()) {
-	        	// extra bullet proofing, just in case user is null (for whatever reason)
-	            return ResponseEntity.notFound().build();
-	        }
-	        
-	        return ResponseEntity.ok(mapUser(user.get()));
-    	} else {
-    		return ResponseEntity.notFound().build();
-    	}
-    }
-
-    @GetMapping("/sessionid")
-    @Operation(
-     summary = "GETs and saves the session id",
-     description= "GETs the session id from the header and saves it",
-     responses = {
-       @ApiResponse(
-         responseCode = "200",
-         description = "Update completed",
-         content = @Content(
-           mediaType = "application/json",
-           schema = @Schema(implementation = User.class, name = "user")
-         )
-       ),
-       @ApiResponse(
-         responseCode = "404", 
-         description = "userId not found",
-         content = @Content(mediaType = "")),
-       @ApiResponse(
-         responseCode = "400",
-         description = "Invalid parameter check userId format."),
-       @ApiResponse(
-         responseCode = "500",
-         description = "Internal error.") 
-    })
-    @Transactional
-    public ResponseEntity<UserBySessionEntity> getSessionId(
-            HttpServletRequest req) {
-
-    	String sessionid = req.getSession().getId();
-    	UserBySessionEntity returnVal = new UserBySessionEntity();
-
-		// find existing user
-    	Optional<UserBySessionEntity> userBySessionE = userBySessionRepo.findById(sessionid);
-
-    	if (userBySessionE.isEmpty()) {
-    		// user not found, just return object with sessionid
-    		returnVal.setUserSessionId(sessionid);
-    		
-    		return ResponseEntity.ok(returnVal);
-    	} else {
-    		// user found, return
-    		return ResponseEntity.ok(userBySessionE.get());
-    	}
-    }
     
     @PostMapping("/{userid}/create")
     @Operation(
@@ -407,15 +312,9 @@ public class UserRestController {
 	    	userByEmailE.setUserId(userid);
 	    	userByEmailE.setUserEmail(userEmail);
 	        	
-	    	// user_by_session save
-	    	UserBySessionEntity userBySessionE = new UserBySessionEntity();
-	    	userBySessionE.setUserId(userid);
-	    	userBySessionE.setUserSessionId(userSessionId);
-	    	
 	    	// save to DB
 	    	userRepo.save(userE);
 	    	userByEmailRepo.save(userByEmailE);
-	    	userBySessionRepo.save(userBySessionE);
 	    	
 	    	// return user data
 	    	return ResponseEntity.ok(mapUser(userE));
@@ -460,7 +359,6 @@ public class UserRestController {
             UUID userid) {
     	
     	boolean emailChanged = false;
-    	boolean sessionidChanged = false;
 
     	// user save
     	UserEntity userE = new UserEntity();
@@ -468,19 +366,12 @@ public class UserRestController {
     	// userid is the partition key, always going to send that
     	userE.setUserId(userid);
 
-    	// pull current sessionid, check for changes
-    	String sessionid = req.getSession().getId();
+    	// pull current sessionid
+  		userE.setSessionId(req.getSession().getId());
     	
        	if (userData.getUserEmail() != null) {
        		emailChanged = true;
        		userE.setUserEmail(userData.getUserEmail());
-       	}
-
-       	if (userData.getSessionId() != null) {
-           	if (!userData.getSessionId().equals(sessionid)) {
-           		sessionidChanged = true;
-           		userE.setSessionId(sessionid);
-           	}       		
        	}
        	
     	// check for null, as we only want to send data that's changed
@@ -522,17 +413,6 @@ public class UserRestController {
         	
         	// delete old email entry
         	userByEmailRepo.deleteById(oldEmail);
-       	}
-       	
-       	if (sessionidChanged) {
-       		// save
-       		UserBySessionEntity userBySessionE = new UserBySessionEntity();
-       		userBySessionE.setUserId(userid);
-       		userBySessionE.setUserSessionId(sessionid);
-       		userBySessionRepo.save(userBySessionE);
-       		
-       		// delete old session entry
-       		userBySessionRepo.deleteById(sessionid);
        	}
        	
     	// save to DB
