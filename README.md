@@ -201,6 +201,39 @@ CREATE TABLE IF NOT EXISTS cart_products (
   AND default_time_to_live = 5184000;
 ```
 
+#### Session 3 - User Profile data model ####
+```sql
+CREATE TYPE address (
+  type TEXT,
+  mailto_name TEXT,
+  street TEXT,
+  street2 TEXT,
+  city TEXT,
+  state_province TEXT,
+  postal_code TEXT,
+  country TEXT
+);
+
+CREATE TABLE user (
+  user_id UUID,
+  user_email TEXT,
+  picture_url TEXT,
+  first_name TEXT,
+  last_name TEXT,
+  locale TEXT,
+  addresses LIST<FROZEN<address>>,
+  session_id TEXT,
+  password TEXT,
+  password_timestamp TIMESTAMP,
+  PRIMARY KEY (user_id)
+);
+
+CREATE TABLE user_by_email (
+  user_email TEXT PRIMARY KEY,
+  user_id UUID
+);
+```
+
 [🏠 Back to Table of Contents](#-table-of-contents)
 
 ## 4. Populate the Data
@@ -226,7 +259,7 @@ INSERT INTO category (name,category_id,image,parent_id) VALUES ('Travel Mugs',06
 INSERT INTO category (name,category_id,image,parent_id) VALUES ('Posters',fdbe9dcb-6878-4216-a64d-27c094b1b075,'',591bf485-de09-4b46-8fd2-5d9dc7ca101e);
 INSERT INTO category (name,category_id,image,parent_id) VALUES ('Wall Art',943482f9-070c-4390-bb30-2107b6fe653a,'bh001.png',591bf485-de09-4b46-8fd2-5d9dc7ca101e);
 INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Men''s "Go Away...Annotation" T-Shirt',99c4d825-d262-4a95-a04e-cc72e7e273c1,'ls534.png',91455473-212e-4c6e-8bec-1da06779ae10,['LS534S','LS534M','LS534L','LS534XL','LS5342XL','LS5343XL']);
-INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Men''s "Your Face...Autowired" T-Shirt',3fa13eee-d057-48d0-b0ae-2d83af9e3e3e,'ls355.png',91455473-212e-4c6e-8bec-1da06779ae10,['LS355S','LS355M','LS355L','LS355XL','LS3552XL','LS3553XL']);
+INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Men''s "Your Face...Autowired" T-Shirt',3fa13eee-d057-48d0-b0ae-2d83af9e3e3e,'ls355.png',91455473-212e-4c6e-8bec-1da06779ae10,['LN355S','LN355M','LN355L','LN355XL','LN3552XL','LN3553XL']);
 INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('Bigheads',2f25a732-0744-406d-baee-3e8131cbe500,'bh001.png',943482f9-070c-4390-bb30-2107b6fe653a,['bh001','bh002','bh003']);
 INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('DataStax Gray Track Jacket',f629e107-b219-4563-a852-6909fd246949,'dss821.jpg',d887b049-d16c-46e1-8c94-0a1280dedc30,['DSS821S','DSS821M','DSS821L','DSS821XL']);
 INSERT INTO category (name,category_id,image,parent_id,products) VALUES ('DataStax Vintage 2015 MVP Hoodie',86d234a4-6b97-476c-ada8-efb344d39743,'dsh915.jpg',6a4d86aa-ceb5-4c6f-b9b9-80e9a8c58ad1,['DSH915S','DSH915M','DSH915L','DSH915XL']);

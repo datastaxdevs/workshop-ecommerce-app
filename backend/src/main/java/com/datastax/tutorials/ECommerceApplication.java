@@ -32,8 +32,7 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
     	// @formatter:off
         http
-        	.csrf().disable()
-            .authorizeRequests(a -> a
+        	.authorizeRequests(a -> a
             		//.antMatchers("/", "/api/v1/users/", "/error", "/webjars/**").permitAll()
             		//.anyRequest().authenticated()
             		.anyRequest().permitAll()
@@ -48,9 +47,9 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/")
 					.permitAll()
                 )
-            //.csrf(c -> c
-            //       .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            //	)
+            .csrf(c -> c
+                   .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            	)
             .exceptionHandling(e -> e
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             	)
