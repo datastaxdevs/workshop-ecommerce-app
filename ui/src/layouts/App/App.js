@@ -2,6 +2,9 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProductList from "../ProductList";
 import Cart from "../Cart";
+import Login from "../Login";
+import User from "../User";
+import Signup from "../Signup";
 import ProductDetail from "../ProductDetail";
 import Navigation from "../../components/Navigation";
 import Footer from "../../components/Footer";
@@ -22,6 +25,9 @@ const App = () => {
           element={<ProductDetail />}
         />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/user" element={<User />} />
       </Routes>
       <Footer />
       <Toaster />

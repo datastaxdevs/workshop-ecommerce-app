@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import { useAllCategories } from "../../hooks";
+import { useAllCategories, useCurrentUser } from "../../hooks";
 import { Link } from "react-router-dom";
 import {
   SearchIcon,
@@ -12,6 +12,7 @@ import { classNames } from "../../utils";
 
 const Navigation = () => {
   const { categories } = useAllCategories();
+  const { data: currentUser } = useCurrentUser();
 
   return (
     <header className="relative bg-white">
@@ -181,27 +182,23 @@ const Navigation = () => {
                 <span className="sr-only">, change currency</span>
               </a>
 
-              {/* Search */}
-              <a
-                href="/"
-                className="hidden ml-6 p-2 text-gray-400 hover:text-gray-500 lg:block"
-              >
-                <span className="sr-only">Search</span>
-                <SearchIcon className="w-6 h-6" aria-hidden="true" />
-              </a>
-
-              {/* Account */}
-              <a
-                href="/"
-                className="p-2 text-gray-400 hover:text-gray-500 lg:ml-4"
-              >
-                <span className="sr-only">Account</span>
-                <UserIcon className="w-6 h-6" aria-hidden="true" />
-              </a>
+              {currentUser && (
+                <Link
+                  to="/user"
+                  component="a"
+                  className="p-2 text-gray-400 hover:text-gray-500 lg:ml-4"
+                >
+                  <span className="sr-only">Account</span>
+                  <UserIcon className="w-6 h-6" aria-hidden="true" />
+                </Link>
+              )}
 
               {/* Cart */}
               <div className="ml-4 flow-root lg:ml-6">
-                <Link to="/cart" className="group -m-2 p-2 flex items-center">
+                <Link
+                  to="/cart"
+                  className="group -m-2 p-2 flex items-center mr-4"
+                >
                   <ShoppingBagIcon
                     className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
                     aria-hidden="true"
@@ -209,6 +206,36 @@ const Navigation = () => {
                   <span className="sr-only">items in cart, view bag</span>
                 </Link>
               </div>
+              {currentUser && (
+                <Link to="/logout">
+                  <button
+                    type="button"
+                    className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                  >
+                    <span>Logout</span>
+                  </button>
+                </Link>
+              )}
+              {!currentUser && (
+                <>
+                  <Link to="/login">
+                    <button
+                      type="button"
+                      className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                    >
+                      <span>Login</span>
+                    </button>
+                  </Link>
+                  <Link to="/signup">
+                    <button
+                      type="button"
+                      className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                    >
+                      <span>Signup</span>
+                    </button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

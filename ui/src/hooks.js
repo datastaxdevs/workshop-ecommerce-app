@@ -144,3 +144,7 @@ export const useCartId = () => {
   }
   return cartId;
 };
+
+export const useCurrentUser = () => {
+  return useSWR("/api/v1/user/user", fetcher);
+};

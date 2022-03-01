@@ -164,15 +164,13 @@ public class CartProductsRestController {
     }
     
     /**
-     * Add product to cart.
+     * Delete product from cart.
      * @param req
      *      current request
      * @param cartid
      *      cart identifier (UUID)
      * @param productid
      *      product identifier (UUID)
-     * @param quantity
-     *      quantity of product to add
      * @return
      *      list of products in the cart
      */

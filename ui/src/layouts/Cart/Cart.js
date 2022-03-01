@@ -17,11 +17,9 @@ const Cart = () => {
   if (!cart) return <NotFound />;
 
   const removeFromCart = async (productId) => {
-    const res = await fetch(`/api/v1/carts/${cartId}/products/${productId}/`, {
+    await fetch(`/api/v1/carts/${cartId}/products/${productId}/`, {
       method: "DELETE",
     });
-    const resJson = await res.json();
-    console.log(resJson);
     toast.success("Removed from Cart");
     setCart(_.reject(cart, { product_id: productId }));
   };
