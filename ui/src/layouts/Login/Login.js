@@ -2,11 +2,8 @@ import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import { useCartId } from "../../hooks";
 
 const Login = () => {
-  const cartId = useCartId();
-
   return (
     <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -17,7 +14,7 @@ const Login = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <Formik
+          {/* <Formik
             initialValues={{ email: "", password: "" }}
             validationSchema={Yup.object({
               email: Yup.string()
@@ -27,7 +24,7 @@ const Login = () => {
             })}
             onSubmit={async (values, { setSubmitting }) => {
               try {
-                const res = await fetch(`/api/v1/users/${cartId}/login`, {
+                const res = await fetch(`/api/v1/users/login`, {
                   method: "PUT",
                   body: JSON.stringify(values),
                 });
@@ -94,10 +91,10 @@ const Login = () => {
                 </button>
               </div>
             </Form>
-          </Formik>
+          </Formik> */}
 
           <div className="mt-6">
-            <div className="relative">
+            {/* <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
               </div>
@@ -106,9 +103,10 @@ const Login = () => {
                   Or continue with
                 </span>
               </div>
-            </div>
+            </div> */}
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            {/* <div className="mt-6 grid grid-cols-2 gap-3"> */}
+            <div className="mt-6 grid grid-cols-1 gap-3">
               <div>
                 <a
                   href="/oauth2/authorization/google"
@@ -130,7 +128,7 @@ const Login = () => {
                 </a>
               </div>
 
-              <div>
+              {/* <div>
                 <a
                   href="http://localhost:8080/oauth2/authorization/github"
                   className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
@@ -149,7 +147,7 @@ const Login = () => {
                     />
                   </svg>
                 </a>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -146,6 +146,5 @@ export const useCartId = () => {
 };
 
 export const useCurrentUser = () => {
-  return { data: null, loading: null, error: null };
-  // return useSWR(`/api/v1/user/user`, fetcher);
+  return useSWR("/api/v1/user/user", fetcher);
 };

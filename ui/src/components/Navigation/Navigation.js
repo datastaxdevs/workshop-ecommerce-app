@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { useAllCategories, useCurrentUser } from "../../hooks";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   SearchIcon,
   ShoppingBagIcon,
@@ -13,6 +13,11 @@ import { classNames } from "../../utils";
 const Navigation = () => {
   const { categories } = useAllCategories();
   const { data: currentUser } = useCurrentUser();
+  let navigate = useNavigate();
+  const logout = async () => {
+    await fetch("/logout", { method: "POST" });
+    return navigate("/");
+  };
 
   return (
     <header className="relative bg-white">
@@ -209,6 +214,7 @@ const Navigation = () => {
               {currentUser && (
                 <Link to="/logout">
                   <button
+                    onClick={logout}
                     type="button"
                     className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
                   >

@@ -2,12 +2,15 @@ import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import { useCartId, useCurrentUser } from "../../hooks";
+import { useCurrentUser } from "../../hooks";
 import _ from "lodash";
 
 const User = () => {
   const { data: currentUser } = useCurrentUser();
-  const cartId = useCartId();
+
+  if (!currentUser) {
+    return <></>;
+  }
 
   return (
     <div className="max-w-2xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-0">
@@ -37,10 +40,13 @@ const User = () => {
         })}
         onSubmit={async (values, { setSubmitting }) => {
           try {
-            const res = await fetch(`/api/v1/users/${cartId}/update`, {
-              method: "PUT",
-              body: JSON.stringify(values),
-            });
+            const res = await fetch(
+              `/api/v1/users/${currentUser.user_id}/update`,
+              {
+                method: "PUT",
+                body: JSON.stringify(values),
+              }
+            );
             const resJson = await res.json();
             console.log(resJson);
             setSubmitting(false);
@@ -248,7 +254,7 @@ const User = () => {
           </div>
         </Form>
       </Formik>
-      <Formik
+      {/* <Formik
         initialValues={{
           password: "",
           newPassword: "",
@@ -263,7 +269,7 @@ const User = () => {
         })}
         onSubmit={async (values, { setSubmitting }) => {
           try {
-            const res = await fetch(`/api/v1/users/${cartId}/updatepassword`, {
+            const res = await fetch(`/api/v1/users/updatepassword`, {
               method: "POST",
               body: JSON.stringify(values),
             });
@@ -366,7 +372,7 @@ const User = () => {
             </div>
           </div>
         </Form>
-      </Formik>
+      </Formik> */}
     </div>
   );
 };
