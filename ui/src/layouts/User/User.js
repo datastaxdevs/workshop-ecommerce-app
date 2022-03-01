@@ -5,9 +5,11 @@ import toast from "react-hot-toast";
 import { useCurrentUser } from "../../hooks";
 import Cookies from "js-cookie";
 import _ from "lodash";
+import { useSWRConfig } from "swr";
 
 const User = () => {
   const { data: currentUser } = useCurrentUser();
+  const { mutate } = useSWRConfig();
 
   if (!currentUser) {
     return <></>;
@@ -42,22 +44,23 @@ const User = () => {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const res = await fetch(
-              `/api/v1/users/${currentUser.user_id}/update`,
+              `/api/v1/user/${currentUser.user_id}/update`,
               {
                 method: "PUT",
                 body: JSON.stringify(values),
                 headers: {
+                  "Content-Type": "application/json",
                   "X-XSRF-TOKEN": Cookies.get("XSRF-TOKEN"),
                 },
               }
             );
             const resJson = await res.json();
-            console.log(resJson);
             setSubmitting(false);
             if (!res.ok) {
               return toast.error("Could not update profile.");
             }
             toast.success("Updated your profile!");
+            mutate("/api/v1/user/user");
           } catch (e) {
             console.error(e);
             toast.error("Could not update profile.");
