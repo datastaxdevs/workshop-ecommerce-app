@@ -41,7 +41,11 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
             		.loginPage("/login").permitAll()
             	)
             .logout(l -> l
-                    .logoutSuccessUrl("/").permitAll()
+					.logoutUrl("/logout")
+					.invalidateHttpSession(true)
+					.deleteCookies("JSESSIONID")
+                    .logoutSuccessUrl("/")
+					.permitAll()
                 )
             .csrf(c -> c
                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
