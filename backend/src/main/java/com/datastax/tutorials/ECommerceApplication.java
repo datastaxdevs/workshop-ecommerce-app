@@ -54,7 +54,7 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             	)
             .oauth2Login()
-				.defaultSuccessUrl("/");
+				.defaultSuccessUrl("/", true);
     }
     
     @Override
