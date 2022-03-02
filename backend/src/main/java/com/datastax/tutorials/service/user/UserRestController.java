@@ -404,15 +404,16 @@ public class UserRestController {
        		// get old email
        		Optional<UserEntity> oldEmailEntry = userRepo.findById(userid);
        		String oldEmail = oldEmailEntry.get().getUserEmail();
-       		
-       		// user_by_email save
-       		UserByEmailEntity userByEmailE = new UserByEmailEntity();
-       		userByEmailE.setUserId(userid);
-       		userByEmailE.setUserEmail(userData.getUserEmail());
-        	userByEmailRepo.save(userByEmailE);
-        	
-        	// delete old email entry
-        	userByEmailRepo.deleteById(oldEmail);
+		    if(!oldEmail.equals(userData.getUserEmail())) {
+				// user_by_email save
+				UserByEmailEntity userByEmailE = new UserByEmailEntity();
+				userByEmailE.setUserId(userid);
+				userByEmailE.setUserEmail(userData.getUserEmail());
+				userByEmailRepo.save(userByEmailE);
+				
+				// delete old email entry
+				userByEmailRepo.deleteById(oldEmail);
+			}
        	}
        	
     	// save to DB
