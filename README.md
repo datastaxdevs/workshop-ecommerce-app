@@ -11,7 +11,9 @@
 
 It doesn't matter if you join our workshop live or you prefer to do at your own pace, we have you covered. In this repository, you'll find everything you need for this workshop:
 
-- [Slide deck](./slides.pdf)
+- [Slide deck - week 1](./slides_wk1.pdf)
+- [Slide deck - week 2](./slides_wk2.pdf)
+- [Slide deck - week 3](./slides_wk3.pdf)
 - [Questions and Answers](https://community.datastax.com/)
 - [Worskhop code] (https://github.com/datastaxdevs/workshop-ecommerce-app)
 
@@ -40,8 +42,8 @@ Complete the homework to earn the badge for this workshop (awarded at the end of
 5. [Create a token](#5-create-your-token)
 6. [Setup your application](#6-setup-your-application)
 7. [Run Unit Tests](#7-run-unit-tests)
-8. [Start the Backend API](#8-start-the-backend-api)
-9. [Start the Application](#9-start-the-frontend)
+8. [Enable Social Login] (#8-enable-social-login)
+9. [Start the Application](#9-start-the-application)
 
 ## 1. Introduction
 
@@ -199,39 +201,6 @@ CREATE TABLE IF NOT EXISTS cart_products (
     PRIMARY KEY (cart_id, product_timestamp, product_id)
 ) WITH CLUSTERING ORDER BY (product_timestamp DESC, product_id ASC)
   AND default_time_to_live = 5184000;
-```
-
-#### Session 3 - User Profile data model ####
-```sql
-CREATE TYPE address (
-  type TEXT,
-  mailto_name TEXT,
-  street TEXT,
-  street2 TEXT,
-  city TEXT,
-  state_province TEXT,
-  postal_code TEXT,
-  country TEXT
-);
-
-CREATE TABLE user (
-  user_id UUID,
-  user_email TEXT,
-  picture_url TEXT,
-  first_name TEXT,
-  last_name TEXT,
-  locale TEXT,
-  addresses LIST<FROZEN<address>>,
-  session_id TEXT,
-  password TEXT,
-  password_timestamp TIMESTAMP,
-  PRIMARY KEY (user_id)
-);
-
-CREATE TABLE user_by_email (
-  user_email TEXT PRIMARY KEY,
-  user_id UUID
-);
 ```
 
 [🏠 Back to Table of Contents](#-table-of-contents)
@@ -610,7 +579,65 @@ Wall Decor
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 8. Install the Backend
+## 8. Enable Social Login
+
+On a tab in a browser navigate to [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials).
+
+Consent to using APIs and services and you should finally be presented a screen that looks like below and pick values as shown.
+
+![ouath](data/img/Oauthconsent1.png?raw=true)
+
+Pick the appropriate values as shcown below and complete the consent.
+
+![ouath](data/img/Oauthconsent2.png?raw=true)
+
+Now click on the `credentials` tab, `+ CREATE CREDENTIALS` tab and finally the `OAuth Client ID` dropdow as shown in the following screen.
+
+![ouath](data/img/Oauthcred0.png?raw=true)
+
+You will be presented with a screen for entering the `Authorized JavaScript Origins` and `Authorized redirect URIs` as shown below.
+
+![ouath](data/img/Oauthcred1.png?raw=true)
+
+You'll need the following URIs. Make a note of this. We will use `http` instead of `https` as illustrated below.
+
+For the `Authorized JavaScript Origins` use the following value from the Gitpod terminal window,
+LN
+```bash
+echo $(gp url 8080 | sed 's/https/http/')
+```
+
+For the `Authorized redirect URIs` use the following from the GitPod terminal window.
+
+```
+echo $(gp url 8080 | sed 's/https/http/')/login/oauth2/code/google
+```
+
+Make sure you enter the above values correctly as shown and hit `CREATE` on bottom as shown.
+
+![ouath](data/img/Oauthcred2.png?raw=true)
+
+Now you're ready to fetch the credentials  by using the copy 'n paste icons on right as shown below.
+
+![ouath](data/img/Oauthcred3.png?raw=true)
+
+You can copy and paste them in the `application.yml` file as entries for Google SSO authorization as indicated below.
+
+```bash
+cp /workspace/backend/src/main/resources/application.yml.example ./backend/src/main/resources/application.yml
+```
+
+and opening and plugging in the values `Your Client ID`
+and `Your Client Secret` respectively by using the following command
+
+```
+gp open ./backend/src/main/resources/application.yml
+```
+
+
+[🏠 Back to Table of Contents](#-table-of-contents)
+
+## 9. Start the Application
 
 You can install the backend with the credentials using the following command
 
@@ -618,10 +645,6 @@ You can install the backend with the credentials using the following command
 cd /workspace/workshop-ecommerce-app
 mvn install -f backend/pom.xml -DskipTests
 ```
-
-[🏠 Back to Table of Contents](#-table-of-contents)
-
-## 9. Start the Application
 
 ✅ **9a: Know your public URL**
 
@@ -729,7 +752,30 @@ Here's how it looks in the browser tab.
 
 This is the docs for the open APIs that enables the frontend or any other program to obtain the data and manipulate it with REST-based CRUD operations.
 
+The complete app is running in the browser as shown below.
+
 ![image](data/img/splash.png?raw=true)
+
+✅ **9g: Use your social login**
+
+Hit login as shown below
+
+![login](data/img/Oauthlogin0.png?raw=true)
+
+
+You should be presented with the Google SSO Login option. Click on the icon as shown below.
+
+![login](data/img/Oauthlogin1.png?raw=true)
+
+Pick the Google user account and proceed to login as you would with Google.
+
+![login](data/img/Oauthlogin2.png?raw=true)
+
+If all the values are wired properly you should see the following screen with the icon above showing that the authentication worked as below and the `Logout` button now available.
+
+![ouath](data/img/Oauthauthenticated.png?raw=true)
+
+and voila, just like that we are done setting up user profile with Google. We can implement Github and other social logins similarly.
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
