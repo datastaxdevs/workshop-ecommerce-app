@@ -576,6 +576,12 @@ Wall Decor
 
 ## 8. Enable Social Login
 
+Now that we're done with tests, let's `cd` to the top directory.
+
+```
+/workspace/workshop-ecommerce-app/
+```
+
 On a tab in a browser navigate to [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials).
 
 Consent to using APIs and services and you should finally be presented a screen that looks like below and pick values as shown.
@@ -624,14 +630,14 @@ Now you're ready to fetch the credentials  by using the copy 'n paste icons on r
 You can copy and paste them in the `application.yml` file as entries for Google SSO authorization as indicated below.
 
 ```bash
-cp /workspace/workshop-ecom/backend/src/main/resources/application.yml.example /workspace/workshop-ecom/backend/src/main/resources/application.yml
+cp /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml.sample /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml
 ```
 
 and opening and plugging in the values `Your Client ID`
 and `Your Client Secret` respectively by using the following command
 
 ```
-gp open /workspace/workshop-ecom/backend/src/main/resources/application.yml
+gp open /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml
 ```
 
 
