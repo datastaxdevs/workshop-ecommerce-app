@@ -582,31 +582,36 @@ Consent to using APIs and services and you should finally be presented a screen 
 
 ![ouath](data/img/Oauthconsent1.png?raw=true)
 
-Pick the appropriate values as shcown below and complete the consent.
+Pick the appropriate values as shown below and complete the consent.
 
 ![ouath](data/img/Oauthconsent2.png?raw=true)
 
-Now click on the `credentials` tab, `+ CREATE CREDENTIALS` tab and finally the `OAuth Client ID` dropdow as shown in the following screen.
+Now click on the `credentials` tab, `+ CREATE CREDENTIALS` tab and finally the `OAuth Client ID` dropdown as shown in the following screen.
 
 ![ouath](data/img/Oauthcred0.png?raw=true)
 
-You will be presented with a screen for entering the `Authorized JavaScript Origins` and `Authorized redirect URIs` as shown below.
 
-![ouath](data/img/Oauthcred1.png?raw=true)
+You will be presented with a screen for entering the `Authorized JavaScript Origins` and `Authorized redirect URIs` as shown below.
 
 You'll need the following URIs. Make a note of this. We will use `http` instead of `https` as illustrated below.
 
 For the `Authorized JavaScript Origins` use the following value from the Gitpod terminal window,
-LN
+
+
 ```bash
 echo $(gp url 8080 | sed 's/https/http/')
 ```
 
 For the `Authorized redirect URIs` use the following from the GitPod terminal window.
 
-```
+```bash
 echo $(gp url 8080 | sed 's/https/http/')/login/oauth2/code/google
 ```
+
+Enter the respective values as shown below which enables URI redirection and SSO for the app.
+
+![ouath](data/img/Oauthcred1.png?raw=true)
+
 
 Make sure you enter the above values correctly as shown and hit `CREATE` on bottom as shown.
 
@@ -619,14 +624,14 @@ Now you're ready to fetch the credentials  by using the copy 'n paste icons on r
 You can copy and paste them in the `application.yml` file as entries for Google SSO authorization as indicated below.
 
 ```bash
-cp /workspace/backend/src/main/resources/application.yml.example ./backend/src/main/resources/application.yml
+cp /workspace/workshop-ecom/backend/src/main/resources/application.yml.example /workspace/workshop-ecom/backend/src/main/resources/application.yml
 ```
 
 and opening and plugging in the values `Your Client ID`
 and `Your Client Secret` respectively by using the following command
 
 ```
-gp open ./backend/src/main/resources/application.yml
+gp open /workspace/workshop-ecom/backend/src/main/resources/application.yml
 ```
 
 
