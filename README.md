@@ -109,7 +109,7 @@ You should see a message something like below.
 **Introduction**
 This section will provide DDL to create three tables inside the "ecommerce" keyspace: category, price, and product.
 
-### Session 1 - Product data model ###
+#### Session 1 - Product data model ####
 The `product` table supports all product data queries, and uses `product_id` as a single key.  It has a few columns for specific product data, but any ad-hoc or non-standard properties can be added to the `specifications` map.
 
 The `category` table will support all product navigation service calls.  It is designed to provide recursive, hierarchical navigation without a pre-set limit on the number of levels.  The top-most level only exists as a `parent_id`, and the bottom-most level contains products.
@@ -118,19 +118,27 @@ The `price` table was intentionally split-off from product.  There are several r
 
 The `featured_product_groups` table was a late-add, to be able to provide some extra "atmosphere" of an e-commerce website.  This way, the UI has a means by which to highlight a few, select products.
 
-### Session 2 - Shopping Cart data model ###
+#### Session 2 - Shopping Cart data model ####
 
-The `user_carts` table supports
+The `user_carts` table supports cart metadata.  Carts are not expected to be long-lived, so they have a default TTL (time to live) of 60 days (5,184,000 seconds).  Carts also have a `name` as a part of the key, so that the user can have multiple carts (think "wish lists").
 
-The `cart_products` table
+The `cart_products` table holds data on the products added to the cart.  The cart uses `product_timestamp` as the first clustering key in descending order; this way products in the cart will be listed with the most-recently-added products at the top.  Like `user_carts`, each entry has a 60 day TTL.
 
-#### ✅ 3a. Open the CqlConsole on Astra
+#### Session 3 - User Profile data model ####
+
+The `user` table holds all data on the user, keyed by a single PRIMARY KEY on `user_id`.  It's main features contain TEXT (string) data for common user properties, as well as a collection of `addresses`.  This is because users (especially B-to-B) may have multiple addresses (mail-to, ship-to, bill-to, etc).  The `addresses` collection is built on a special user defined type (UDT) and `FROZEN` to treat the collection as a Binary Large OBject (BLOB) to reduce tombstones (required by CQL).
+
+As mentioned above, the `address` UDT contains properties used for postal contacts.  All properties are of the TEXT datatype.
+
+The `user_by_email` table is intended to be used as a "manual index" on email address. Essentially, it is a lookup table returning the `user_id` associated with an email address.  This is necessary as `user_email` is nigh-unique (in terms of cardinality of values), and thus a CQL secondary index would perform quite poorly.
+
+### ✅ 3a. Open the CqlConsole on Astra
 
 ```sql
 use ecommerce;
 ```
 
-#### ✅ 3b. Execute the following CQL script to create the schema
+### ✅ 3b. Execute the following CQL script to create the schema
 
 #### Session 1 - Product data model ####
 ```sql
