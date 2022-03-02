@@ -23,15 +23,10 @@ If you cannot attend this workshop live, recordings of this workshop and many mo
 
 <img src="data/img/build-an-ecommerce-app.png" width="200" align=right />
 
-Complete the homework to earn the badge for this workshop (awarded at the end of the series).
+Complete the homework to earn the badge for this workshop (**awarded only at the end of the series**).
 
-1. Rollup your sleeves, and modify the underlying product data.
-    - Add your own product to the website.
-        1. `INSERT` rows into the product, price, and category tables. Section [4a](https://github.com/datastaxdevs/workshop-ecommerce-app#-4a-execute-the-following-script-to-populate-the-tables-with-the-data-below) will provide some clues on to do that.
-        2. Navigate to your product, and add it to your shopping cart.
-        3. View the shopping cart.
-2. Take a SCREENSHOT of the shopping cart containing your new product!
-3. Don't worry about submitting it just yet.  We'll have instructions on how to do that at the end of the series!
+1. Implement Google login and take SCREENSHOT(s).
+2. Don't worry about submitting it just yet.  We'll have instructions on how to do that at the end of the series!
 
 ## 📋 Table of contents
 
@@ -42,7 +37,7 @@ Complete the homework to earn the badge for this workshop (awarded at the end of
 5. [Create a token](#5-create-your-token)
 6. [Setup your application](#6-setup-your-application)
 7. [Run Unit Tests](#7-run-unit-tests)
-8. [Enable Social Login] (#8-enable-social-login)
+8. [Enable Social Login](#8-enable-social-login)
 9. [Start the Application](#9-start-the-application)
 
 ## 1. Introduction
