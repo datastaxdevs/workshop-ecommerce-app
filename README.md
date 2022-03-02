@@ -671,7 +671,7 @@ Now you're ready to fetch the credentials  by using the copy 'n paste icons on r
 You can copy and paste them in the `application.yml` file as entries for Google SSO authorization as indicated below.
 
 ```bash
-cp /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml.sample /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml
+mv /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml.sample /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml
 ```
 
 and opening and plugging in the values `Your Client ID`
