@@ -198,6 +198,39 @@ CREATE TABLE IF NOT EXISTS cart_products (
   AND default_time_to_live = 5184000;
 ```
 
+#### Session 3 - User Profile data model ####
+```sql
+CREATE TYPE address (
+  type TEXT,
+  mailto_name TEXT,
+  street TEXT,
+  street2 TEXT,
+  city TEXT,
+  state_province TEXT,
+  postal_code TEXT,
+  country TEXT
+);
+
+CREATE TABLE user (
+  user_id UUID,
+  user_email TEXT,
+  picture_url TEXT,
+  first_name TEXT,
+  last_name TEXT,
+  locale TEXT,
+  addresses LIST<FROZEN<address>>,
+  session_id TEXT,
+  password TEXT,
+  password_timestamp TIMESTAMP,
+  PRIMARY KEY (user_id)
+);
+
+CREATE TABLE user_by_email (
+  user_email TEXT PRIMARY KEY,
+  user_id UUID
+);
+```
+
 [🏠 Back to Table of Contents](#-table-of-contents)
 
 ## 4. Populate the Data
