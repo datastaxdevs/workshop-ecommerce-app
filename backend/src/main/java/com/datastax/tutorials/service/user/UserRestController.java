@@ -369,9 +369,20 @@ public class UserRestController {
     	// pull current sessionid
   		userE.setSessionId(req.getSession().getId());
     	
+  		// check if email address has changed
        	if (userData.getUserEmail() != null) {
-       		emailChanged = true;
-       		userE.setUserEmail(userData.getUserEmail());
+       		String newEmail = userData.getUserEmail();
+       		Optional<UserByEmailEntity> existingUser = userByEmailRepo.findById(newEmail);
+       		
+       		if (existingUser.isEmpty()) {
+       			// new email is NOT found in DB
+       			emailChanged = true;
+       			userE.setUserEmail(newEmail);
+       		} else {
+       			// email from web form WAS FOUND in DB
+       			// set it to the local user entity object, so that Spring Data doesn't detect a change
+       			userE.setUserEmail(existingUser.get().getUserEmail());
+       		}
        	}
        	
     	// check for null, as we only want to send data that's changed
