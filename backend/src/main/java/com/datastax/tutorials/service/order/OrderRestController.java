@@ -20,11 +20,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
+import com.datastax.tutorials.service.usercarts.UserCartEntity;
+import com.datastax.tutorials.service.usercarts.UserCartsPrimaryKey;
+import com.datastax.tutorials.service.usercarts.UserCartsRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,10 +55,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class OrderRestController {
 	private OrderRepository orderRepo;
 	private OrderByUserRepository orderUserRepo;
+	private OrderStatusHistoryRepository orderStatusRepo;
+	private UserCartsRepository userCartRepo;
 	
-	public OrderRestController(OrderRepository oRepo,OrderByUserRepository oURepo) {
+	public OrderRestController(OrderRepository oRepo,OrderByUserRepository oURepo,
+			OrderStatusHistoryRepository oSHRepo,UserCartsRepository uCRepo) {
+
 		orderRepo = oRepo;
 		orderUserRepo = oURepo;
+		orderStatusRepo = oSHRepo;
+		userCartRepo = uCRepo;
 	}
 
     /**
@@ -68,12 +78,12 @@ public class OrderRestController {
      */
     @GetMapping("/{orderid}/")
     @Operation(
-     summary = "Retrieve all orders by a userid",
+     summary = "Retrieve data for a specifc order by a orderid",
      description= "Find **orderss list** for a user by its id `SELECT * FROM order WHERE orderid =?`",
      responses = {
        @ApiResponse(
          responseCode = "200",
-         description = "A list of orders for the user",
+         description = "Detail for order by orderid",
          content = @Content(
            mediaType = "application/json",
            schema = @Schema(implementation = Order.class, name = "Order")
@@ -113,7 +123,7 @@ public class OrderRestController {
     @GetMapping("/user/{userid}/")
     @Operation(
      summary = "Retrieve all orders by a userid",
-     description= "Find **orders list** for a user by its id `SELECT * FROM order_history WHERE userid =?`",
+     description= "Find **orders list** for a userid `SELECT * FROM order_by_user WHERE userid =?`",
      responses = {
        @ApiResponse(
          responseCode = "200",
@@ -190,7 +200,7 @@ public class OrderRestController {
     		return ResponseEntity.notFound().build();
     	}
     	
-    	final String NEW_ORDER_STATUS = "PENDING";
+    	final OrderStatusEnum NEW_ORDER_STATUS = OrderStatusEnum.PENDING;
     	
     	// generate order id - version 1 UUID == TimeUUID
     	UUID orderid = Uuids.timeBased();
@@ -201,7 +211,7 @@ public class OrderRestController {
     	OrderPrimaryKey oKey = new OrderPrimaryKey();
     	oKey.setOrderId(orderid);
 
-    	orderE.setOrderStatus(NEW_ORDER_STATUS);
+    	orderE.setOrderStatus(NEW_ORDER_STATUS.name());
     	orderE.setOrderSubtotal(order.getOrderSubtotal());
     	orderE.setOrderShippingHandling(order.getOrderShippingHandling());
     	orderE.setOrderTax(order.getOrderTax());
@@ -227,21 +237,167 @@ public class OrderRestController {
     	oUKey.setOrderId(orderid);
     	oUKey.setUserId(userid);
     	orderByUserE.setKey(oUKey);
-    	orderByUserE.setOrderStatus(NEW_ORDER_STATUS);
+    	orderByUserE.setOrderStatus(NEW_ORDER_STATUS.name());
     	orderByUserE.setOrderTotal(order.getOrderTotal());
 
     	// save to DB
     	orderUserRepo.save(orderByUserE);
     	
-    	// TODO Delete existing cart
+    	// Add entry into order status history table
+    	OrderStatusHistoryEntity orderStatus = new OrderStatusHistoryEntity();
+    	OrderStatusHistoryPrimaryKey orderStatusKey = new OrderStatusHistoryPrimaryKey();
+    	orderStatusKey.setOrderId(orderid);
+    	orderStatusKey.setStatusTimestamp(orderTimeStamp);
+    	orderStatus.setKey(orderStatusKey);
+    	orderStatus.setOrderStatus(NEW_ORDER_STATUS.name());
+    	
+    	// save to DB
+    	orderStatusRepo.save(orderStatus);
+    	
+    	// Delete existing cart
+    	UserCartEntity cart = new UserCartEntity();
+    	UserCartsPrimaryKey cartKey = new UserCartsPrimaryKey();
+    	cartKey.setUserId(userid);
+    	cartKey.setCartId(order.getCartId());
+    	cartKey.setCartName(order.getCartName());
+    	cart.setKey(cartKey);
+    	
+    	// save (DELETE) to DB
+    	userCartRepo.delete(cart);
     	
     	// Adjust request and return it as the response
     	order.setOrderId(orderid);
-    	order.setOrderStatus(NEW_ORDER_STATUS);
+    	order.setOrderStatus(NEW_ORDER_STATUS.name());
     	order.setOrderTimestamp(orderTimeStamp);
+    	
+    	// TODO - put on Pulsar topic!
     	
     	// map order to entity and return
     	return ResponseEntity.ok(order);
+    }
+    
+    /**
+     * Retrieve the status history for an order.
+     * @param orderid
+     *      user identifier (UUID)
+     * @return
+     *      history of statuses for that order
+     */
+    @GetMapping("/{orderid}/status/history")
+    @Operation(
+     summary = "Retrieve the status history for an orderid",
+     description= "Find **orders list** for a user by its id `SELECT * FROM order_status_history WHERE orderid =?`",
+     responses = {
+       @ApiResponse(
+         responseCode = "200",
+         description = "A list of status history for the order",
+         content = @Content(
+           mediaType = "application/json",
+           schema = @Schema(implementation = OrderStatusHistory.class, name = "OrderStatusHistory")
+         )
+       ),
+       @ApiResponse(
+         responseCode = "404", 
+         description = "orderId not found",
+         content = @Content(mediaType = "")),
+       @ApiResponse(
+         responseCode = "400",
+         description = "Invalid parameter check orderId format."),
+       @ApiResponse(
+         responseCode = "500",
+         description = "Internal error.")
+    })
+    public ResponseEntity<Stream<OrderStatusHistory>> findOrderStatusHistory(
+            @PathVariable(value = "orderid")
+            @Parameter(name = "orderid", description = "user identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
+            UUID orderid) {
+    	Optional<OrderStatusHistoryEntity> e = orderStatusRepo.findById(orderid);
+
+    	// map order to entity and return
+    	return ResponseEntity.ok(e.stream().map(this::mapOrderStatusHistory));
+    }
+
+    /**
+     * Cancel an order.
+     * @param orderid
+     *      order identifier (UUID)
+     * @param userid
+     *      user identifier (UUID)
+     * @return
+     *      list of orders for that user
+     */
+    @PutMapping("/{orderid}/user/{userid}/cancel")
+    @Operation(
+     summary = "Cancel an order",
+     description= "Update all statuses for the order to CANCELLED, to prevent it from progressing",
+     responses = {
+       @ApiResponse(
+         responseCode = "200",
+         description = "Cancel an order for the user",
+         content = @Content(
+           mediaType = "application/json")
+       ),
+       @ApiResponse(
+         responseCode = "404", 
+         description = "An error occured",
+         content = @Content(mediaType = "")),
+       @ApiResponse(
+         responseCode = "400",
+         description = "Invalid parameter."),
+       @ApiResponse(
+         responseCode = "500",
+         description = "Internal error.")
+    })
+    @Transactional
+    public ResponseEntity<OrderStatusHistory> cancelOrder(
+            @PathVariable(value = "orderid")
+            @Parameter(name = "orderid", description = "order identifier (UUID)", example = "5929e846-53e8-173e-8525-80b666c46a83")
+            UUID orderid,
+    		@PathVariable(value = "userid")
+            @Parameter(name = "userid", description = "user identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
+            UUID userid) {
+    	
+    	final OrderStatusEnum CANCELLED_ORDER_STATUS = OrderStatusEnum.CANCELLED;
+
+    	// verify the userid and orderid
+    	OrderByUserEntity orderByUserE = orderUserRepo.findByUserIdAndOrderId(userid, orderid);
+    	
+    	if (orderByUserE == null) {
+    		// that combination of userid an orderid was not valid
+    		return ResponseEntity.notFound().build();
+    	} else {
+	    	// verify that the order has not yet shipped
+	    	OrderStatusEnum currentStatus = computeOrderStatus(orderByUserE.getOrderStatus());
+    		
+	    	if (currentStatus.getStatusOrdinal() < OrderStatusEnum.SHIPPED.getStatusOrdinal()) {
+	    		// pull full order detail
+	    		OrderEntity orderE = orderRepo.findById(orderid).get();
+	    		// set status
+	    		orderE.setOrderStatus(CANCELLED_ORDER_STATUS.name());
+
+		    	// set status on order_by_user
+		    	orderByUserE.setOrderStatus(CANCELLED_ORDER_STATUS.name());
+
+		    	// Add entry into order status history table
+		    	OrderStatusHistoryEntity orderStatusE = new OrderStatusHistoryEntity();
+		    	OrderStatusHistoryPrimaryKey orderStatusKey = new OrderStatusHistoryPrimaryKey();
+		    	orderStatusKey.setOrderId(orderid);
+		    	orderStatusKey.setStatusTimestamp(new Date());
+		    	orderStatusE.setKey(orderStatusKey);
+		    	orderStatusE.setOrderStatus(CANCELLED_ORDER_STATUS.name());
+		    	
+		    	// save to DB
+		    	orderRepo.save(orderE);
+		    	orderUserRepo.save(orderByUserE);
+		    	orderStatusRepo.save(orderStatusE);
+		    	
+		    	// map order to entity and return
+		    	return ResponseEntity.ok(mapOrderStatusHistory(orderStatusE));
+	    	} else {
+	    		// Order has already shipped
+	    		return ResponseEntity.badRequest().build();
+	    	}
+    	}
     }
     
     private Order mapOrder(OrderEntity entity) {
@@ -281,5 +437,44 @@ public class OrderRestController {
     	orderByUser.setOrderTotal(entity.getOrderTotal());
     	
     	return orderByUser;
+    }
+    
+    private OrderStatusHistory mapOrderStatusHistory(OrderStatusHistoryEntity entity) {
+    	OrderStatusHistory orderStatusHistory = new OrderStatusHistory();
+    	
+    	//key columns
+    	OrderStatusHistoryPrimaryKey key = entity.getKey();
+    	orderStatusHistory.setOrderId(key.getOrderId());
+    	orderStatusHistory.setStatusTimestamp(key.getStatusTimestamp());
+    	// payload columns
+    	orderStatusHistory.setOrderStatus(entity.getOrderStatus());
+
+    	return orderStatusHistory;
+    }
+    
+    private OrderStatusEnum computeOrderStatus(String status) {
+//    	PENDING (0),
+//    	PICKED (1),
+//    	SHIPPED (2),
+//    	COMPLETE (3),
+//    	CANCELLED (4),
+//		ERROR (5);
+    	
+    	switch (status) {
+    		case "PENDING":
+    			return OrderStatusEnum.PENDING;
+    		case "PICKED":
+    			return OrderStatusEnum.PICKED;
+    		case "SHIPPED":
+    			return OrderStatusEnum.SHIPPED;
+    		case "COMPLETE":
+    			return OrderStatusEnum.COMPLETE;
+    		case "CANCALLED":
+    			return OrderStatusEnum.CANCELLED;
+    		case "ERROR":
+    			return OrderStatusEnum.ERROR;
+    	}
+    	// should never get here, so return ERROR if it does
+    	return OrderStatusEnum.ERROR;
     }
 }

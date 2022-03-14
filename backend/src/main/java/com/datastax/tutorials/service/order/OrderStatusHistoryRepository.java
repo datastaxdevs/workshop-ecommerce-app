@@ -4,6 +4,6 @@ import java.util.UUID;
 
 import org.springframework.data.cassandra.repository.CassandraRepository;
 
-public interface OrderRepository extends CassandraRepository<OrderEntity,UUID> {
+public interface OrderStatusHistoryRepository extends CassandraRepository<OrderStatusHistoryEntity,UUID> {
 
 }

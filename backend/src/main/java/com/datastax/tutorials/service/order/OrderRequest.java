@@ -14,6 +14,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderRequest {
 
+	@JsonProperty("cart_id")
+	@NotNull(message="cart_id cannot be null")
+	private UUID cartId;
+	
+	@JsonProperty("cart_name")
+	@NotNull(message="cart_name cannot be null")
+	private String cartName;
+	
 	@JsonProperty("order_id")
 	@NotNull(message="order_id cannot be null")
 	private UUID orderId;
@@ -46,6 +54,22 @@ public class OrderRequest {
 	@JsonProperty("shipping_address")
 	private Address shippingAddress;
 
+	public UUID getCartId() {
+		return cartId;
+	}
+
+	public void setCartId(UUID cartId) {
+		this.cartId = cartId;
+	}
+
+	public String getCartName() {
+		return cartName;
+	}
+
+	public void setCartName(String cartName) {
+		this.cartName = cartName;
+	}
+	
 	public UUID getOrderId() {
 		return orderId;
 	}
