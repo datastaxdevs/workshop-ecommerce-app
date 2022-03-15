@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  error:
+    include-stacktrace: always
+    
+spring:
+  application:
+    name: ecom
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: change_me
+            client-secret: change_me
+          google:
+            client-id: change_me
+            client-secret: change_me
+  data:
+    cassandra:
+      schema-action: create-if-not-exists
+
