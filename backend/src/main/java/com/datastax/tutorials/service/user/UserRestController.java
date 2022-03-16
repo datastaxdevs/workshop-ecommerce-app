@@ -9,26 +9,23 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.ArrayList;
 import java.util.Date;
-//import java.util.HashMap;
 import java.util.List;
-//import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -107,7 +104,7 @@ public class UserRestController {
     	String email = principal.getAttribute("email");
     	Optional<UserByEmailEntity> existingUser = userByEmailRepo.findById(email);
     	
-    	if (existingUser.isEmpty()) {
+    	if (!existingUser.isPresent()) {
     		// If not, create new!
     		user = new UserEntity();
     		// need a userId, but we also need a way to get/transfer the one from the website
@@ -137,7 +134,7 @@ public class UserRestController {
 	    	userId = existingUser.get().getUserId();
 	        Optional<UserEntity> userO = userRepo.findById(userId);
 	        
-	        if (userO.isEmpty()) {
+	        if (!userO.isPresent()) {
 	        	// catch-all, if for whatever reason a valid userId can't yield an existing user
 	            return ResponseEntity.notFound().build();
 	        	
@@ -223,7 +220,7 @@ public class UserRestController {
     		// now pull the user data 
 	        Optional<UserEntity> user = userRepo.findById(userByEmail.get().getUserId());
 	        
-	        if (user.isEmpty()) {
+	        if (!user.isPresent()) {
 	        	// extra bullet proofing, just in case user is null (for whatever reason)
 	            return ResponseEntity.notFound().build();
 	        }
@@ -274,7 +271,7 @@ public class UserRestController {
     	//check if this is a returning user
     	Optional<UserByEmailEntity> existingUser = userByEmailRepo.findById(userEmail);
     	
-    	if (existingUser.isEmpty()) {
+    	if (!existingUser.isPresent()) {
     		// If not, create new!
     		
 	    	// Hash the password from the request body
@@ -456,7 +453,7 @@ public class UserRestController {
          responseCode = "500",
          description = "Internal error.") 
     })
-    public ResponseEntity<Stream<User>> loginUser(
+    public ResponseEntity<User> loginUser(
             HttpServletRequest req, 
             @RequestBody Password passwordData,
             @PathVariable(value = "userid")
@@ -475,7 +472,7 @@ public class UserRestController {
 	    	BCryptPasswordEncoder pEncoder = new BCryptPasswordEncoder();
 	    	if (pEncoder.matches(rawPassword, hashedPassword)) {
 	    		// Match!  return user data
-	        	return ResponseEntity.ok(returnVal.stream().map(this::mapUser));    		
+	        	return ResponseEntity.ok(mapUser(returnVal.get()));    		
 	    	} else {
 	    		// passwords do NOT match
 	    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -529,7 +526,7 @@ public class UserRestController {
          responseCode = "500",
          description = "Internal error.") 
     })
-    public ResponseEntity<Stream<User>> updateUserPassword(
+    public ResponseEntity<User> updateUserPassword(
             HttpServletRequest req, 
             @RequestBody Password passwordData,
             @PathVariable(value = "userid")
@@ -558,7 +555,7 @@ public class UserRestController {
 		    	userRepo.save(userE);
 		    	
 		    	// return user data
-		    	return ResponseEntity.ok(returnVal.stream().map(this::mapUser));
+		    	return ResponseEntity.ok(mapUser(returnVal.get()));
 	    	} else {
 	    		// passwords do not match
 	    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

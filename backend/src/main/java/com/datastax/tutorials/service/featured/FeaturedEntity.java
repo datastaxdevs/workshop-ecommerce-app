@@ -1,7 +1,6 @@
 package com.datastax.tutorials.service.featured;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.cassandra.core.mapping.CassandraType;
@@ -13,7 +12,12 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @Table("featured_product_groups")
 public class FeaturedEntity implements Serializable {
 
-	@PrimaryKey
+	/**
+     * Serial.
+     */
+    private static final long serialVersionUID = -8646621243907313642L;
+
+    @PrimaryKey
 	private FeaturedPrimaryKey key;
 	
     @Column("name")
