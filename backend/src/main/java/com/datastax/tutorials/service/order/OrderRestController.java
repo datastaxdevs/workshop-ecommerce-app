@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
-import com.datastax.tutorials.service.usercarts.UserCartEntity;
+import com.datastax.tutorials.service.cartproducts.CartProductsRepository;
+import com.datastax.tutorials.service.user.Address;
+import com.datastax.tutorials.service.user.AddressEntity;
 import com.datastax.tutorials.service.usercarts.UserCartsPrimaryKey;
 import com.datastax.tutorials.service.usercarts.UserCartsRepository;
 
@@ -57,14 +59,20 @@ public class OrderRestController {
 	private OrderByUserRepository orderUserRepo;
 	private OrderStatusHistoryRepository orderStatusRepo;
 	private UserCartsRepository userCartRepo;
+	private CartProductsRepository cartProductsRepo;
+	
+	static final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
+	static final OrderStatusEnum NEW_ORDER_STATUS = OrderStatusEnum.PENDING;
 	
 	public OrderRestController(OrderRepository oRepo,OrderByUserRepository oURepo,
-			OrderStatusHistoryRepository oSHRepo,UserCartsRepository uCRepo) {
+			OrderStatusHistoryRepository oSHRepo,UserCartsRepository uCRepo,
+			CartProductsRepository cPRepo) {
 
 		orderRepo = oRepo;
 		orderUserRepo = oURepo;
 		orderStatusRepo = oSHRepo;
 		userCartRepo = uCRepo;
+		cartProductsRepo = cPRepo;
 	}
 
     /**
@@ -105,7 +113,8 @@ public class OrderRestController {
             @PathVariable(value = "orderid")
             @Parameter(name = "orderid", description = "order identifier (UUID)", example = "5929e846-53e8-173e-8525-80b666c46a83")
             UUID orderid) {
-    	Optional<OrderEntity> e = orderRepo.findById(orderid);
+    	
+    	Optional<OrderEntity> e = orderRepo.findByKeyOrderId(orderid);
 
     	// map order to entity and return
     	return ResponseEntity.ok(e.stream().map(this::mapOrder));
@@ -149,7 +158,8 @@ public class OrderRestController {
             @PathVariable(value = "userid")
             @Parameter(name = "userid", description = "user identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
             UUID userid) {
-    	Optional<OrderByUserEntity> e = orderUserRepo.findById(userid);
+    	
+    	Optional<OrderByUserEntity> e = orderUserRepo.findByKeyUserId(userid);
 
     	// map order to entity and return
     	return ResponseEntity.ok(e.stream().map(this::mapOrderByUser));
@@ -200,12 +210,12 @@ public class OrderRestController {
     		return ResponseEntity.notFound().build();
     	}
     	
-    	final OrderStatusEnum NEW_ORDER_STATUS = OrderStatusEnum.PENDING;
-    	
     	// generate order id - version 1 UUID == TimeUUID
+    	UUID cartid = order.getCartId();
     	UUID orderid = Uuids.timeBased();
-    	Date orderTimeStamp = new Date(orderid.timestamp());
-    	
+    	long timestamp = getTimeFromUUID(orderid);
+    	Date orderTimeStamp = new Date(timestamp);
+
     	// create DB entry for order (by id)
     	OrderEntity orderE = new OrderEntity();
     	OrderPrimaryKey oKey = new OrderPrimaryKey();
@@ -217,7 +227,7 @@ public class OrderRestController {
     	orderE.setOrderTax(order.getOrderTax());
     	orderE.setOrderTotal(order.getOrderTotal());
     	orderE.setPaymentMethod(order.getPaymentMethod());
-    	orderE.setShippingAddress(order.getShippingAddress());
+    	orderE.setShippingAddress(mapAddressEntity(order.getShippingAddress()));
     	
     	//set products
     	for (OrderProduct product : order.getProductList()) {
@@ -254,16 +264,17 @@ public class OrderRestController {
     	// save to DB
     	orderStatusRepo.save(orderStatus);
     	
-    	// Delete existing cart
-    	UserCartEntity cart = new UserCartEntity();
+    	// Delete existing user cart
     	UserCartsPrimaryKey cartKey = new UserCartsPrimaryKey();
     	cartKey.setUserId(userid);
-    	cartKey.setCartId(order.getCartId());
+    	cartKey.setCartId(cartid);
     	cartKey.setCartName(order.getCartName());
-    	cart.setKey(cartKey);
     	
     	// save (DELETE) to DB
-    	userCartRepo.delete(cart);
+    	userCartRepo.deleteById(cartKey);
+    	
+    	// Delete existing cart products
+    	cartProductsRepo.deleteByKeyCartId(cartid);
     	
     	// Adjust request and return it as the response
     	order.setOrderId(orderid);
@@ -311,7 +322,7 @@ public class OrderRestController {
             @PathVariable(value = "orderid")
             @Parameter(name = "orderid", description = "user identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
             UUID orderid) {
-    	Optional<OrderStatusHistoryEntity> e = orderStatusRepo.findById(orderid);
+    	Optional<OrderStatusHistoryEntity> e = orderStatusRepo.findByKeyOrderId(orderid);
 
     	// map order to entity and return
     	return ResponseEntity.ok(e.stream().map(this::mapOrderStatusHistory));
@@ -360,18 +371,22 @@ public class OrderRestController {
     	final OrderStatusEnum CANCELLED_ORDER_STATUS = OrderStatusEnum.CANCELLED;
 
     	// verify the userid and orderid
-    	OrderByUserEntity orderByUserE = orderUserRepo.findByUserIdAndOrderId(userid, orderid);
+    	OrderByUserPrimaryKey orderBUKey = new OrderByUserPrimaryKey();
+    	orderBUKey.setUserId(userid);
+    	orderBUKey.setOrderId(orderid);
+    	Optional<OrderByUserEntity> orderByUserO = orderUserRepo.findById(orderBUKey);
     	
-    	if (orderByUserE == null) {
+    	if (orderByUserO.isEmpty()) {
     		// that combination of userid an orderid was not valid
     		return ResponseEntity.notFound().build();
     	} else {
+    		OrderByUserEntity orderByUserE = orderByUserO.get();
 	    	// verify that the order has not yet shipped
 	    	OrderStatusEnum currentStatus = computeOrderStatus(orderByUserE.getOrderStatus());
     		
 	    	if (currentStatus.getStatusOrdinal() < OrderStatusEnum.SHIPPED.getStatusOrdinal()) {
 	    		// pull full order detail
-	    		OrderEntity orderE = orderRepo.findById(orderid).get();
+	    		OrderEntity orderE = orderRepo.findByKeyOrderId(orderid).get();
 	    		// set status
 	    		orderE.setOrderStatus(CANCELLED_ORDER_STATUS.name());
 
@@ -418,7 +433,7 @@ public class OrderRestController {
     	order.setOrderTax(entity.getOrderTax());
     	order.setOrderTotal(entity.getOrderTotal());
     	order.setPaymentMethod(entity.getPaymentMethod());
-    	order.setShippingAddress(entity.getShippingAddress());
+    	order.setShippingAddress(mapAddress(entity.getShippingAddress()));
     	
     	return order;
     }
@@ -452,6 +467,54 @@ public class OrderRestController {
     	return orderStatusHistory;
     }
     
+    /**
+     * Mapping Entity UDT => REST.
+     *
+     * @param ae
+     *      entity
+     * @return
+     *      rest bean
+     */
+    private Address mapAddress(AddressEntity ae) {
+
+		Address a = new Address();
+		
+		a.setType(ae.getType());
+		a.setMailtoName(ae.getMailtoName());
+		a.setStreet(ae.getStreet());
+		a.setStreet2(ae.getStreet2());
+		a.setCity(ae.getCity());
+		a.setStateProvince(ae.getStateProvince());
+		a.setPostalCode(ae.getPostalCode());
+		a.setCountry(ae.getCountry());
+		
+    	return a;
+    }
+    
+    /**
+     * Mapping request UDT => Entity.
+     *
+     * @param a
+     *      rest bean
+     * @return
+     *      entity
+     */
+    private AddressEntity mapAddressEntity(Address a) {
+
+		AddressEntity ae = new AddressEntity();
+		
+		ae.setType(a.getType());
+		ae.setMailtoName(a.getMailtoName());
+		ae.setStreet(a.getStreet());
+		ae.setStreet2(a.getStreet2());
+		ae.setCity(a.getCity());
+		ae.setStateProvince(a.getStateProvince());
+		ae.setPostalCode(a.getPostalCode());
+		ae.setCountry(a.getCountry());
+		
+		return ae;
+    }
+    
     private OrderStatusEnum computeOrderStatus(String status) {
 //    	PENDING (0),
 //    	PICKED (1),
@@ -477,4 +540,10 @@ public class OrderRestController {
     	// should never get here, so return ERROR if it does
     	return OrderStatusEnum.ERROR;
     }
+    
+    public static long getTimeFromUUID(UUID uuid) {
+
+      return (uuid.timestamp() - NUM_100NS_INTERVALS_SINCE_UUID_EPOCH) / 10000;
+    }
+
 }

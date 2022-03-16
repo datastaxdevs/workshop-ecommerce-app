@@ -1,5 +1,6 @@
 package com.datastax.tutorials.service.order;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.springframework.data.cassandra.core.mapping.CassandraType;
@@ -9,7 +10,9 @@ import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.data.cassandra.core.mapping.CassandraType.Name;
 
 @Table("order_by_user")
-public class OrderByUserEntity {
+public class OrderByUserEntity implements Serializable {
+
+	private static final long serialVersionUID = 6321619082711404837L;
 
 	@PrimaryKey
 	private OrderByUserPrimaryKey key;

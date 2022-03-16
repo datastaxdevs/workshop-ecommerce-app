@@ -8,4 +8,6 @@ import org.springframework.data.cassandra.repository.CassandraRepository;
 public interface CartProductsRepository  extends CassandraRepository<CartProductEntity, CartProductsPrimaryKey> {
 
 	List<CartProductEntity> findByKeyCartId(UUID cartId);
+	
+	void deleteByKeyCartId(UUID cartId);
 }

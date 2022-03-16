@@ -7,5 +7,6 @@ import org.springframework.data.cassandra.repository.CassandraRepository;
 
 public interface UserCartsRepository extends CassandraRepository<UserCartEntity, UserCartsPrimaryKey> {
 
-	List<UserCartEntity> findByKeyUserId(UUID userId);	
+	List<UserCartEntity> findByKeyUserId(UUID userId);
+
 }

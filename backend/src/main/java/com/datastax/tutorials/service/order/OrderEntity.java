@@ -2,7 +2,6 @@ package com.datastax.tutorials.service.order;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.Column;
@@ -10,9 +9,9 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.data.cassandra.core.mapping.CassandraType.Name;
 
-import com.datastax.tutorials.service.user.Address;
+import com.datastax.tutorials.service.user.AddressEntity;
 
-@Table("order")
+@Table("order_by_id")
 public class OrderEntity implements Serializable {
 
 	private static final long serialVersionUID = 5140291715224864748L;
@@ -49,7 +48,8 @@ public class OrderEntity implements Serializable {
 	private String paymentMethod;
 	
 	@Column("shipping_address")
-	private Address shippingAddress;
+	//@CassandraType(type = CassandraType.Name.UDT, userTypeName = "address")
+	private AddressEntity shippingAddress;
 
 	public OrderPrimaryKey getKey() {
 		return this.key;
@@ -115,11 +115,11 @@ public class OrderEntity implements Serializable {
 		this.paymentMethod = paymentMethod;
 	}
 
-	public Address getShippingAddress() {
+	public AddressEntity getShippingAddress() {
 		return shippingAddress;
 	}
 
-	public void setShippingAddress(Address shippingAddress) {
+	public void setShippingAddress(AddressEntity shippingAddress) {
 		this.shippingAddress = shippingAddress;
 	}
 }
