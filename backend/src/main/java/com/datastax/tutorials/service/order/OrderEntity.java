@@ -22,7 +22,11 @@ public class OrderEntity implements Serializable {
 	@Column("product_qty")
 	@CassandraType(type = Name.INT)
 	private int productQty;
-	
+
+	@Column("product_price")
+	@CassandraType(type = Name.DECIMAL)
+	private BigDecimal productPrice;
+
 	@Column("order_status")
 	@CassandraType(type = Name.TEXT)
 	private String orderStatus;
@@ -65,6 +69,14 @@ public class OrderEntity implements Serializable {
 
 	public void setProductQty(int productQty) {
 		this.productQty = productQty;
+	}
+
+	public BigDecimal getProductPrice() {
+		return productPrice;
+	}
+
+	public void setProductPrice(BigDecimal productPrice) {
+		this.productPrice = productPrice;
 	}
 
 	public String getOrderStatus() {

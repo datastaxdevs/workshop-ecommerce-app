@@ -2,6 +2,7 @@ package com.datastax.tutorials.service.order;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
@@ -11,27 +12,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Order {
+public class OrderResponse {
 
 	@JsonProperty("order_id")
 	@NotNull(message="order_id cannot be null")
 	private UUID orderId;
 	
-	@JsonProperty("product_id")
-	@NotNull(message="product_id cannot be null")
-	private String productName;
-	
-	@JsonProperty("product_name")
-	@NotNull(message="product_name cannot be null")
-	private String productId;
-	
-	@JsonProperty("product_qty")
-	@NotNull(message="product_qty cannot be null")
-	private int productQty;
-
-	@JsonProperty("product_price")
-	@NotNull(message="product_price cannot be null")
-	private BigDecimal productPrice;
+	@JsonProperty("product_list")
+	@NotNull(message="product_list cannot be null")
+	private List<OrderProduct> productList;
 	
 	@JsonProperty("order_status")
 	private String orderStatus;
@@ -56,7 +45,7 @@ public class Order {
 	
 	@JsonProperty("shipping_address")
 	private Address shippingAddress;
-
+	
 	public UUID getOrderId() {
 		return orderId;
 	}
@@ -65,35 +54,12 @@ public class Order {
 		this.orderId = orderId;
 	}
 
-	public String getProductName() {
-		return productName;
+	public List<OrderProduct> getProductList() {
+		return productList;
 	}
 
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-
-	public String getProductId() {
-		return productId;
-	}
-
-	public void setProductId(String productId) {
-		this.productId = productId;
-	}
-
-	public int getProductQty() {
-		return productQty;
-	}
-
-	public void setProductQty(int productQty) {
-		this.productQty = productQty;
-	}
-	public BigDecimal getProductPrice() {
-		return productPrice;
-	}
-
-	public void setProductPrice(BigDecimal productPrice) {
-		this.productPrice = productPrice;
+	public void setProductList(List<OrderProduct> productList) {
+		this.productList = productList;
 	}
 
 	public String getOrderStatus() {

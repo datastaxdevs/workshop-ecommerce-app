@@ -10,10 +10,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -76,11 +79,11 @@ public class OrderRestController {
 	}
 
     /**
-     * Retrieve all orders for a user.
+     * Retrieve an order by id.
      * @param req
      *      current request
-     * @param userid
-     *      user identifier (UUID)
+     * @param orderid
+     *      order identifier (UUID)
      * @return
      *      list of orders for that user
      */
@@ -108,16 +111,52 @@ public class OrderRestController {
          responseCode = "500",
          description = "Internal error.") 
     })
-    public ResponseEntity<Stream<Order>> findOrderById(
+    public ResponseEntity<OrderResponse> findOrderById(
             HttpServletRequest req, 
             @PathVariable(value = "orderid")
             @Parameter(name = "orderid", description = "order identifier (UUID)", example = "5929e846-53e8-173e-8525-80b666c46a83")
             UUID orderid) {
     	
-    	Optional<OrderEntity> e = orderRepo.findByKeyOrderId(orderid);
+    	List<OrderEntity> entityList = orderRepo.findByKeyOrderId(orderid);
 
-    	// map order to entity and return
-    	return ResponseEntity.ok(e.stream().map(this::mapOrder));
+    	if (entityList.size() > 0) {
+	    	// map to first result (0) to order response
+	    	OrderResponse order = new OrderResponse();
+	
+	    	// key columns
+	    	OrderEntity firstResult = entityList.get(0);
+	    	OrderPrimaryKey key = firstResult.getKey();
+	    	order.setOrderId(key.getOrderId());
+	    	// payload columns
+	    	order.setOrderStatus(firstResult.getOrderStatus());
+	    	// not storing timestamp, but deriving it from orderId (TimeUUID)
+	    	order.setOrderTimestamp(new Date(getTimeFromUUID(key.getOrderId())));
+	    	order.setOrderSubtotal(firstResult.getOrderSubtotal());
+	    	order.setOrderShippingHandling(firstResult.getOrderShippingHandling());
+	    	order.setOrderTax(firstResult.getOrderTax());
+	    	order.setOrderTotal(firstResult.getOrderTotal());
+	    	order.setPaymentMethod(firstResult.getPaymentMethod());
+	    	order.setShippingAddress(mapAddress(firstResult.getShippingAddress()));    	
+	
+	    	// loop through results, build product list
+	    	List<OrderProduct> productList = new ArrayList<OrderProduct>();
+	    	
+	    	for (OrderEntity orderLine : entityList) {
+		    	OrderProduct prod = new OrderProduct();
+		    	prod.setProductName(key.getProductName());
+		    	prod.setProductId(key.getProductId());
+		    	prod.setProductQty(orderLine.getProductQty());
+		    	prod.setProductPrice(orderLine.getProductPrice());
+		    	
+		    	productList.add(prod);
+	    	}
+	    	
+	    	order.setProductList(productList);
+	    	
+	    	return ResponseEntity.ok(order);
+    	} else {
+    		return ResponseEntity.notFound().build();
+    	}
     }
     
     /**
@@ -153,13 +192,13 @@ public class OrderRestController {
          responseCode = "500",
          description = "Internal error.")
     })
-    public ResponseEntity<Stream<OrderByUser>> findOrdersByUserId(
+    public ResponseEntity<Stream<List<OrderByUser>>> findOrdersByUserId(
             HttpServletRequest req, 
             @PathVariable(value = "userid")
             @Parameter(name = "userid", description = "user identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
             UUID userid) {
     	
-    	Optional<OrderByUserEntity> e = orderUserRepo.findByKeyUserId(userid);
+    	Optional<List<OrderByUserEntity>> e = orderUserRepo.findByKeyUserId(userid);
 
     	// map order to entity and return
     	return ResponseEntity.ok(e.stream().map(this::mapOrderByUser));
@@ -236,6 +275,7 @@ public class OrderRestController {
         	orderE.setKey(oKey);
 
     		orderE.setProductQty(product.getProductQty());
+    		orderE.setProductPrice(product.getProductPrice());
     		
         	// save to DB
         	orderRepo.save(orderE);
@@ -320,7 +360,7 @@ public class OrderRestController {
     })
     public ResponseEntity<Stream<OrderStatusHistory>> findOrderStatusHistory(
             @PathVariable(value = "orderid")
-            @Parameter(name = "orderid", description = "user identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
+            @Parameter(name = "orderid", description = "order identifier (UUID)", example = "5929e846-53e8-473e-8525-80b666c46a83")
             UUID orderid) {
     	Optional<OrderStatusHistoryEntity> e = orderStatusRepo.findByKeyOrderId(orderid);
 
@@ -376,7 +416,7 @@ public class OrderRestController {
     	orderBUKey.setOrderId(orderid);
     	Optional<OrderByUserEntity> orderByUserO = orderUserRepo.findById(orderBUKey);
     	
-    	if (orderByUserO.isEmpty()) {
+    	if (!orderByUserO.isPresent()) {
     		// that combination of userid an orderid was not valid
     		return ResponseEntity.notFound().build();
     	} else {
@@ -386,8 +426,10 @@ public class OrderRestController {
     		
 	    	if (currentStatus.getStatusOrdinal() < OrderStatusEnum.SHIPPED.getStatusOrdinal()) {
 	    		// pull full order detail
-	    		OrderEntity orderE = orderRepo.findByKeyOrderId(orderid).get();
+	    		// order_status is a STATIC column, so we just need to set it on one row (the first)
+	    		OrderEntity orderE = orderRepo.findByKeyOrderId(orderid).get(0);
 	    		// set status
+	    		
 	    		orderE.setOrderStatus(CANCELLED_ORDER_STATUS.name());
 
 		    	// set status on order_by_user
@@ -426,6 +468,7 @@ public class OrderRestController {
     	// payload columns
     	order.setProductQty(entity.getProductQty());
     	order.setOrderStatus(entity.getOrderStatus());
+    	order.setProductPrice(entity.getProductPrice());
     	// not storing timestamp, but deriving it from orderId (TimeUUID)
     	order.setOrderTimestamp(new Date(key.getOrderId().timestamp()));
     	order.setOrderSubtotal(entity.getOrderSubtotal());
@@ -438,20 +481,26 @@ public class OrderRestController {
     	return order;
     }
  
-    private OrderByUser mapOrderByUser(OrderByUserEntity entity) {
-    	OrderByUser orderByUser = new OrderByUser();
+    private List<OrderByUser> mapOrderByUser(List<OrderByUserEntity> entityList) {
+    	List<OrderByUser> returnVal = new ArrayList<OrderByUser>();
     	
-    	// key columns
-    	OrderByUserPrimaryKey key = entity.getKey();
-    	orderByUser.setOrderId(key.getOrderId());
-    	orderByUser.setUserId(key.getUserId());
-    	// payload columns
-    	orderByUser.setOrderStatus(entity.getOrderStatus());
-    	// not storing timestamp, but deriving it from orderId (TimeUUID)
-    	orderByUser.setOrderTimestamp(new Date(key.getOrderId().timestamp()));
-    	orderByUser.setOrderTotal(entity.getOrderTotal());
-    	
-    	return orderByUser;
+    	for (OrderByUserEntity order : entityList) {
+    		
+	    	OrderByUser orderByUser = new OrderByUser();
+	    	
+	    	// key columns
+	    	OrderByUserPrimaryKey key = order.getKey();
+	    	orderByUser.setOrderId(key.getOrderId());
+	    	orderByUser.setUserId(key.getUserId());
+	    	// payload columns
+	    	orderByUser.setOrderStatus(order.getOrderStatus());
+	    	// not storing timestamp, but deriving it from orderId (TimeUUID)
+	    	orderByUser.setOrderTimestamp(new Date(getTimeFromUUID(key.getOrderId())));
+	    	orderByUser.setOrderTotal(order.getOrderTotal());
+	    	
+	    	returnVal.add(orderByUser);
+    	}    	
+    	return returnVal;
     }
     
     private OrderStatusHistory mapOrderStatusHistory(OrderStatusHistoryEntity entity) {
