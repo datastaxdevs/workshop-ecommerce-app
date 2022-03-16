@@ -1,8 +1,6 @@
 package com.datastax.tutorials.service.featured;
 
 import java.math.BigDecimal;
-
-import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
