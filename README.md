@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS user_carts (
     cart_name text,
     cart_id uuid,
     cart_is_active boolean,
-    user_email text static,
+    user_email text,
     PRIMARY KEY (user_id, cart_name, cart_id)
 ) WITH default_time_to_live = 5184000;
 
