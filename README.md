@@ -132,6 +132,14 @@ As mentioned above, the `address` UDT contains properties used for postal contac
 
 The `user_by_email` table is intended to be used as a "manual index" on email address. Essentially, it is a lookup table returning the `user_id` associated with an email address.  This is necessary as `user_email` is nigh-unique (in terms of cardinality of values), and thus a CQL secondary index would perform quite poorly.
 
+#### Session 4 - Order Processing System data model ####
+
+The `order_by_id` table holds detail on each order.  It partitions on `order_id` for optimal data distribution, and clusters on `product_name` and `product_id` for sort order.  The columns specific to the order itself (and not a product) are `STATIC` so that they are only stored once (with the partition key).
+
+The `order_by_user` table holds a reference to each order by `user_id`.  The idea, is that this table is queried by `user_id` and the results are shown on an "order history" page for that user.  Then, each order can be clicked-on, revealing the detail contained in the `order_by_id` table.  `order_id` is a TimeUUID (version 1 UUID) type, which is converted into a human-readable timestamp in the service layer.
+
+The `order_status_history` table maintains a history of each status for an order.  It is meant to be used with queries to the `order_by_id` table, so that a user may see the status progression of their order.
+
 ### ✅ 3a. Open the CqlConsole on Astra
 
 ```sql
@@ -208,7 +216,7 @@ CREATE TABLE IF NOT EXISTS cart_products (
 
 #### Session 3 - User Profile data model ####
 ```sql
-CREATE TYPE address (
+CREATE TYPE IF NOT EXISTS address (
   type TEXT,
   mailto_name TEXT,
   street TEXT,
@@ -219,7 +227,7 @@ CREATE TYPE address (
   country TEXT
 );
 
-CREATE TABLE user (
+CREATE TABLE IF NOT EXISTS user (
   user_id UUID,
   user_email TEXT,
   picture_url TEXT,
@@ -233,10 +241,44 @@ CREATE TABLE user (
   PRIMARY KEY (user_id)
 );
 
-CREATE TABLE user_by_email (
+CREATE TABLE IF NOT EXISTS user_by_email (
   user_email TEXT PRIMARY KEY,
   user_id UUID
 );
+```
+
+#### Session 4 - Order Processing System data model ####
+```sql
+CREATE TABLE IF NOT EXISTS order_by_id (
+    order_id timeuuid,
+    product_name text,
+    product_id text,
+    order_shipping_handling decimal static,
+    order_status text static,
+    order_subtotal decimal static,
+    order_tax decimal static,
+    order_total decimal static,
+    payment_method text static,
+    product_price decimal,
+    product_qty int,
+    shipping_address address static,
+    PRIMARY KEY (order_id, product_name, product_id)
+) WITH CLUSTERING ORDER BY (product_name ASC, product_id ASC);
+
+CREATE TABLE IF NOT EXISTS order_by_user (
+    user_id uuid,
+    order_id timeuuid,
+    order_status text,
+    order_total decimal,
+    PRIMARY KEY (user_id, order_id)
+) WITH CLUSTERING ORDER BY (order_id DESC);
+
+CREATE TABLE IF NOT EXISTS order_status_history (
+    order_id timeuuid,
+    status_timestamp timestamp,
+    order_status text,
+    PRIMARY KEY (order_id, status_timestamp)
+) WITH CLUSTERING ORDER BY (status_timestamp DESC);
 ```
 
 [🏠 Back to Table of Contents](#-table-of-contents)
