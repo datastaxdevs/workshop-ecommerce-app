@@ -148,8 +148,8 @@ use ecommerce;
 
 ### ✅ 3b. Execute the following CQL script to create the schema
 
-#### Session 1 - Product data model ####
 ```sql
+/* Session 1 - Product data model */
 /* category table */
 CREATE TABLE IF NOT EXISTS category (
     parent_id UUID,
@@ -189,10 +189,8 @@ CREATE TABLE IF NOT EXISTS featured_product_groups (
     parent_id UUID,
     price DECIMAL,
 PRIMARY KEY (feature_id,category_id));
-```
 
-#### Session 2 - Shopping Cart data model ####
-```sql
+/* Session 2 - Shopping Cart data model */
 CREATE TABLE IF NOT EXISTS user_carts (
     user_id uuid,
     cart_name text,
@@ -212,10 +210,8 @@ CREATE TABLE IF NOT EXISTS cart_products (
     PRIMARY KEY (cart_id, product_timestamp, product_id)
 ) WITH CLUSTERING ORDER BY (product_timestamp DESC, product_id ASC)
   AND default_time_to_live = 5184000;
-```
 
-#### Session 3 - User Profile data model ####
-```sql
+/* Session 3 - User Profile data model */
 CREATE TYPE IF NOT EXISTS address (
   type TEXT,
   mailto_name TEXT,
@@ -245,10 +241,8 @@ CREATE TABLE IF NOT EXISTS user_by_email (
   user_email TEXT PRIMARY KEY,
   user_id UUID
 );
-```
 
-#### Session 4 - Order Processing System data model ####
-```sql
+/* Session 4 - Order Processing System data model */
 CREATE TABLE IF NOT EXISTS order_by_id (
     order_id timeuuid,
     product_name text,
