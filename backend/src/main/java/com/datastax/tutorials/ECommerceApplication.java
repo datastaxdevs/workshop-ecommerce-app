@@ -66,8 +66,8 @@ public class ECommerceApplication extends WebSecurityConfigurerAdapter {
     				                "/api/v1/featured/**",
     				                "/api/v1/carts/**",
     				                "/api/v1/users/**",
-    				                //"/api/v1/user/**",	 // testing only...REMOVE!
-    				                "/api/v1/order/**",      // testing only...REMOVE!
+    				                //"/api/v1/user/**",	 // testing only...REMOVE or comment-out!
+    				                //"/api/v1/order/**",    // testing only...REMOVE or comment-out!
     				                "/swagger-ui/**",
 									"/logout",
 									"/static/**",
