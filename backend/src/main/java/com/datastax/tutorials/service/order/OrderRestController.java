@@ -16,7 +16,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.catalina.connector.Response;
+import org.apache.pulsar.client.api.AuthenticationFactory;
+import org.apache.pulsar.client.api.Producer;
+import org.apache.pulsar.client.api.PulsarClient;
+import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.shade.com.google.gson.Gson;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -64,8 +68,15 @@ public class OrderRestController {
 	private UserCartsRepository userCartRepo;
 	private CartProductsRepository cartProductsRepo;
 	
-	static final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
-	static final OrderStatusEnum NEW_ORDER_STATUS = OrderStatusEnum.PENDING;
+	private PulsarClient client;
+	private Producer<byte[]> orderProducer;
+	
+	private static final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
+	private static final OrderStatusEnum NEW_ORDER_STATUS = OrderStatusEnum.PENDING;
+	private static final String SERVICE_URL = System.getenv("ASTRA_STREAM_URL");
+	private static final String YOUR_PULSAR_TOKEN = System.getenv("ASTRA_STREAM_TOKEN");
+	private static final String PENDING_ORDER_TOPIC = "persistent://ecomorders/default/pending-orders";
+	//private static final String ERRORED_ORDER_TOPIC = "persistent://ecomorders/default/errored-orders";
 	
 	public OrderRestController(OrderRepository oRepo,OrderByUserRepository oURepo,
 			OrderStatusHistoryRepository oSHRepo,UserCartsRepository uCRepo,
@@ -76,6 +87,29 @@ public class OrderRestController {
 		orderStatusRepo = oSHRepo;
 		userCartRepo = uCRepo;
 		cartProductsRepo = cPRepo;
+        
+		// Create Pulsar/Astra Streaming client
+		try {
+			client = PulsarClient.builder()
+			        .serviceUrl(SERVICE_URL)
+			        .authentication(
+			            AuthenticationFactory.token(YOUR_PULSAR_TOKEN)
+			        )
+			        .build();
+		} catch (PulsarClientException e) {
+			// issue building the client stream connection
+			e.printStackTrace();
+		}
+
+        // Create producer on a topic
+        try {
+			orderProducer = client.newProducer()
+			        .topic(PENDING_ORDER_TOPIC)
+			        .create();
+		} catch (PulsarClientException e) {
+			// issue creating the streaming message producer
+			e.printStackTrace();
+		}
 	}
 
     /**
@@ -318,12 +352,28 @@ public class OrderRestController {
     	
     	// Adjust request and return it as the response
     	order.setOrderId(orderid);
+    	order.setUserId(userid);
     	order.setOrderStatus(NEW_ORDER_STATUS.name());
     	order.setOrderTimestamp(orderTimeStamp);
     	
-    	// TODO - put on Pulsar topic!
+    	// put on Pulsar topic!
+    	String orderJSON = new Gson().toJson(order);
+		try {
+			sendToOrderStream(orderJSON);
+		} catch (Exception e) {
+			try {
+				// Try putting it on the error'd-orders topic
+				//sendToPulsar(orderJSON,ERRORED_ORDER_TOPIC);
+			} catch (Exception e2) {
+				// Pass the error up.  Inform the customer that they should
+				// call for support with their email address ready.
+				//
+				// Build a method in the order processor to check for failed orders.
+				return ResponseEntity.internalServerError().build();
+			}
+		}
     	
-    	// map order to entity and return
+    	// return order
     	return ResponseEntity.ok(order);
     }
     
@@ -457,29 +507,34 @@ public class OrderRestController {
     	}
     }
     
-    private Order mapOrder(OrderEntity entity) {
-    	Order order = new Order();
-    	
-    	// key columns
-    	OrderPrimaryKey key = entity.getKey();
-    	order.setOrderId(key.getOrderId());
-    	order.setProductName(key.getProductName());
-    	order.setProductId(key.getProductId());
-    	// payload columns
-    	order.setProductQty(entity.getProductQty());
-    	order.setOrderStatus(entity.getOrderStatus());
-    	order.setProductPrice(entity.getProductPrice());
-    	// not storing timestamp, but deriving it from orderId (TimeUUID)
-    	order.setOrderTimestamp(new Date(key.getOrderId().timestamp()));
-    	order.setOrderSubtotal(entity.getOrderSubtotal());
-    	order.setOrderShippingHandling(entity.getOrderShippingHandling());
-    	order.setOrderTax(entity.getOrderTax());
-    	order.setOrderTotal(entity.getOrderTotal());
-    	order.setPaymentMethod(entity.getPaymentMethod());
-    	order.setShippingAddress(mapAddress(entity.getShippingAddress()));
-    	
-    	return order;
+    private void sendToOrderStream(String message) throws Exception {
+        // Send a message to the topic
+        orderProducer.send(message.getBytes());
     }
+    
+//    private Order mapOrder(OrderEntity entity) {
+//    	Order order = new Order();
+//    	
+//    	// key columns
+//    	OrderPrimaryKey key = entity.getKey();
+//    	order.setOrderId(key.getOrderId());
+//    	order.setProductName(key.getProductName());
+//    	order.setProductId(key.getProductId());
+//    	// payload columns
+//    	order.setProductQty(entity.getProductQty());
+//    	order.setOrderStatus(entity.getOrderStatus());
+//    	order.setProductPrice(entity.getProductPrice());
+//    	// not storing timestamp, but deriving it from orderId (TimeUUID)
+//    	order.setOrderTimestamp(new Date(key.getOrderId().timestamp()));
+//    	order.setOrderSubtotal(entity.getOrderSubtotal());
+//    	order.setOrderShippingHandling(entity.getOrderShippingHandling());
+//    	order.setOrderTax(entity.getOrderTax());
+//    	order.setOrderTotal(entity.getOrderTotal());
+//    	order.setPaymentMethod(entity.getPaymentMethod());
+//    	order.setShippingAddress(mapAddress(entity.getShippingAddress()));
+//    	
+//    	return order;
+//    }
  
     private List<OrderByUser> mapOrderByUser(List<OrderByUserEntity> entityList) {
     	List<OrderByUser> returnVal = new ArrayList<OrderByUser>();
@@ -581,7 +636,7 @@ public class OrderRestController {
     			return OrderStatusEnum.SHIPPED;
     		case "COMPLETE":
     			return OrderStatusEnum.COMPLETE;
-    		case "CANCALLED":
+    		case "CANCELLED":
     			return OrderStatusEnum.CANCELLED;
     		case "ERROR":
     			return OrderStatusEnum.ERROR;
@@ -590,9 +645,15 @@ public class OrderRestController {
     	return OrderStatusEnum.ERROR;
     }
     
-    public static long getTimeFromUUID(UUID uuid) {
-
+    private static long getTimeFromUUID(UUID uuid) {
       return (uuid.timestamp() - NUM_100NS_INTERVALS_SINCE_UUID_EPOCH) / 10000;
     }
 
+    protected void finalize() throws PulsarClientException {
+        // Close the stream producer
+        orderProducer.close();
+        
+        // Close the stream client
+        client.close();
+    }
 }
