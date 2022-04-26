@@ -352,6 +352,7 @@ public class OrderRestController {
     	
     	// Adjust request and return it as the response
     	order.setOrderId(orderid);
+    	order.setUserId(userid);
     	order.setOrderStatus(NEW_ORDER_STATUS.name());
     	order.setOrderTimestamp(orderTimeStamp);
     	

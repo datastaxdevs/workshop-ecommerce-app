@@ -1,4 +1,4 @@
-package com.datastax.tutorials.service.order;
+package ecom;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
-import com.datastax.tutorials.service.user.Address;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,18 +1,17 @@
 package ecom;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.pulsar.client.api.*;
+import org.apache.pulsar.shade.com.google.gson.Gson;
 
 public class EcomOrderProcessor {
 
-	private static PulsarClient client;
-	private static Reader<byte[]> reader;
-	private static Consumer<byte[]> consumer;
-	
 	private static final String SERVICE_URL = System.getenv("ASTRA_STREAM_URL");
 	private static final String YOUR_PULSAR_TOKEN = System.getenv("ASTRA_STREAM_TOKEN");
+	private static final String SUBSCRIPTION_NAME = "ecom-subscription";
 	
 	public static void main(String[] args) {
 		
@@ -20,44 +19,116 @@ public class EcomOrderProcessor {
 			System.out.println("Usage arguments: verify | pick | ship | complete [readonly] [orderid]");
 			System.exit(0);
 		} else {
-			String topic = getTopic(args[0]);
+			String command = args[0];
 			boolean readOnly = isReadOnly(args);
+
+			String topic = getTopic(command);
+			String nextTopic = getNextTopic(command);
 			
-			initializeConnections(topic,readOnly);
+			PulsarClient client = initializeClient(topic);
 			
 	        boolean receivedMsg = false;
-            Message<byte[]> msg = null;
+            Message msg = null;
 	        
-	        if (readOnly) {
+	        if (readOnly || command.equals("verify")) {
 	        	// reader
 		        while (!receivedMsg) {
 		            // Block for up to 1 second for a message
 					try {
+						Reader<byte[]> reader = client.newReader()
+								.topic(topic)
+								.startMessageId(MessageId.earliest)
+								.create();
+						
 						msg = reader.readNext(1, TimeUnit.SECONDS);
+						if (msg != null) {
+							System.out.println(new String(msg.getData()));
+							receivedMsg = true;
+						}
+						
+						reader.close();
 					} catch (Exception e) {
 						System.out.println(e.toString());
+						receivedMsg = true;
 					}
-		
 		        }
 	        } else {
 	        	// consumer
 	        	while (!receivedMsg) {
 	        		try {
-	        			msg = consumer.receive(10, TimeUnit.SECONDS);
+	        			Consumer consumer = client.newConsumer()
+	        					.topic(topic)
+	        					.subscriptionName(SUBSCRIPTION_NAME)
+	        					.subscriptionType(SubscriptionType.Exclusive)
+	        					.subscribe();
+	        			
+	        			msg = consumer.receive(1, TimeUnit.SECONDS);
+	        			
+	        			if (msg != null) {
+	        				consumer.acknowledge(msg);
+	        		        System.out.println(new String(msg.getData()));
+	    					receivedMsg = true;
+	        			}
+	        			
+	        			consumer.close();
 	        		} catch (Exception e) {
 						System.out.println(e.toString());
-					}
+						receivedMsg = true;
+	        		}
 	        	}
 	        }
 
-	        if(msg != null){
-                System.out.printf("Message received: %s%n",  new String(msg.getData()));
+	        try {
+		        // serialize orderJSON as an object
+		        OrderRequest objOrder = new Gson().fromJson(msg.getData().toString(), OrderRequest.class);
+				UUID userId = objOrder.getUserId();
+				UUID orderId = objOrder.getOrderId();		
 
-                receivedMsg = true;
-            }
-
-	        closeConnections(readOnly);
+		        // push order to next topic
+	        	boolean sentMsg = false;
+	
+		        if (receivedMsg && !nextTopic.contains("none")) {
+		        		        	
+		        	while (!sentMsg) {
+		        		try {
+				            // Create producer on a topic
+				            Producer<byte[]> producer = client.newProducer()
+				                    .topic("persistent://" + nextTopic)
+				                    .create();
+			
+				            // Send a message to the topic
+				            producer.send(msg.getData());
+				            sentMsg = true;
+				            
+				            System.out.println("Pushed order " + orderId.toString() + " to " + nextTopic);
+				            
+				            //Close the producer
+				            producer.close();
+		        		} catch (Exception e) {
+							System.out.println(e.toString());
+		        		}
+		        	}	        	
+		        }
+		        // increment order status
+		        updateOrderStatus(objOrder,orderId,userId);
+		        
+	        } catch (Exception ex) {
+	        	System.out.println(ex.toString());
+	        }
+	        
+	        closeClient(client);
 		}
+	}
+	
+	private static void updateOrderStatus(OrderRequest order, UUID orderId, UUID userId) {
+		// connect to Astra DB cluster
+		
+		// update order_by_id
+		
+		// update order_by_user
+		
+		// insert to order_status_history
+		
 	}
 	
 	private static String getTopic(String command) {
@@ -66,7 +137,7 @@ public class EcomOrderProcessor {
     	switch (command.toLowerCase()) {
     	// starting topic
 			case "verify":
-				returnVal = "pending-orders2";
+				returnVal = "pending-orders";
 				break;
 			case "pick":
 				returnVal = "pending-orders";
@@ -74,9 +145,32 @@ public class EcomOrderProcessor {
 			case "ship":
 				returnVal = "picked-orders";
 				break;
+			case "complete":
+				returnVal = "shipped-orders";
     	}
     	
-    	return returnVal;
+    	return "ecomorders/default/" + returnVal;
+	}
+	
+	private static String getNextTopic(String command) {
+		String returnVal = "error";
+		
+    	switch (command.toLowerCase()) {
+    	// starting topic
+			case "verify":
+				returnVal = "none";
+				break;
+			case "pick":
+				returnVal = "picked-orders";
+				break;
+			case "ship":
+				returnVal = "shipped-orders";
+				break;
+			case "complete":
+				returnVal = "completed-orders";
+    	}
+    	
+    	return "ecomorders/default/" + returnVal;
 	}
 	
 	private static boolean isReadOnly(String args[]) {
@@ -93,45 +187,27 @@ public class EcomOrderProcessor {
 		return returnVal;
 	}
 	
-	private static void initializeConnections(String topic, boolean readOnly) {
+	private static PulsarClient initializeClient(String topic) {
 		System.out.println("topic=ecomorders/default/" + topic);
 		
 		try {
 	        // Create client object
-	        client = PulsarClient.builder()
+	        PulsarClient client = PulsarClient.builder()
 	                .serviceUrl(SERVICE_URL)
 	                .authentication(
 	                    AuthenticationFactory.token(YOUR_PULSAR_TOKEN)
 	                )
 	                .build();
-	
-	        if (readOnly) {
-		        // Create a reader on a topic
-		        reader = client.newReader()
-		                .topic("ecomorders/default/" + topic)
-		                .startMessageId(MessageId.earliest)
-		                .create();
-	        } else {
-	            // Create a consumer on a topic with a subscription
-	            consumer = client.newConsumer()
-	                    .topic("ecomorders/default/" + topic)
-	                    .subscriptionName(topic + "-sub")
-	                    .subscribe();
-	        }
-	        
+	       
+	        return client;
 		} catch (Exception e) {
-			System.out.println(e.toString());
-		}
+		    System.out.println(e.toString());
+			return null;
+		}		
 	}
 	
-	private static void closeConnections(boolean readOnly) {
+	private static void closeClient(PulsarClient client) {
 		try {
-			if (readOnly) {
-				reader.close();
-			} else {
-				consumer.close();
-			}
-			
 			// always close the client 
 			client.close();
 		} catch (IOException e) {
