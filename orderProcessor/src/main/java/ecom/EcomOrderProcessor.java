@@ -1,10 +1,13 @@
 package ecom;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.pulsar.client.api.*;
+import org.apache.pulsar.shade.com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.pulsar.shade.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pulsar.shade.com.google.gson.Gson;
 
 public class EcomOrderProcessor {
@@ -80,9 +83,13 @@ public class EcomOrderProcessor {
 
 	        try {
 		        // serialize orderJSON as an object
-		        OrderRequest objOrder = new Gson().fromJson(msg.getData().toString(), OrderRequest.class);
-				UUID userId = objOrder.getUserId();
-				UUID orderId = objOrder.getOrderId();		
+		        // OrderRequest objOrder = new Gson().fromJson(msg.getData().toString(), OrderRequest.class);
+				ObjectMapper mapper = new ObjectMapper();
+				//OrderRequest objOrder = mapper.readValue(msg.getData(), OrderRequest.class);
+				Map<String, Object> objOrder 
+					= mapper.readValue(msg.getData(), new TypeReference<Map<String,Object>>(){});
+	        	UUID userId = UUID.fromString(objOrder.get("user_id").toString());
+				UUID orderId = UUID.fromString(objOrder.get("order_id").toString());		
 
 		        // push order to next topic
 	        	boolean sentMsg = false;
@@ -110,7 +117,7 @@ public class EcomOrderProcessor {
 		        	}	        	
 		        }
 		        // increment order status
-		        updateOrderStatus(objOrder,orderId,userId);
+		        updateOrderStatus(orderId,userId);
 		        
 	        } catch (Exception ex) {
 	        	System.out.println(ex.toString());
@@ -120,7 +127,7 @@ public class EcomOrderProcessor {
 		}
 	}
 	
-	private static void updateOrderStatus(OrderRequest order, UUID orderId, UUID userId) {
+	private static void updateOrderStatus(UUID orderId, UUID userId) {
 		// connect to Astra DB cluster
 		
 		// update order_by_id
