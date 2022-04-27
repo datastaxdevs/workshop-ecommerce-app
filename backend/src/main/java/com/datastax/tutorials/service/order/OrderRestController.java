@@ -75,8 +75,9 @@ public class OrderRestController {
 	private static final OrderStatusEnum NEW_ORDER_STATUS = OrderStatusEnum.PENDING;
 	private static final String SERVICE_URL = System.getenv("ASTRA_STREAM_URL");
 	private static final String YOUR_PULSAR_TOKEN = System.getenv("ASTRA_STREAM_TOKEN");
-	private static final String PENDING_ORDER_TOPIC = "persistent://ecomorders/default/pending-orders";
-	//private static final String ERRORED_ORDER_TOPIC = "persistent://ecomorders/default/errored-orders";
+	private static final String STREAMING_NAMESPACE = System.getenv("ASTRA_STREAM_NAMESPACE");
+	private static final String STREAMING_PREFIX = STREAMING_NAMESPACE + "/default/";
+	private static final String PENDING_ORDER_TOPIC = "persistent://" + STREAMING_PREFIX + "pending-orders";
 	
 	public OrderRestController(OrderRepository oRepo,OrderByUserRepository oURepo,
 			OrderStatusHistoryRepository oSHRepo,UserCartsRepository uCRepo,

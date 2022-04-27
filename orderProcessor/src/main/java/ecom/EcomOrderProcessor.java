@@ -8,12 +8,13 @@ import java.util.concurrent.TimeUnit;
 import org.apache.pulsar.client.api.*;
 import org.apache.pulsar.shade.com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.pulsar.shade.com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.pulsar.shade.com.google.gson.Gson;
 
 public class EcomOrderProcessor {
 
 	private static final String SERVICE_URL = System.getenv("ASTRA_STREAM_URL");
 	private static final String YOUR_PULSAR_TOKEN = System.getenv("ASTRA_STREAM_TOKEN");
+	private static final String STREAMING_NAMESPACE = System.getenv("ASTRA_STREAM_NAMESPACE");
+	private static final String STREAMING_PREFIX = STREAMING_NAMESPACE + "/default/";
 	private static final String SUBSCRIPTION_NAME = "ecom-subscription";
 	
 	public static void main(String[] args) {
@@ -117,7 +118,7 @@ public class EcomOrderProcessor {
 		        	}	        	
 		        }
 		        // increment order status
-		        updateOrderStatus(orderId,userId);
+		        updateOrderStatus(orderId,userId,command);
 		        
 	        } catch (Exception ex) {
 	        	System.out.println(ex.toString());
@@ -127,12 +128,14 @@ public class EcomOrderProcessor {
 		}
 	}
 	
-	private static void updateOrderStatus(UUID orderId, UUID userId) {
+	private static void updateOrderStatus(UUID orderId, UUID userId, String command) {
+		String status = computeStatus(command);
+		
 		// connect to Astra DB cluster
 		
-		// update order_by_id
+		// update order_by_id status
 		
-		// update order_by_user
+		// update order_by_user status
 		
 		// insert to order_status_history
 		
@@ -156,14 +159,14 @@ public class EcomOrderProcessor {
 				returnVal = "shipped-orders";
     	}
     	
-    	return "ecomorders/default/" + returnVal;
+    	return STREAMING_PREFIX + returnVal;
 	}
 	
 	private static String getNextTopic(String command) {
 		String returnVal = "error";
 		
     	switch (command.toLowerCase()) {
-    	// starting topic
+    	// next topic
 			case "verify":
 				returnVal = "none";
 				break;
@@ -177,7 +180,24 @@ public class EcomOrderProcessor {
 				returnVal = "completed-orders";
     	}
     	
-    	return "ecomorders/default/" + returnVal;
+    	return STREAMING_PREFIX + returnVal;
+	}
+	
+	private static String computeStatus(String command) {
+		String returnVal = "PENDING";
+		
+    	switch (command.toLowerCase()) {
+			case "pick":
+				returnVal = "PICKED";
+				break;
+			case "ship":
+				returnVal = "SHIPPED";
+				break;
+			case "complete":
+				returnVal = "COMPLETE";
+    	}
+    	
+    	return returnVal;
 	}
 	
 	private static boolean isReadOnly(String args[]) {
@@ -195,8 +215,8 @@ public class EcomOrderProcessor {
 	}
 	
 	private static PulsarClient initializeClient(String topic) {
-		System.out.println("topic=ecomorders/default/" + topic);
-		
+		System.out.println("topic=" + STREAMING_PREFIX + topic);
+
 		try {
 	        // Create client object
 	        PulsarClient client = PulsarClient.builder()
