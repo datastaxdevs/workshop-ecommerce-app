@@ -2,7 +2,7 @@ server:
   port: 8080
   error:
     include-stacktrace: always
-    
+
 spring:
   application:
     name: ecom
@@ -26,7 +26,7 @@ astra:
     database-region: ${ASTRA_DB_REGION}
   cql:
     enabled: true
-    download-scb: 
+    download-scb:
       enabled: true
     driver-config:
       basic:
@@ -41,6 +41,3 @@ astra:
           set-keyspace-timeout: 10s
         control-connection:
           timeout: 10s
-        
-        
-        
