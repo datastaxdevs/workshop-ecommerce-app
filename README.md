@@ -48,7 +48,7 @@ Worldwide digital sales in 2020 eclipsed four trillion dollars (USD).  Businesse
 
 Why does an e-commerce site need to be fast?  Because most consumers will leave a web page or a mobile app if it takes longer than a few seconds to load.  In the content below, we will cover how to build high-performing data models and services, helping you to build a e-commerce site with high throughput and low latency.
 
-## 2. Create Astra DB Instance
+## 2. Create Astra DB and Streaming Instances
 
 You can skip to step 2c if you have already created a keyspace `ecommerce` in database `demos`. Otherwise (if you did not attend the previous installment of the e-commerce worksop):
 
@@ -60,7 +60,7 @@ If you do not have an account yet, register and sign in to Astra DB: This is FRE
 
 _Make sure to chose a password with minimum 8 characters, containing upper and lowercase letters, at least one number and special character_
 
-#### ✅ 2b. Create a "FREE" plan
+#### ✅ 2b. Create a DB on the "FREE" plan
 
 Follow this [guide](https://docs.datastax.com/en/astra/docs/creating-your-astra-database.html), to set up a pay as you go database with a free $25 monthly credit. You will find below recommended values to enter:
 
@@ -70,7 +70,7 @@ Follow this [guide](https://docs.datastax.com/en/astra/docs/creating-your-astra-
 
 _You can technically use whatever name(s) you want and update the code to reflect the keyspace. This is really to get you on a happy path for the first run._
 
-- **For provider and region**: Choose a provider (GCP, Azure or AWS) and then the related region is where your database will reside physically (choose one close to you or your users).
+- **For provider and region**: For Astra DB, select GCP as a provider and then the related region is where your database will reside physically (choose one close to you or your users).
 
 - **Create the database**. Review all the fields to make sure they are as shown, and click the `Create Database` button.
 
@@ -87,7 +87,6 @@ You will see your new database `pending` in the Dashboard.
 
 To connect to the database programmatically, you need to make sure the status will change to `Active`. This happens when the database is ready, and will only take 2-3 minutes. You will also receive an email when it is ready.
 
-
 **👁️ Expected Output**
 
 ![my-pic](data/img/db-active.png?raw=true)
@@ -101,6 +100,35 @@ You should see a message something like below.
 ```cql
 {"message":"Resuming your database, please try again shortly."}
 ```
+
+#### ✅ 2d. Create a Streaming Tenant and Topics on the "FREE" plan
+
+Here we will walk through how to create an Astra Streaming Tenant.  Start by clicking the "Create Stream" button in the left navigation pane.
+
+![image](data/img/create-stream.png?raw=true)
+
+On the next page, provide a name for your tenant and select a provider/region.  Click the blue "Create Tenant" button when complete.
+
+![image](data/img/create_streaming_tenant.png?raw=true)
+
+Note that Tenant Names must be unique across providers.  To ensure uniqueness, name it "ecommerce-" followed by your name or company.
+
+Now we need to create topics _within_ our tenant.  Click on the link or on the "Topics" tab.  You should see the "default" namespace with an "Add Topic" button (on the right).  Click the "Add Topic" button.
+
+![image](data/img/add_topic1.png?raw=true)
+
+Name the topic "pending-orders" and make sure that the "Persistent" switch is selected.  Don't worry about the "Partitioned" switch for now.  Click the "Add Topic" button when ready.
+
+![image](data/img/add_topic2.png?raw=true)
+
+Repeat this process to add 3 more topics:
+ - picked-orders
+ - shipped-orders
+ - completed-orders
+
+When you are done, your "Topics" tab should look similar to this:
+
+![image](data/img/streaming_topics_final.png?raw=true)
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
@@ -451,9 +479,9 @@ select * from CATEGORY;
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 5. Create your token
+## 5. Create your tokens
 
-#### ✅ 5a. Create the token
+#### ✅ 5a. Create the Astra DB token
 
 Following the [Manage Application Tokens docs](https://docs.datastax.com/en/astra/docs/manage-application-tokens.html) create a token with `Database Admnistrator` roles.
 
@@ -475,7 +503,7 @@ This is what the token page looks like. You can now download the values as a CSV
 
 - `appToken:` We will use it as a api token Key to interact with APIs.
 
-#### ✅ 5b. Save your token locally
+#### ✅ 5b. Save your DB token locally
 
 To know more about roles of each token you can have a look to [this video.](https://www.youtube.com/watch?v=TUTCLsBuUd4&list=PL2g2h-wyI4SpWK1G3UaxXhzZc6aUFXbvL&index=8)
 
@@ -484,6 +512,26 @@ To know more about roles of each token you can have a look to [this video.](http
 We are now set with the database and credentials and will incorporate them into the application as we will see below.
 
 [🏠 Back to Table of Contents](#-table-of-contents)
+
+#### ✅ 5c. View the Astra Streaming token and connection details
+
+Click on the "Connect" tab.  Take note of your tenant name and broker service URL.  It's a good idea to copy/paste those into a text editor for now.  When you're ready, click on the "Token Manager" link.
+
+![image](data/img/broker_service_url.png?raw=true)
+
+You should have one token created by default.  Click on the copy icon on the right.  Paste your token into a text editor for now.
+
+![image](data/img/copy_stream_token.png?raw=true)
+
+Later on, we will use this information to populate environment variables, allowing us to connect to our Astra Streaming tenant.  It will be similar to the example below:
+
+```
+export ASTRA_STREAM_TENANT=ecommerce-aaron
+export ASTRA_STREAM_URL="pulsar+ssl://pulsar-gcp-uscentral1.streaming.datastax.com:6651"
+export ASTRA_STREAM_TOKEN="eyJhMBhGYBlahBlahBlahNotARealToken37hOAv9t1fHIhJLAHw"
+```
+
+#### ✅ 5d. Save your Streaming token locally
 
 ## 6. Setup your application
 
