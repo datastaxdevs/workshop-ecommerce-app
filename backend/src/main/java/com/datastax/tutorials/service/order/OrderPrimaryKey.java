@@ -5,16 +5,18 @@ import java.util.UUID;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
+import org.springframework.data.cassandra.core.mapping.CassandraType.Name;
 
 @PrimaryKeyClass
 public class OrderPrimaryKey {
     @PrimaryKeyColumn(
             name = "order_id", 
             ordinal = 0, 
-            type = PrimaryKeyType.PARTITIONED) 
+            type = PrimaryKeyType.PARTITIONED)
+    @CassandraType(type = Name.TIMEUUID)
 	private UUID orderId;
  
-    
     @PrimaryKeyColumn(
             name = "product_name", 
             ordinal = 1, 

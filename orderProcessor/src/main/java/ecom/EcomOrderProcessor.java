@@ -13,8 +13,8 @@ public class EcomOrderProcessor {
 
 	private static final String SERVICE_URL = System.getenv("ASTRA_STREAM_URL");
 	private static final String YOUR_PULSAR_TOKEN = System.getenv("ASTRA_STREAM_TOKEN");
-	private static final String STREAMING_NAMESPACE = System.getenv("ASTRA_STREAM_NAMESPACE");
-	private static final String STREAMING_PREFIX = STREAMING_NAMESPACE + "/default/";
+	private static final String STREAMING_TENANT = System.getenv("ASTRA_STREAM_TENANT");
+	private static final String STREAMING_PREFIX = STREAMING_TENANT + "/default/";
 	private static final String SUBSCRIPTION_NAME = "ecom-subscription";
 	
 	public static void main(String[] args) {

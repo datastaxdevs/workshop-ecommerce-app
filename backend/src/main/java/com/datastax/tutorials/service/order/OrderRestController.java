@@ -10,6 +10,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,12 +73,22 @@ public class OrderRestController {
 	private PulsarClient client;
 	private Producer<byte[]> orderProducer;
 	
+	// assuming standard shipping and handling of $4.00 US
+	private static final BigDecimal SHIPPING_HANDLING = new BigDecimal(4.00);
+	
+	// assuming default US tax rate of 5%
+	private static final BigDecimal TAX_RATE = new BigDecimal(0.05);
+	
+	// defining the number of nanoseconds since epoch for the TIMEUUID/timestamp conversion
 	private static final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
+	
+	// setting default order status to PENDING
 	private static final OrderStatusEnum NEW_ORDER_STATUS = OrderStatusEnum.PENDING;
+	
 	private static final String SERVICE_URL = System.getenv("ASTRA_STREAM_URL");
 	private static final String YOUR_PULSAR_TOKEN = System.getenv("ASTRA_STREAM_TOKEN");
-	private static final String STREAMING_NAMESPACE = System.getenv("ASTRA_STREAM_NAMESPACE");
-	private static final String STREAMING_PREFIX = STREAMING_NAMESPACE + "/default/";
+	private static final String STREAMING_TENANT = System.getenv("ASTRA_STREAM_TENANT");
+	private static final String STREAMING_PREFIX = STREAMING_TENANT + "/default/";
 	private static final String PENDING_ORDER_TOPIC = "persistent://" + STREAMING_PREFIX + "pending-orders";
 	
 	public OrderRestController(OrderRepository oRepo,OrderByUserRepository oURepo,
@@ -279,7 +291,8 @@ public class OrderRestController {
             UUID userid) {
     	
     	// make sure we have an actual product list
-    	if (order.getProductList().size() < 1) {
+    	List<OrderProduct> products = order.getProductList();
+    	if (products.size() < 1) {
     		// We get here if the size of the product list is either zero or negative(?)
     		return ResponseEntity.notFound().build();
     	}
@@ -290,6 +303,30 @@ public class OrderRestController {
     	long timestamp = getTimeFromUUID(orderid);
     	Date orderTimeStamp = new Date(timestamp);
 
+    	// compute order subtotal
+    	BigDecimal running_total = BigDecimal.ZERO;
+    	for (OrderProduct prod : products) {
+    		BigDecimal linePrice = prod.getProductPrice()
+    				.multiply(new BigDecimal(prod.getProductQty()));
+    		running_total = running_total.add(linePrice);
+    	}
+    	order.setOrderSubtotal(running_total);
+    	
+    	// compute shipping and handling
+    	order.setOrderShippingHandling(SHIPPING_HANDLING);
+    	
+    	// compute tax on products only, not on shipping and handling (will vary by local tax laws)
+    	BigDecimal tax = running_total
+    			.multiply(TAX_RATE)
+    			.setScale(2, RoundingMode.HALF_EVEN);
+    	order.setOrderTax(tax);
+    	
+    	// compute order total
+    	BigDecimal total = running_total
+    			.add(SHIPPING_HANDLING)
+    			.add(tax);
+    	order.setOrderTotal(total);
+    	
     	// create DB entry for order (by id)
     	OrderEntity orderE = new OrderEntity();
     	OrderPrimaryKey oKey = new OrderPrimaryKey();
