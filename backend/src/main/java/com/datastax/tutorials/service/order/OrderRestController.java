@@ -315,7 +315,8 @@ public class OrderRestController {
     	// compute shipping and handling
     	order.setOrderShippingHandling(SHIPPING_HANDLING);
     	
-    	// compute tax on products only, not on shipping and handling (will vary by local tax laws)
+    	// compute tax on products only, not on shipping and handling (will vary by local tax laws).
+    	// Recommend using an external service for calling/computing tax which takes tax laws into account.
     	BigDecimal tax = running_total
     			.multiply(TAX_RATE)
     			.setScale(2, RoundingMode.HALF_EVEN);
