@@ -6,6 +6,8 @@ import Login from "../Login";
 import User from "../User";
 import Signup from "../Signup";
 import ProductDetail from "../ProductDetail";
+import OrderHistory from "../OrderHistory";
+import OrderDetail from "../OrderDetail";
 import Navigation from "../../components/Navigation";
 import Footer from "../../components/Footer";
 import { Toaster } from "react-hot-toast";
@@ -28,6 +30,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/user" element={<User />} />
+        <Route path="/orders" element={<OrderHistory />} />
+        <Route path="/orders/:orderId" element={<OrderDetail />} />
       </Routes>
       <Footer />
       <Toaster />

@@ -207,14 +207,24 @@ const Navigation = () => {
                 </Link>
               </div>
               {currentUser && (
-                <Link to="/logout">
-                  <button
-                    type="button"
-                    className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
-                  >
-                    <span>Logout</span>
-                  </button>
-                </Link>
+                <>
+                  <Link to="/orders">
+                    <button
+                      type="button"
+                      className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                    >
+                      <span>Orders</span>
+                    </button>
+                  </Link>
+                  <Link to="/logout">
+                    <button
+                      type="button"
+                      className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                    >
+                      <span>Logout</span>
+                    </button>
+                  </Link>
+                </>
               )}
               {!currentUser && (
                 <>

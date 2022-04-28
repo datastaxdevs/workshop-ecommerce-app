@@ -152,3 +152,12 @@ export const useCurrentUser = () => {
   }
   return { data, loading, error };
 };
+
+export const useOrders = () => {
+  const { data: currentUser } = useCurrentUser();
+  return useSWR(() => `/api/v1/order/user/${currentUser.user_id}/`, fetcher);
+};
+
+export const useOrder = (orderId) => {
+  return useSWR(`/api/v1/order/${orderId}/`, fetcher);
+};
