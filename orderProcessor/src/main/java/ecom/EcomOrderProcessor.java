@@ -89,8 +89,8 @@ public class EcomOrderProcessor {
 				//OrderRequest objOrder = mapper.readValue(msg.getData(), OrderRequest.class);
 				Map<String, Object> objOrder 
 					= mapper.readValue(msg.getData(), new TypeReference<Map<String,Object>>(){});
-	        	UUID userId = UUID.fromString(objOrder.get("user_id").toString());
-				UUID orderId = UUID.fromString(objOrder.get("order_id").toString());		
+	        	UUID userId = UUID.fromString(objOrder.get("userId").toString());
+				UUID orderId = UUID.fromString(objOrder.get("orderId").toString());		
 
 		        // push order to next topic
 	        	boolean sentMsg = false;
