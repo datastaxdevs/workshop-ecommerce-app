@@ -147,10 +147,10 @@ public class EcomOrderProcessor {
     	switch (command.toLowerCase()) {
     	// starting topic
 			case "verify":
-				returnVal = "pending-orders2";
+				returnVal = "pending-orders";
 				break;
 			case "pick":
-				returnVal = "pending-orders2";
+				returnVal = "pending-orders";
 				break;
 			case "ship":
 				returnVal = "picked-orders";
