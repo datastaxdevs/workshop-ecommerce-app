@@ -5,7 +5,7 @@
   "proxy": "http://localhost:8080",
   "dependencies": {
     "@craco/craco": "^6.3.0",
-    "@headlessui/react": "^1.4.1",
+    "@headlessui/react": "^1.6.4",
     "@heroicons/react": "^1.0.4",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
