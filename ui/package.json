@@ -7,7 +7,7 @@
     "@craco/craco": "^6.3.0",
     "@headlessui/react": "^1.4.1",
     "@heroicons/react": "^1.0.4",
-    "@testing-library/jest-dom": "^5.15.0",
+    "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "craco": "^0.0.3",
