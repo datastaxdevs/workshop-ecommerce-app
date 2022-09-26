@@ -63,7 +63,7 @@ public class EcomOrderProcessor {
 	        			Consumer consumer = client.newConsumer()
 	        					.topic(topic)
 	        					.subscriptionName(SUBSCRIPTION_NAME)
-	        					.subscriptionType(SubscriptionType.Exclusive)
+	        					.subscriptionType(SubscriptionType.Shared)
 	        					.subscribe();
 	        			
 	        			msg = consumer.receive(1, TimeUnit.SECONDS);
