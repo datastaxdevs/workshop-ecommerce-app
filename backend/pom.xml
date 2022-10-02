@@ -8,7 +8,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.6.1</version>
-		<relativePath />
+		<relativePath/>
 	</parent>
 
 	<groupId>com.datastax.tutorials</groupId>
@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>com.datastax.astra</groupId>
 			<artifactId>astra-spring-boot-starter</artifactId>
-			<version>0.3.0</version>
+			<version>0.3.4</version>
 		</dependency>
 
 		<!-- Pulsar -->
