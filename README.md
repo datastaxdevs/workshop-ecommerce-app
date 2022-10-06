@@ -510,6 +510,12 @@ To know more about roles of each token you can have a look to [this video.](http
 
 **Note: Make sure you don't close the window accidentally or otherwise - if you close this window before you copy the values, the application token is lost forever. They won't be available later for security reasons.**
 
+> **⚠️ Important**
+> ```
+> The instructor will show you on screen how to create a token 
+> but will have to destroy to token immediately for security reasons.
+> ```
+
 We are now set with the database and credentials and will incorporate them into the application as we will see below.
 
 [🏠 Back to Table of Contents](#-table-of-contents)
