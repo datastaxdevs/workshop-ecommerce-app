@@ -6,8 +6,12 @@ tasks:
       mvn install -f backend/pom.xml -DskipTests
       npm --prefix ui install
       npm --prefix ui run build
+      curl -Ls "https://dtsx.io/get-astra-cli" | bash >> ./install.log
     command: |
       gp open README.md
+      unset JAVA_TOOL_OPTIONS
+      source /home/gitpod/.astra/cli/astra-init.sh
+      astra setup
 ports:
   - port: 8080
     onOpen: open-browser

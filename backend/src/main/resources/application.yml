@@ -21,16 +21,15 @@ spring:
 
 astra:
   api:
-    application-token: ${ASTRA_DB_APPLICATION_TOKEN}
-    database-id: ${ASTRA_DB_ID}
-    database-region: ${ASTRA_DB_REGION}
+    application-token: ${ASTRA_DB_APP_TOKEN}
+    secure-connect-bundle: /workspace/workshop-ecommerce-app/secure-bundle-workshops.zip
   cql:
     enabled: true
     download-scb:
       enabled: true
     driver-config:
       basic:
-        session-keyspace: ${ASTRA_DB_KEYSPACE}
+        session-keyspace: ecommerce
         request:
           timeout: 8s
           consistency: LOCAL_QUORUM
