@@ -724,6 +724,10 @@ Pick the appropriate values as shown below and complete the consent.
 
 ![ouath](data/img/Oauthconsent2.png?raw=true)
 
+Make sure the project is setup for internal testing (and not for production) as shown below with the "MAKE INTERNAL".
+
+![ouath](data/img/Oauthconsent3.png?raw=true)
+
 Now click on the `credentials` tab, `+ CREATE CREDENTIALS` tab and finally the `OAuth Client ID` dropdown as shown in the following screen.
 
 ![ouath](data/img/Oauthcred0.png?raw=true)
