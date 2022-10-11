@@ -32,11 +32,11 @@ Complete the homework to earn the badge for this workshop (**awarded only at the
 ## 📋 Table of contents
 
 1. [Introduction](#1-introduction)
-2. [Setup](#2-setup)
-3. [Know your Gipod] (#3-know-your-gitpod)
-4. [Create your schema](#4-create-your-schema)
-5. [Populate the dataset](#5-populate-the-data)
-6. [Create your Pulsar token](#6-create-your-pulsar-token)
+2. [Create your Database](#2-create-astra-db-instance)
+3. [Create your schema](#3-create-your-schema)
+4. [Populate the dataset](#4-populate-the-data)
+5. [Create a token](#5-create-your-token)
+6. [Setup your application](#6-setup-your-application)
 7. [Run Unit Tests](#7-run-unit-tests)
 8. [Enable Social Login](#8-enable-social-login)
 9. [Start the Application](#9-start-the-application)
@@ -49,130 +49,91 @@ Worldwide digital sales in 2020 eclipsed four trillion dollars (USD).  Businesse
 
 Why does an e-commerce site need to be fast?  Because most consumers will leave a web page or a mobile app if it takes longer than a few seconds to load.  In the content below, we will cover how to build high-performing data models and services, helping you to build a e-commerce site with high throughput and low latency.
 
-## 2. Setup
+## 2. Create Astra DB and Streaming Instances
 
-# 🏁 Start Hands-on
+You can skip to step 2c if you have already created a keyspace `ecommerce` in database `demos`. Otherwise (if you did not attend the previous installment of the e-commerce worksop):
 
-## Setup
+**`ASTRA DB`** is the simplest way to run Cassandra with zero operations - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 20M read/write operations, 80GB storage monthly - sufficient to run small production workloads.
 
-#### `✅.setup-01`- Create your [Astra Account](https://astra.dev/yt-10-12)
+#### ✅ 2a. Register
 
-> *ℹ️ Documentation:[Database creation guide](https://awesome-astra.github.io/docs/pages/astra/create-instance/#c-procedure)*
+If you do not have an account yet, register and sign in to Astra DB: This is FREE and NO CREDIT CARD is required. [https://astra.datastax.com](https://astra.dev/5-4): You can use your `Github`, `Google` accounts or register with an `email`.
 
-#### `✅.setup-02`- Create `Database Asministrator` Token.
+_Make sure to chose a password with minimum 8 characters, containing upper and lowercase letters, at least one number and special character_
 
->  *ℹ️ Documentation: [Token creation guide](https://awesome-astra.github.io/docs/pages/astra/create-token/#c-procedure)*.
+#### ✅ 2b. Create a DB on the "FREE" plan
 
-```
-Skip this step is you already have a token. You can reuse the same token in our other workshops, too. Your token should look like: `AstraCS:....`
-```
+Follow this [guide](https://docs.datastax.com/en/astra/docs/creating-your-astra-database.html), to set up a pay as you go database with a free $25 monthly credit. You will find below recommended values to enter:
 
-|Field|Value|
-|---|---|
-|**Role**| `Database Administrator` |
+- **For the database name** - `demos`
 
-> **⚠️ Important**
-> ```
-> The instructor will show you on screen how to create a token 
-> but will have to destroy to token immediately for security reasons.
-> ```
+- **For the keyspace name** - `ecommerce`
 
-![token](https://awesome-astra.github.io/docs/img/astra/astra-create-token.gif)
+_You can technically use whatever name(s) you want and update the code to reflect the keyspace. This is really to get you on a happy path for the first run._
 
+- **For provider and region**: For Astra DB, select GCP as a provider and then the related region is where your database will reside physically (choose one close to you or your users).
 
-#### `✅.setup-03`- Open Gitpod
+- **Create the database**. Review all the fields to make sure they are as shown, and click the `Create Database` button.
 
-Gitpod is an IDE based on VSCode deployed in the cloud.
+**👁️ Walkthrough**
 
-> ↗️ _Right Click and select open as a new Tab..._
+*The Walkthrough mentions a different keyspace, make sure to use `ecommerce`*
 
-<a href="https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app"><img src="https://dabuttonfactory.com/button.png?t=Open+Gitpod&f=Open+Sans-Bold&ts=16&tc=fff&hp=20&vp=10&c=11&bgt=unicolored&bgc=0b5394" /></a>
+![image](data/img/astra-create-db.gif?raw=true)
+You will see your new database `pending` in the Dashboard.
 
+![my-pic](data/img/db-pending.png?raw=true)
 
-#### `✅.setup-04`- Setup Astra CLI
+#### ✅ 2c. Ensure the database turns to active state
 
-Go back to your gitpod terminal waiting for your token. Make sure you select the `database` shell in the bottom-right panel and provide the value where it is asked.
+To connect to the database programmatically, you need to make sure the status will change to `Active`. This happens when the database is ready, and will only take 2-3 minutes. You will also receive an email when it is ready.
 
-> 🖥️ `setup-04 output`
->
-> ```
-> [cedrick.lunven@gmail.com]
-> ASTRA_DB_APPLICATION_TOKEN=AstraCS:AAAAAAAA
-> 
-> [What's NEXT ?]
-> You are all set.(configuration is stored in ~/.astrarc) You can now:
->    • Use any command, 'astra help' will get you the list
->    • Try with 'astra db list'
->    • Enter interactive mode using 'astra'
-> 
-> Happy Coding !
-> ```
+**👁️ Expected Output**
 
-#### `✅.setup-05`- Create database `workshops` and keyspace `ecommerce` if they do not exist:
+![my-pic](data/img/db-active.png?raw=true)
 
-```bash
-astra db create workshops -k ecommerce --if-not-exist --wait
+If it's in a `standby` state you can hit `Connect` and `CQL Console` on top.
+
+You should see a message something like below.
+
+**👁️ Expected Output**
+
+```cql
+{"message":"Resuming your database, please try again shortly."}
 ```
 
-Let's analyze the command:
-| Chunk         | Description     |
-|--------------|-----------|
-| `db create` | Operation executed `create` in group `db`  |
-| `workshops` | Name of the database, our argument |
-|`-k ks_java` | Name of the keyspace, a db can contains multiple keyspaces |
-| `--if-not-exist` | Flag for itempotency creating only what if needed |
-| `--wait` | Make the command blocking until all expected operations are executed (timeout is 180s) |
+#### ✅ 2d. Create a Streaming Tenant and Topics on the "FREE" plan
 
-> **Note**: If the database already exist but has not been used for while the status will be `HIBERNATED`. The previous command will resume the db an create the new keyspace but it can take about a minute to execute.
+Here we will walk through how to create an Astra Streaming Tenant.  Start by clicking the "Create Stream" button in the left navigation pane.
 
-#### `✅.setup-06`- Register token as env variable
+![image](data/img/create-stream.png?raw=true)
 
-```
-export ASTRA_DB_APP_TOKEN=`astra config get default --key ASTRA_DB_APPLICATION_TOKEN`
-echo ${ASTRA_DB_APP_TOKEN}
-```
+On the next page, provide a name for your tenant and select a provider/region.  Click the blue "Create Tenant" button when complete.
 
-#### `✅.setup-07`- Download Secure bundle
+![image](data/img/create_streaming_tenant.png?raw=true)
 
-- Download credentials in home folder
+Note that Tenant Names must be unique across providers.  To ensure uniqueness, name it "ecommerce-" followed by your name or company.
 
-```
-astra db download-scb workshops -f /workspace/workshop-workshop-ecommerce-app/secure-bundle-workshops.zip
-```
+Now we need to create topics _within_ our tenant.  Click on the link or on the "Topics" tab.  You should see the "default" namespace with an "Add Topic" button (on the right).  Click the "Add Topic" button.
 
-- Check that the file is about `12k`
-```
-ls -l /workspace/workshop-ecommerce-app/secure-bundle-workshops.zip
-```
+![image](data/img/add_topic1.png?raw=true)
 
-*Congratulations your environment is all set, let's start the labs !*
+Name the topic "pending-orders" and make sure that the "Persistent" switch is selected.  Don't worry about the "Partitioned" switch for now.  Click the "Add Topic" button when ready.
 
+![image](data/img/add_topic2.png?raw=true)
+
+Repeat this process to add 3 more topics:
+ - picked-orders
+ - shipped-orders
+ - completed-orders
+
+When you are done, your "Topics" tab should look similar to this:
+
+![image](data/img/streaming_topics_final.png?raw=true)
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 3. Know your Gitpod
-
-Take a moment to read this entire section since it'll help you with the rest of the workshop as you'll be spending most of your time in Gitpod. If you're familiar with Gitpod, you can easily skip this entire section.
-
-The extreme left side has the explorer view(1). The top left, middle to right is where you'll be editing files(2), etc. and the bottom left, middle to right is what we will refer to as the Gitpod terminal window(3) as shown below.
-
-**👁️ Expected output**
-
-![gitpod](data/img/gitpod-01-home-annotated.png?raw=true)
-
-
-You can always get back to the file explorer view whenever by clicking on the hamburger menu on the top left followed by `View` and `Explorer` as shown below.
-
-![gitpod](data/img/Filexplorer0.png?raw=true)
-
-
-You can allow cutting and pasting into the window by clicking on `Allow` as shown below.
-
-![gitpod](data/img/allow.png?raw=true)
-
-[🏠 Back to Table of Contents](#-table-of-contents)
-
-## 4. Create your schema
+## 3. Create your schema
 
 **Introduction**
 This section will provide DDL to create three tables inside the "ecommerce" keyspace: category, price, and product.
@@ -519,9 +480,47 @@ select * from CATEGORY;
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 5. Create your Pulsar token
+## 5. Create your tokens
 
-#### ✅ 5a. View the Astra Streaming token and connection details
+#### ✅ 5a. Create the Astra DB token
+
+Following the [Manage Application Tokens docs](https://docs.datastax.com/en/astra/docs/manage-application-tokens.html) create a token with `Database Admnistrator` roles.
+
+- Go the `Organization Settings`
+
+- Go to `Token Management`
+
+- Pick the role `Database Administrator` on the select box
+
+- Click Generate token
+
+**👁️ Walkthrough**
+
+![image](data/img/astra-create-token.gif?raw=true)
+
+This is what the token page looks like. You can now download the values as a CSV. We will need those values but you can also keep this window open for use later.
+
+![image](data/img/astra-token.png?raw=true)
+
+- `appToken:` We will use it as a api token Key to interact with APIs.
+
+#### ✅ 5b. Save your DB token locally
+
+To know more about roles of each token you can have a look to [this video.](https://www.youtube.com/watch?v=TUTCLsBuUd4&list=PL2g2h-wyI4SpWK1G3UaxXhzZc6aUFXbvL&index=8)
+
+**Note: Make sure you don't close the window accidentally or otherwise - if you close this window before you copy the values, the application token is lost forever. They won't be available later for security reasons.**
+
+> **⚠️ Important**
+> ```
+> The instructor will show you on screen how to create a token 
+> but will have to destroy to token immediately for security reasons.
+> ```
+
+We are now set with the database and credentials and will incorporate them into the application as we will see below.
+
+[🏠 Back to Table of Contents](#-table-of-contents)
+
+#### ✅ 5c. View the Astra Streaming token and connection details
 
 Click on the "Connect" tab.  Take note of your tenant name and broker service URL.  It's a good idea to copy/paste those into a text editor for now.  When you're ready, click on the "Token Manager" link.
 
@@ -538,6 +537,96 @@ export ASTRA_STREAM_TENANT=ecommerce-aaron
 export ASTRA_STREAM_URL="pulsar+ssl://pulsar-gcp-uscentral1.streaming.datastax.com:6651"
 export ASTRA_STREAM_TOKEN="eyJhMBhGYBlahBlahBlahNotARealToken37hOAv9t1fHIhJLAHw"
 ```
+
+#### ✅ 5d. Save your Streaming token locally
+
+## 6. Setup your application
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/datastaxdevs/workshop-ecommerce-app)
+
+### Know your Gitpod
+
+Take a moment to read this entire section since it'll help you with the rest of the workshop as you'll be spending most of your time in Gitpod. If you're familiar with Gitpod, you can easily skip this entire section.
+
+The extreme left side has the explorer view(1). The top left, middle to right is where you'll be editing files(2), etc. and the bottom left, middle to right is what we will refer to as the Gitpod terminal window(3) as shown below.
+
+**👁️ Expected output**
+
+![gitpod](data/img/gitpod-01-home-annotated.png?raw=true)
+
+
+You can always get back to the file explorer view whenever by clicking on the hamburger menu on the top left followed by `View` and `Explorer` as shown below.
+
+![gitpod](data/img/Filexplorer0.png?raw=true)
+
+
+You can allow cutting and pasting into the window by clicking on `Allow` as shown below.
+
+![gitpod](data/img/allow.png?raw=true)
+
+
+✅ **6a: Enter the token**
+
+To run the application you need to provide the credentials and identifier to the application. you will have to provide 4 values in total as shown below
+
+
+Copy the environment sample file as below.
+
+```
+cp .env.example .env
+```
+
+Open the `.env` file as below.
+
+```
+gp open .env
+```
+
+- In Astra DB go back to home page by clicking the logo
+
+- Select you database `demos` in the left panel and then copy values for `cloud-region` and `database-id` (clusterID) from the details page as shown below.
+
+- *The DatabaseID is located on the home page*
+
+![Ecom Welcome Screen](data/img/astra-config-1.png?raw=true)
+
+- *The Database region (and keyspace) are located in the details page*
+
+![Ecom Welcome Screen](data/img/astra-config-2.png?raw=true)
+
+- Replace `application-token` with values shown on the Astra token screen or picking the values from the CSV token file your dowloaded before including the AstraCS: part of the token.
+
+
+- *Make sure the Token looks something like (with AstraCS: preceeding `AstraCS:xxxxxxxxxxx:yyyyyyyyyyy`*
+
+```yaml
+# Copy this file to .env and fill in the appropriate values. Refer to README.md
+# for instructions on where to find them.
+export ASTRA_DB_ID=
+export ASTRA_DB_REGION=
+export ASTRA_DB_APPLICATION_TOKEN=
+export ASTRA_DB_KEYSPACE=ecommerce
+export ASTRA_STREAM_TENANT=
+export ASTRA_STREAM_URL=
+export ASTRA_STREAM_TOKEN=
+```
+
+Make sure to inject the environment variables by running the following command
+
+```
+source .env
+```
+
+Verify that the environment variables are properly setup with the following command
+
+```
+env | grep -i astra
+```
+
+You should see four environment variables (not shown here).
+
+
+[🏠 Back to Table of Contents](#-table-of-contents)
 
 ## 7. Run Unit Tests
 
@@ -840,18 +929,17 @@ and voila, just like that we are done setting up user profile with Google. We ca
 Did you put items in your cart and check out?  You will likely have an order waiting in your "pending-orders" topic.  To simulate moving the orders between topics, a small Order Processor was created.  To build and run:
 
 ```
-source /workspace/workshop-ecommerce-app/.env
-cd /workspace/workshop-ecommerce-app/backend/orderProcessor
+cd orderProcessor
 mvn clean install
 ```
 
 Once that process completes, have a look at the `target/` directory.  You should see a JAR named `ecom-0.0.1-SNAPSHOT-spring-boot.jar`.  To process an order on the "pending-orders" topic, you need to have it "picked."  To simulate a picking process, try this:
 
 ```
-java -jar /workspace/workshop-ecommerce-app/backend/orderProcessor/target/ecom-0.0.1-SNAPSHOT-spring-boot.jar pick
+java -jar ecom-0.0.1-SNAPSHOT-spring-boot.jar pick
 ```
 
-If an order is present (**you can create an order**), you should see the order JSON get processed and moved to the next topic:
+If an order is present, you should see the order JSON get processed and moved to the next topic:
 
 ```
 {"cartId":"b8a5bd07-2337-44de-8890-582e88e29754","cartName":"b8a5bd07-2337-44de-8890-582e88e29754","orderId":"e8ecd3b0-498b-11ed-b5a7-fbd1f5143654","userId":"f1dbd2c0-bda4-4ccc-93dd-4aecd78758f5","productList":[{"productId":"DSS821XL","productName":"DataStax Gray Track Jacket","productQty":1,"productPrice":44.99},{"productId":"APC30XL","productName":"Apache Cassandra 3.0 Contributor T-Shirt","productQty":1,"productPrice":15.99}],"orderStatus":"PENDING","orderTimestamp":"Oct 11, 2022, 5:41:17 PM","orderSubtotal":60.98,"orderShippingHandling":4,"orderTax":3.05,"orderTotal":68.03,"shippingAddress":{"street":"123 Limon Gala Rd.","city":"Maple Grove","stateProvince":"Minnesota","postalCode":"55369","country":"United States"}}
@@ -862,7 +950,7 @@ Pushed order e8ecd3b0-498b-11ed-b5a7-fbd1f5143654 to ecommerce-aaron/default/pic
 
 # Done?
 
-Congratulations: you made to the end of today's workshop. You will notice that the application is still incomplete as we're evolving it. More building to follow!!!
+Congratulations: you made it to the end of today's workshop. You will notice that the application is still incomplete as we're evolving it. More building to follow!!!
 
 ![Badge](data/img/build-an-ecommerce-app.png)
 
