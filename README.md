@@ -606,6 +606,9 @@ export ASTRA_DB_ID=
 export ASTRA_DB_REGION=
 export ASTRA_DB_APPLICATION_TOKEN=
 export ASTRA_DB_KEYSPACE=ecommerce
+export ASTRA_STREAM_TENANT=
+export ASTRA_STREAM_URL=
+export ASTRA_STREAM_TOKEN=
 ```
 
 Make sure to inject the environment variables by running the following command
@@ -921,9 +924,33 @@ and voila, just like that we are done setting up user profile with Google. We ca
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
+✅ **9h: Process your order(s)**
+
+Did you put items in your cart and check out?  You will likely have an order waiting in your "pending-orders" topic.  To simulate moving the orders between topics, a small Order Processor was created.  To build and run:
+
+```
+cd orderProcessor
+mvn clean install
+```
+
+Once that process completes, have a look at the `target/` directory.  You should see a JAR named `ecom-0.0.1-SNAPSHOT-spring-boot.jar`.  To process an order on the "pending-orders" topic, you need to have it "picked."  To simulate a picking process, try this:
+
+```
+java -jar ecom-0.0.1-SNAPSHOT-spring-boot.jar pick
+```
+
+If an order is present, you should see the order JSON get processed and moved to the next topic:
+
+```
+{"cartId":"b8a5bd07-2337-44de-8890-582e88e29754","cartName":"b8a5bd07-2337-44de-8890-582e88e29754","orderId":"e8ecd3b0-498b-11ed-b5a7-fbd1f5143654","userId":"f1dbd2c0-bda4-4ccc-93dd-4aecd78758f5","productList":[{"productId":"DSS821XL","productName":"DataStax Gray Track Jacket","productQty":1,"productPrice":44.99},{"productId":"APC30XL","productName":"Apache Cassandra 3.0 Contributor T-Shirt","productQty":1,"productPrice":15.99}],"orderStatus":"PENDING","orderTimestamp":"Oct 11, 2022, 5:41:17 PM","orderSubtotal":60.98,"orderShippingHandling":4,"orderTax":3.05,"orderTotal":68.03,"shippingAddress":{"street":"123 Limon Gala Rd.","city":"Maple Grove","stateProvince":"Minnesota","postalCode":"55369","country":"United States"}}
+Pushed order e8ecd3b0-498b-11ed-b5a7-fbd1f5143654 to ecommerce-aaron/default/picked-orders
+```
+
+[🏠 Back to Table of Contents](#-table-of-contents)
+
 # Done?
 
-Congratulations: you made to the end of today's workshop. You will notice that the application is still incomplete as we're evolving it. More building to follow!!!
+Congratulations: you made it to the end of today's workshop. You will notice that the application is still incomplete as we're evolving it. More building to follow!!!
 
 ![Badge](data/img/build-an-ecommerce-app.png)
 
