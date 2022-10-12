@@ -929,6 +929,7 @@ and voila, just like that we are done setting up user profile with Google. We ca
 Did you put items in your cart and check out?  You will likely have an order waiting in your "pending-orders" topic.  To simulate moving the orders between topics, a small Order Processor was created.  To build and run:
 
 ```
+source .env
 cd orderProcessor
 mvn clean install
 ```
@@ -936,7 +937,7 @@ mvn clean install
 Once that process completes, have a look at the `target/` directory.  You should see a JAR named `ecom-0.0.1-SNAPSHOT-spring-boot.jar`.  To process an order on the "pending-orders" topic, you need to have it "picked."  To simulate a picking process, try this:
 
 ```
-java -jar ecom-0.0.1-SNAPSHOT-spring-boot.jar pick
+java -jar target/ecom-0.0.1-SNAPSHOT-spring-boot.jar pick
 ```
 
 If an order is present, you should see the order JSON get processed and moved to the next topic:
