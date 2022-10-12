@@ -399,17 +399,17 @@ VALUES ('LN3552XL','LN355','Your Face is an @Autowired @Bean T-Shirt','NerdShirt
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
 VALUES ('LN355XL','LN355','Your Face is an @Autowired @Bean T-Shirt','NerdShirts','NS102','Men''s 3x Large "Your Face...Autowired" T-Shirt','Everyone knows that one person who overuses the "your face" jokes.',{'size':'3x Large','material':'cotton, polyester','cut':'men''s','color':'black'},{'ln355.png'});
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
-VALUES ('DSA1121S','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - Small','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'Small','material':'cotton, polyester','color':'black'},{'apc30.jpg'});
+VALUES ('DSA1121S','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - Small','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'Small','material':'cotton, polyester','color':'black'},{'dsa1121.jpg'});
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
-VALUES ('DSA1121M','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - Medium','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'Medium','material':'cotton, polyester','color':'black'},{'apc30.jpg'});
+VALUES ('DSA1121M','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - Medium','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'Medium','material':'cotton, polyester','color':'black'},{'dsa1121.jpg'});
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
-VALUES ('DSA1121L','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - Large','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'Large','material':'cotton, polyester','color':'black'},{'apc30.jpg'});
+VALUES ('DSA1121L','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - Large','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'Large','material':'cotton, polyester','color':'black'},{'dsa1121.jpg'});
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
-VALUES ('DSA1121XL','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - Extra Large','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'Extra Large','material':'cotton, polyester','color':'black'},{'apc30.jpg'});
+VALUES ('DSA1121XL','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - Extra Large','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'Extra Large','material':'cotton, polyester','color':'black'},{'dsa1121.jpg'});
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
-VALUES ('DSA11212XL','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - 2X Large','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'2X Large','material':'cotton, polyester','color':'black'},{'apc30.jpg'});
+VALUES ('DSA11212XL','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - 2X Large','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'2X Large','material':'cotton, polyester','color':'black'},{'dsa1121.jpg'});
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
-VALUES ('DSA11213XL','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - 3X Large','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'3X Large','material':'cotton, polyester','color':'black'},{'apc30.jpg'});
+VALUES ('DSA11213XL','DSA1121','DataStax Astra "One Team" Long Sleeve Tee','DataStax','DSA1121','DataStax Astra "One Team" Long Sleeve Tee - 3X Large','Given out at the internal summit, show how proud you are to talk about the world''s best multi-region, multi-cloud, serverless database!',{'size':'3X Large','material':'cotton, polyester','color':'black'},{'dsa1121.jpg'});
 INSERT INTO product(product_id,product_group,name,brand,model_number,short_desc,long_desc,specifications,images)
 VALUES ('APC30S','APC30','Apache Cassandra 3.0 Contributor T-Shirt','Apache Foundation','APC30','Apache Cassandra 3.0 Contributor T-Shirt - Small','Own a piece of Cassandra history with this Apache Cassandra 3.0 "Contributor" shirt.  Given out to all of the contributors to the project in 2016, shows the unmistakable Cassandra Eye on the front, with the
 engine rebuild" on the back.',{'size':'Small','material':'cotton, polyester','color':'black'},{'apc30.jpg'});
@@ -510,6 +510,12 @@ To know more about roles of each token you can have a look to [this video.](http
 
 **Note: Make sure you don't close the window accidentally or otherwise - if you close this window before you copy the values, the application token is lost forever. They won't be available later for security reasons.**
 
+> **⚠️ Important**
+> ```
+> The instructor will show you on screen how to create a token 
+> but will have to destroy to token immediately for security reasons.
+> ```
+
 We are now set with the database and credentials and will incorporate them into the application as we will see below.
 
 [🏠 Back to Table of Contents](#-table-of-contents)
@@ -598,8 +604,11 @@ gp open .env
 # for instructions on where to find them.
 export ASTRA_DB_ID=
 export ASTRA_DB_REGION=
-export ASTRA_DB_APPLICATION_TOKEN=
+export ASTRA_DB_APP_TOKEN=
 export ASTRA_DB_KEYSPACE=ecommerce
+export ASTRA_STREAM_TENANT=
+export ASTRA_STREAM_URL=
+export ASTRA_STREAM_TOKEN=
 ```
 
 Make sure to inject the environment variables by running the following command
@@ -717,6 +726,10 @@ Consent to using APIs and services and you should finally be presented a screen 
 Pick the appropriate values as shown below and complete the consent.
 
 ![ouath](data/img/Oauthconsent2.png?raw=true)
+
+Make sure the project is setup for internal testing (and not for production) as shown below with the "MAKE INTERNAL".
+
+![ouath](data/img/Oauthconsent3.png?raw=true)
 
 Now click on the `credentials` tab, `+ CREATE CREDENTIALS` tab and finally the `OAuth Client ID` dropdown as shown in the following screen.
 
@@ -911,9 +924,34 @@ and voila, just like that we are done setting up user profile with Google. We ca
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
+✅ **9h: Process your order(s)**
+
+Did you put items in your cart and check out?  You will likely have an order waiting in your "pending-orders" topic.  To simulate moving the orders between topics, a small Order Processor was created.  To build and run:
+
+```
+source .env
+cd orderProcessor
+mvn clean install
+```
+
+Once that process completes, have a look at the `target/` directory.  You should see a JAR named `ecom-0.0.1-SNAPSHOT-spring-boot.jar`.  To process an order on the "pending-orders" topic, you need to have it "picked."  To simulate a picking process, try this:
+
+```
+java -jar target/ecom-0.0.1-SNAPSHOT-spring-boot.jar pick
+```
+
+If an order is present, you should see the order JSON get processed and moved to the next topic:
+
+```
+{"cartId":"b8a5bd07-2337-44de-8890-582e88e29754","cartName":"b8a5bd07-2337-44de-8890-582e88e29754","orderId":"e8ecd3b0-498b-11ed-b5a7-fbd1f5143654","userId":"f1dbd2c0-bda4-4ccc-93dd-4aecd78758f5","productList":[{"productId":"DSS821XL","productName":"DataStax Gray Track Jacket","productQty":1,"productPrice":44.99},{"productId":"APC30XL","productName":"Apache Cassandra 3.0 Contributor T-Shirt","productQty":1,"productPrice":15.99}],"orderStatus":"PENDING","orderTimestamp":"Oct 11, 2022, 5:41:17 PM","orderSubtotal":60.98,"orderShippingHandling":4,"orderTax":3.05,"orderTotal":68.03,"shippingAddress":{"street":"123 Limon Gala Rd.","city":"Maple Grove","stateProvince":"Minnesota","postalCode":"55369","country":"United States"}}
+Pushed order e8ecd3b0-498b-11ed-b5a7-fbd1f5143654 to ecommerce-aaron/default/picked-orders
+```
+
+[🏠 Back to Table of Contents](#-table-of-contents)
+
 # Done?
 
-Congratulations: you made to the end of today's workshop. You will notice that the application is still incomplete as we're evolving it. More building to follow!!!
+Congratulations: you made it to the end of today's workshop. You will notice that the application is still incomplete as we're evolving it. More building to follow!!!
 
 ![Badge](data/img/build-an-ecommerce-app.png)
 
