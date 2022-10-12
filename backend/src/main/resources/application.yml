@@ -21,7 +21,7 @@ spring:
 
 astra:
   api:
-    application-token: ${ASTRA_DB_APPLICATION_TOKEN}
+    application-token: ${ASTRA_DB_APP_TOKEN}
     database-id: ${ASTRA_DB_ID}
     database-region: ${ASTRA_DB_REGION}
     secure-connect-bundle: /workspace/workshop-ecommerce-app/secure-connect-workshops.zip
