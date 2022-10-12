@@ -604,7 +604,7 @@ gp open .env
 # for instructions on where to find them.
 export ASTRA_DB_ID=
 export ASTRA_DB_REGION=
-export ASTRA_DB_APPLICATION_TOKEN=
+export ASTRA_DB_APP_TOKEN=
 export ASTRA_DB_KEYSPACE=ecommerce
 export ASTRA_STREAM_TENANT=
 export ASTRA_STREAM_URL=
