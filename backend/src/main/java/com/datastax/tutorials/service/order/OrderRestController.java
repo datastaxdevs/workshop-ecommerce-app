@@ -70,8 +70,8 @@ public class OrderRestController {
 	private UserCartsRepository userCartRepo;
 	private CartProductsRepository cartProductsRepo;
 	
-	//private PulsarClient client;
-	//private Producer<byte[]> orderProducer;
+	private PulsarClient client;
+	private Producer<byte[]> orderProducer;
 	
 	// assuming standard shipping and handling of $4.00 US
 	private static final BigDecimal SHIPPING_HANDLING = new BigDecimal(4.00);
@@ -102,27 +102,27 @@ public class OrderRestController {
 		cartProductsRepo = cPRepo;
         
 		// Create Pulsar/Astra Streaming client
-//		try {
-//			client = PulsarClient.builder()
-//			        .serviceUrl(SERVICE_URL)
-//			        .authentication(
-//			            AuthenticationFactory.token(YOUR_PULSAR_TOKEN)
-//			        )
-//			        .build();
-//		} catch (PulsarClientException e) {
+		try {
+			client = PulsarClient.builder()
+			        .serviceUrl(SERVICE_URL)
+			        .authentication(
+			            AuthenticationFactory.token(YOUR_PULSAR_TOKEN)
+			        )
+			        .build();
+		} catch (PulsarClientException e) {
 			// issue building the client stream connection
-//			e.printStackTrace();
-//		}
+			e.printStackTrace();
+		}
 
         // Create producer on a topic
-//        try {
-//			orderProducer = client.newProducer()
-//			        .topic(PENDING_ORDER_TOPIC)
-//			        .create();
-//		} catch (PulsarClientException e) {
+        try {
+			orderProducer = client.newProducer()
+			        .topic(PENDING_ORDER_TOPIC)
+			        .create();
+		} catch (PulsarClientException e) {
 			// issue creating the streaming message producer
-//			e.printStackTrace();
-//		}
+			e.printStackTrace();
+		}
 	}
 
     /**
@@ -333,7 +333,8 @@ public class OrderRestController {
     	OrderPrimaryKey oKey = new OrderPrimaryKey();
     	oKey.setOrderId(orderid);
 
-    	orderE.setOrderStatus(NEW_ORDER_STATUS.name());
+    	// Only updating status on order_status_history and order_by_user
+    	//orderE.setOrderStatus(NEW_ORDER_STATUS.name());
     	orderE.setOrderSubtotal(order.getOrderSubtotal());
     	orderE.setOrderShippingHandling(order.getOrderShippingHandling());
     	orderE.setOrderTax(order.getOrderTax());
@@ -392,7 +393,8 @@ public class OrderRestController {
     	// Adjust request and return it as the response
     	order.setOrderId(orderid);
     	order.setUserId(userid);
-    	order.setOrderStatus(NEW_ORDER_STATUS.name());
+    	// Only updating status on order_status_history and order_by_user
+    	//order.setOrderStatus(NEW_ORDER_STATUS.name());
     	order.setOrderTimestamp(orderTimeStamp);
     	
     	// put on Pulsar topic!
@@ -548,32 +550,8 @@ public class OrderRestController {
     
     private void sendToOrderStream(String message) throws Exception {
         // Send a message to the topic
-//        orderProducer.send(message.getBytes());
+        orderProducer.send(message.getBytes());
     }
-    
-//    private Order mapOrder(OrderEntity entity) {
-//    	Order order = new Order();
-//    	
-//    	// key columns
-//    	OrderPrimaryKey key = entity.getKey();
-//    	order.setOrderId(key.getOrderId());
-//    	order.setProductName(key.getProductName());
-//    	order.setProductId(key.getProductId());
-//    	// payload columns
-//    	order.setProductQty(entity.getProductQty());
-//    	order.setOrderStatus(entity.getOrderStatus());
-//    	order.setProductPrice(entity.getProductPrice());
-//    	// not storing timestamp, but deriving it from orderId (TimeUUID)
-//    	order.setOrderTimestamp(new Date(key.getOrderId().timestamp()));
-//    	order.setOrderSubtotal(entity.getOrderSubtotal());
-//    	order.setOrderShippingHandling(entity.getOrderShippingHandling());
-//    	order.setOrderTax(entity.getOrderTax());
-//    	order.setOrderTotal(entity.getOrderTotal());
-//    	order.setPaymentMethod(entity.getPaymentMethod());
-//    	order.setShippingAddress(mapAddress(entity.getShippingAddress()));
-//    	
-//    	return order;
-//    }
  
     private List<OrderByUser> mapOrderByUser(List<OrderByUserEntity> entityList) {
     	List<OrderByUser> returnVal = new ArrayList<OrderByUser>();
@@ -690,9 +668,9 @@ public class OrderRestController {
 
     protected void finalize() throws PulsarClientException {
         // Close the stream producer
-//        orderProducer.close();
+        orderProducer.close();
         
         // Close the stream client
-//        client.close();
+        client.close();
     }
 }
