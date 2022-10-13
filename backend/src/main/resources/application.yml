@@ -13,8 +13,8 @@ spring:
       client:
         registration:
           google:
-            client-id: change_me
-            client-secret: change_me
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
   data:
     cassandra:
       schema-action: create-if-not-exists
@@ -24,14 +24,14 @@ astra:
     application-token: ${ASTRA_DB_APP_TOKEN}
     database-id: ${ASTRA_DB_ID}
     database-region: ${ASTRA_DB_REGION}
-    secure-connect-bundle: /workspace/workshop-ecommerce-app/secure-connect-workshops.zip
+    cross-region-failback: false
   cql:
     enabled: true
     download-scb:
       enabled: true
     driver-config:
       basic:
-        session-keyspace: ecommerce
+        session-keyspace: ${ASTRA_DB_KEYSPACE}
         request:
           timeout: 8s
           consistency: LOCAL_QUORUM
