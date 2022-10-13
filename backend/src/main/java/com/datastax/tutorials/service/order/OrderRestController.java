@@ -333,7 +333,8 @@ public class OrderRestController {
     	OrderPrimaryKey oKey = new OrderPrimaryKey();
     	oKey.setOrderId(orderid);
 
-    	orderE.setOrderStatus(NEW_ORDER_STATUS.name());
+    	// Only updating status on order_status_history and order_by_user
+    	//orderE.setOrderStatus(NEW_ORDER_STATUS.name());
     	orderE.setOrderSubtotal(order.getOrderSubtotal());
     	orderE.setOrderShippingHandling(order.getOrderShippingHandling());
     	orderE.setOrderTax(order.getOrderTax());
@@ -392,7 +393,8 @@ public class OrderRestController {
     	// Adjust request and return it as the response
     	order.setOrderId(orderid);
     	order.setUserId(userid);
-    	order.setOrderStatus(NEW_ORDER_STATUS.name());
+    	// Only updating status on order_status_history and order_by_user
+    	//order.setOrderStatus(NEW_ORDER_STATUS.name());
     	order.setOrderTimestamp(orderTimeStamp);
     	
     	// put on Pulsar topic!
@@ -550,30 +552,6 @@ public class OrderRestController {
         // Send a message to the topic
         orderProducer.send(message.getBytes());
     }
-    
-//    private Order mapOrder(OrderEntity entity) {
-//    	Order order = new Order();
-//    	
-//    	// key columns
-//    	OrderPrimaryKey key = entity.getKey();
-//    	order.setOrderId(key.getOrderId());
-//    	order.setProductName(key.getProductName());
-//    	order.setProductId(key.getProductId());
-//    	// payload columns
-//    	order.setProductQty(entity.getProductQty());
-//    	order.setOrderStatus(entity.getOrderStatus());
-//    	order.setProductPrice(entity.getProductPrice());
-//    	// not storing timestamp, but deriving it from orderId (TimeUUID)
-//    	order.setOrderTimestamp(new Date(key.getOrderId().timestamp()));
-//    	order.setOrderSubtotal(entity.getOrderSubtotal());
-//    	order.setOrderShippingHandling(entity.getOrderShippingHandling());
-//    	order.setOrderTax(entity.getOrderTax());
-//    	order.setOrderTotal(entity.getOrderTotal());
-//    	order.setPaymentMethod(entity.getPaymentMethod());
-//    	order.setShippingAddress(mapAddress(entity.getShippingAddress()));
-//    	
-//    	return order;
-//    }
  
     private List<OrderByUser> mapOrderByUser(List<OrderByUserEntity> entityList) {
     	List<OrderByUser> returnVal = new ArrayList<OrderByUser>();

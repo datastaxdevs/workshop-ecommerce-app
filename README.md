@@ -512,7 +512,7 @@ To know more about roles of each token you can have a look to [this video.](http
 
 > **⚠️ Important**
 > ```
-> The instructor will show you on screen how to create a token 
+> The instructor will show you on screen how to create a token
 > but will have to destroy to token immediately for security reasons.
 > ```
 
@@ -609,6 +609,8 @@ export ASTRA_DB_KEYSPACE=ecommerce
 export ASTRA_STREAM_TENANT=
 export ASTRA_STREAM_URL=
 export ASTRA_STREAM_TOKEN=
+export GOOGLE_CLIENT_ID=
+export GOOGLE_CLIENT_SECRET=
 ```
 
 Make sure to inject the environment variables by running the following command
@@ -766,19 +768,7 @@ Now you're ready to fetch the credentials  by using the copy 'n paste icons on r
 
 ![ouath](data/img/Oauthcred3.png?raw=true)
 
-You can copy and paste them in the `application.yml` file as entries for Google SSO authorization as indicated below.
-
-```bash
-mv /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml.sample /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml
-```
-
-and opening and plugging in the values `Your Client ID`
-and `Your Client Secret` respectively by using the following command
-
-```
-gp open /workspace/workshop-ecommerce-app/backend/src/main/resources/application.yml
-```
-
+You can copy and paste them in the `.env` file as entries for Google `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 

@@ -2,7 +2,7 @@ server:
   port: 8080
   error:
     include-stacktrace: always
-    
+
 spring:
   application:
     name: ecom
@@ -11,8 +11,8 @@ spring:
       client:
         registration:
           google:
-            client-id: change_me
-            client-secret: change_me
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
   data:
     cassandra:
       schema-action: create-if-not-exists
@@ -22,9 +22,10 @@ astra:
     application-token: ${ASTRA_DB_APPLICATION_TOKEN}
     database-id: ${ASTRA_DB_ID}
     database-region: ${ASTRA_DB_REGION}
+    cross-region-failback: false
   cql:
     enabled: true
-    download-scb: 
+    download-scb:
       enabled: true
     driver-config:
       basic:
@@ -39,4 +40,3 @@ astra:
           set-keyspace-timeout: 10s
         control-connection:
           timeout: 10s
-        
