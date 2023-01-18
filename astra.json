@@ -12,7 +12,6 @@
                   "https://www.youtube.com/watch?v=h7BEsnMk1_E"
                  ],
   "tags": [
-    Java, Spring Boot, Spring Data, Astra DB, Cassandra, Astra Streaming
     { "name": "java" },
     { "name": "spring-boot" },
     { "name":"spring-data" },
