@@ -3,7 +3,8 @@
   "description": "Are you building or do you support an e-commerce website? If so, then this content is for you!  Worldwide digital sales in 2020 eclipsed four trillion dollars (USD). Businesses that want to compete, need a high performing e-commerce website. Here, we will demonstrate how to build a high performing persistence layer with DataStax ASTRA DB.",
   "duration": "50 minutes",
   "skillLevel": "Advanced",
-  "language":"java",
+  "language":["java"],
+  "stack":["spring"],
   "githubUrl": "https://github.com/datastaxdevs/workshop-ecommerce-app",
   "badge": "https://api.badgr.io/public/badges/By3medzRRv6DYaPPJrOEyw/image?imageVersion=1",
   "youTubeUrl": [ "https://www.youtube.com/watch?v=4djnV5wZSeg",
@@ -20,5 +21,5 @@
     { "name":"streaming" }
   ],
   "category": "workshop",
-  "usecases": "Retail"
+  "usecases": ["Retail"]
 }
