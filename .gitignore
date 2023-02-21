@@ -28,5 +28,6 @@ dist
 .factorypath
 .templates
 template.config.js
-.env
+.java_version
+.env*
 backend/src/main/resources/static/*
