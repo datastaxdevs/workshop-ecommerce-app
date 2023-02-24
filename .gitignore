@@ -3,8 +3,9 @@
 .classpath
 .project
 .cache
+.java-version
 
-# do not commit you token
+# do not commit your token
 application.yaml
 application.yml
 node_modules
@@ -27,5 +28,6 @@ dist
 .factorypath
 .templates
 template.config.js
-.env
+.java_version
+.env*
 backend/src/main/resources/static/*

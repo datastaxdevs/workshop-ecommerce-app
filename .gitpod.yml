@@ -3,6 +3,13 @@ image:
 tasks:
   - name: setup
     before: |
+      # REMOVE USER VALIDATION -Y ON JAVA 17 INSTALLATION
+      sed -i '1,$s/sdkman_auto_answer=false/sdkman_auto_answer=true/' /home/gitpod/.sdkman/etc/config
+      sed -i '1,$s/sdkman_selfupdate_enable=true/sdkman_selfupdate_enable=false/' /home/gitpod/.sdkman/etc/config
+      
+      # JAVA 17 INSTALL
+      sdk install java
+
       mvn install -f backend/pom.xml -DskipTests
       npm --prefix ui install
       npm --prefix ui run build

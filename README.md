@@ -37,8 +37,8 @@ Complete the homework to earn the badge for this workshop (**awarded only at the
 4. [Populate the dataset](#4-populate-the-data)
 5. [Create a token](#5-create-your-token)
 6. [Setup your application](#6-setup-your-application)
-7. [Run Unit Tests](#7-run-unit-tests)
-8. [Enable Social Login](#8-enable-social-login)
+7. [Enable Social Login](#7-enable-social-login)
+8. [Run Unit Tests](#8-run-unit-tests)
 9. [Start the Application](#9-start-the-application)
 
 ## 1. Introduction
@@ -57,7 +57,7 @@ You can skip to step 2c if you have already created a keyspace `ecommerce` in da
 
 #### ✅ 2a. Register
 
-If you do not have an account yet, register and sign in to Astra DB: This is FREE and NO CREDIT CARD is required. [https://astra.datastax.com](https://astra.dev/5-4): You can use your `Github`, `Google` accounts or register with an `email`.
+If you do not have an account yet, register and sign in to Astra DB: This is FREE and NO CREDIT CARD is required. [https://astra.datastax.com](https://astra.dev/yt-11-30): You can use your `Github`, `Google` accounts or register with an `email`.
 
 _Make sure to chose a password with minimum 8 characters, containing upper and lowercase letters, at least one number and special character_
 
@@ -630,88 +630,7 @@ You should see four environment variables (not shown here).
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
-## 7. Run Unit Tests
-
-The application is now set you should be able to interact with your DB. Let's demonstrate some capabilities.
-
-✅ **7a: Use CqlSession**
-
-Interaction with Cassandra are implemented in Java through drivers and the main Class is `CqlSession`.
-
-Higher level frameworks like Spring, Spring Data, or even quarkus will rely on this object so let's make sure it is part of your Spring context with a `@SpringBootTest`.
-
-Let's change to the sub-directory from the terminal window as shown below.
-
-```
-cd backend
-```
-
-Let's run the first test with the following command.
-
-
-```bash
-mvn test -Dtest=com.datastax.tutorials.Test01_Connectivity
-```
-
-**👁️ Expected output**
-
-```bash
-[..init...]
-Execute some Cql (CqlSession)
-+ Your Keyspace: sag_ecommerce
-+ Product Categories:
-Clothing
-Cups and Mugs
-Tech Accessories
-Wall Decor
-List Databases available in your Organization (AstraClient)
-+ Your OrganizationID: e195fbea-79b6-4d60-9291-063d8c9e6364
-+ Your Databases:
-workshops	 : id=8c98b922-aeb0-4435-a0d5-a2788e23dff8, region=eu-central-1
-sample_apps	 : id=c2d6bd3d-6112-47f6-9b66-b033e6174f0e, region=us-east-1
-sdk_tests	 : id=a52f5879-3476-42d2-b5c9-81b18fc6d103, region=us-east-1
-metrics	 : id=d7ded041-3cfb-4dd4-9957-e20003c3ebe2, region=us-east-1
-```
-
-✅ **7b: Working With Spring Data**
-
-Spring Data allows Mapping `Object <=> Table` based on annotation at the java bean level. Then by convention CQL query will be executed under the hood.
-
-```bash
-mvn test -Dtest=com.datastax.tutorials.Test02_SpringData
-```
-
-**👁️ Expected output**
-
-```bash
-Categories:
-- Clothing with children:[T-Shirts, Hoodies, Jackets]
-- Cups and Mugs with children:[Cups, Coffee Mugs, Travel Mugs]
-- Tech Accessories with children:[Mousepads, Wrist Rests, Laptop Covers]
-- Wall Decor with children:[Posters, Wall Art]
-```
-
-✅ **7c: Working With Rest Controller**
-
-`TestRestTemplate` is a neat way to test a web controller. The application will start on a random port with `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`
-
-```bash
-mvn test -Dtest=com.datastax.tutorials.Test03_RestController
-```
-
-**👁️ Expected output**
-
-```bash
-List Categories:
-Clothing
-Cups and Mugs
-Tech Accessories
-Wall Decor
-```
-
-[🏠 Back to Table of Contents](#-table-of-contents)
-
-## 8. Enable Social Login
+## 7. Enable Social Login
 
 Now that we're done with tests, let's `cd` to the top directory.
 
@@ -769,6 +688,87 @@ Now you're ready to fetch the credentials  by using the copy 'n paste icons on r
 ![ouath](data/img/Oauthcred3.png?raw=true)
 
 You can copy and paste them in the `.env` file as entries for Google `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+
+[🏠 Back to Table of Contents](#-table-of-contents)
+
+## 8. Run Unit Tests
+
+The application is now set you should be able to interact with your DB. Let's demonstrate some capabilities.
+
+✅ **8a: Use CqlSession**
+
+Interaction with Cassandra are implemented in Java through drivers and the main Class is `CqlSession`.
+
+Higher level frameworks like Spring, Spring Data, or even quarkus will rely on this object so let's make sure it is part of your Spring context with a `@SpringBootTest`.
+
+Let's change to the sub-directory from the terminal window as shown below.
+
+```
+cd backend
+```
+
+Let's run the first test with the following command.
+
+
+```bash
+mvn test -Dtest=com.datastax.tutorials.Test01_Connectivity
+```
+
+**👁️ Expected output**
+
+```bash
+[..init...]
+Execute some Cql (CqlSession)
++ Your Keyspace: sag_ecommerce
++ Product Categories:
+Clothing
+Cups and Mugs
+Tech Accessories
+Wall Decor
+List Databases available in your Organization (AstraClient)
++ Your OrganizationID: e195fbea-79b6-4d60-9291-063d8c9e6364
++ Your Databases:
+workshops	 : id=8c98b922-aeb0-4435-a0d5-a2788e23dff8, region=eu-central-1
+sample_apps	 : id=c2d6bd3d-6112-47f6-9b66-b033e6174f0e, region=us-east-1
+sdk_tests	 : id=a52f5879-3476-42d2-b5c9-81b18fc6d103, region=us-east-1
+metrics	 : id=d7ded041-3cfb-4dd4-9957-e20003c3ebe2, region=us-east-1
+```
+
+✅ **8b: Working With Spring Data**
+
+Spring Data allows Mapping `Object <=> Table` based on annotation at the java bean level. Then by convention CQL query will be executed under the hood.
+
+```bash
+mvn test -Dtest=com.datastax.tutorials.Test02_SpringData
+```
+
+**👁️ Expected output**
+
+```bash
+Categories:
+- Clothing with children:[T-Shirts, Hoodies, Jackets]
+- Cups and Mugs with children:[Cups, Coffee Mugs, Travel Mugs]
+- Tech Accessories with children:[Mousepads, Wrist Rests, Laptop Covers]
+- Wall Decor with children:[Posters, Wall Art]
+```
+
+✅ **8c: Working With Rest Controller**
+
+`TestRestTemplate` is a neat way to test a web controller. The application will start on a random port with `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`
+
+```bash
+mvn test -Dtest=com.datastax.tutorials.Test03_RestController
+```
+
+**👁️ Expected output**
+
+```bash
+List Categories:
+Clothing
+Cups and Mugs
+Tech Accessories
+Wall Decor
+```
 
 [🏠 Back to Table of Contents](#-table-of-contents)
 
