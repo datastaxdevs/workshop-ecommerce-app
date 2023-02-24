@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.datastax.astra.sdk.AstraClient;
-import com.datastax.astra.sdk.databases.domain.Database;
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.dtsx.astra.sdk.db.domain.Database;
 
 @SpringBootTest
 public class Test01_Connectivity {
