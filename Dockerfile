@@ -23,14 +23,6 @@ ADD . /app/
 # set Node.js working directory
 WORKDIR /app/ui/
 
-# install Node.js
-#RUN apt-get update && apt-get install -y \
-#    software-properties-common \
-#    npm
-#RUN npm install npm@14.18.2 -g && \
-#    npm install n -g && \
-#    n 14.18.2
-
 RUN apt-get update && apt-get install -y \
   ca-certificates \
   curl
@@ -38,15 +30,14 @@ RUN apt-get update && apt-get install -y \
 ENV NODE_PATH $NODE_HOME/lib/node_modules
 ENV PATH $NODE_HOME/bin:$PATH
 
+# install Node.js binary
 RUN curl https://nodejs.org/dist/v$NODE_VERSION/$NODE_PACKAGE.tar.gz | tar -xzC /opt/
 
 # output Java version
 RUN java -version
 
 # build web UI
-#RUN npm --prefix ui install
 RUN npm install
-#RUN npm --prefix ui run build
 RUN npm run build
 
 EXPOSE 8080
