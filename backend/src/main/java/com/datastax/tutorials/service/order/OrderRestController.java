@@ -103,12 +103,19 @@ public class OrderRestController {
         
 		// Create Pulsar/Astra Streaming client
 		try {
-			client = PulsarClient.builder()
-			        .serviceUrl(SERVICE_URL)
-			        .authentication(
-			            AuthenticationFactory.token(YOUR_PULSAR_TOKEN)
-			        )
-			        .build();
+			if (YOUR_PULSAR_TOKEN == null) {
+				// run without auth ... local Pulsar
+				client = PulsarClient.builder()
+				        .serviceUrl(SERVICE_URL)
+				        .build();
+			} else {
+				client = PulsarClient.builder()
+				        .serviceUrl(SERVICE_URL)
+				        .authentication(
+				            AuthenticationFactory.token(YOUR_PULSAR_TOKEN)
+				        )
+				        .build();
+			}
 		} catch (PulsarClientException e) {
 			// issue building the client stream connection
 			e.printStackTrace();
@@ -190,8 +197,8 @@ public class OrderRestController {
 	    	
 	    	for (OrderEntity orderLine : entityList) {
 		    	OrderProduct prod = new OrderProduct();
-		    	prod.setProductName(key.getProductName());
-		    	prod.setProductId(key.getProductId());
+		    	prod.setProductName(orderLine.getKey().getProductName());
+		    	prod.setProductId(orderLine.getKey().getProductId());
 		    	prod.setProductQty(orderLine.getProductQty());
 		    	prod.setProductPrice(orderLine.getProductPrice());
 		    	
