@@ -16,6 +16,8 @@ import com.datastax.oss.driver.api.core.cql.Row;
 
 public class EcomOrderProcessor {
 
+	private static PulsarClient client;
+	
 	private static final String SERVICE_URL = System.getenv("ASTRA_STREAM_URL");
 	private static final String YOUR_PULSAR_TOKEN = System.getenv("ASTRA_STREAM_TOKEN");
 	private static final String STREAMING_TENANT = System.getenv("ASTRA_STREAM_TENANT");
@@ -122,7 +124,7 @@ public class EcomOrderProcessor {
 		        		}
 		        	}	        	
 			        // increment order status
-			        updateOrderStatus(orderId,userId,command);
+			        //updateOrderStatus(orderId,userId,command);
 		        }
 		        
 	        } catch (Exception ex) {
@@ -246,17 +248,24 @@ public class EcomOrderProcessor {
 	}
 	
 	private static PulsarClient initializeClient(String topic) {
-		System.out.println("topic=" + STREAMING_PREFIX + topic);
+		System.out.println("topic=" + topic);
 
 		try {
 	        // Create client object
-	        PulsarClient client = PulsarClient.builder()
-	                .serviceUrl(SERVICE_URL)
-	                .authentication(
-	                    AuthenticationFactory.token(YOUR_PULSAR_TOKEN)
-	                )
-	                .build();
-	       
+			if (YOUR_PULSAR_TOKEN == null) {
+				// run without auth ... local Pulsar
+		        client = PulsarClient.builder()
+		                .serviceUrl(SERVICE_URL)
+		                .build();
+			} else {
+		        client = PulsarClient.builder()
+		                .serviceUrl(SERVICE_URL)
+		                .authentication(
+		                    AuthenticationFactory.token(YOUR_PULSAR_TOKEN)
+		                )
+		                .build();
+			}
+			
 	        return client;
 		} catch (Exception e) {
 		    System.out.println(e.toString());
