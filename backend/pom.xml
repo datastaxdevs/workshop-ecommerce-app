@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>com.datastax.astra</groupId>
 			<artifactId>astra-spring-boot-starter</artifactId>
-			<version>0.4</version>
+			<version>1.2.7</version>
 		</dependency>
 
 		<!-- Pulsar -->
